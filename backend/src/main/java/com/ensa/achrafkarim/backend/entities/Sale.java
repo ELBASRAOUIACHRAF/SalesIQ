@@ -2,10 +2,7 @@ package com.ensa.achrafkarim.backend.entities;
 
 import com.ensa.achrafkarim.backend.enums.PaymentMethod;
 import com.ensa.achrafkarim.backend.enums.Status;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -23,4 +20,7 @@ public class Sale {
 
     @OneToMany(mappedBy = "sale")
     private List<SoldProduct> soldProducts ;
+
+    @ManyToOne
+    private User user;
 }

@@ -24,7 +24,7 @@ public class User{
     private LocalDateTime updatedAt;
     private LocalDateTime lastLogin;
 
-    @OneToMany(mappedBy = "sale")
+    @OneToMany(mappedBy = "user")
     private List<Sale> sales;
 
     @OneToMany(mappedBy = "user")
