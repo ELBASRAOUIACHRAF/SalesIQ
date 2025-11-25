@@ -17,7 +17,7 @@ public class Reviews {
     private LocalDateTime  reviewDate;
 
     @ManyToOne
-    private User user;
+    private Users users;
 
     @ManyToOne
     private Product product;

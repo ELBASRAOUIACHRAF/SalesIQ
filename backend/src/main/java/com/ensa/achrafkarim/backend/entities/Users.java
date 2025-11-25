@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Data
-public class User{
+public class Users {
     @Id
     @GeneratedValue
     private Long id;
@@ -26,9 +26,9 @@ public class User{
     private LocalDateTime updatedAt;
     private LocalDateTime lastLogin;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "users")
     private List<Sale> sales;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "users")
     private List<Reviews>  reviews;
 }

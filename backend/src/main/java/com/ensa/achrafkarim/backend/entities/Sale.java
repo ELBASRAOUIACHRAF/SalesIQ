@@ -22,5 +22,5 @@ public class Sale {
     private List<SoldProduct> soldProducts ;
 
     @ManyToOne
-    private User user;
+    private Users users;
 }
