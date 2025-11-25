@@ -1,9 +1,6 @@
 package com.ensa.achrafkarim.backend.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 
@@ -14,6 +11,7 @@ import java.util.List;
 @Data
 public class Product {
     @Id
+    @GeneratedValue
     private Long id;
     private String name;
     private double price;
