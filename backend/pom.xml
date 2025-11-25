@@ -117,6 +117,7 @@
                         <artifactId>spring-restdocs-asciidoctor</artifactId>
                         <version>${spring-restdocs.version}</version>
                     </dependency>
+
                 </dependencies>
             </plugin>
             <plugin>
