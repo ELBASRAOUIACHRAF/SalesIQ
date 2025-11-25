@@ -31,4 +31,10 @@ public class Product {
     private Boolean isActive;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    @OneToOne
+    private SoldProduct soldProduct;
+
+    @ManyToOne
+    private Category category;
 }
