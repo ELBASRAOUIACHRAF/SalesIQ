@@ -13,6 +13,7 @@ public class SoldProduct {
     private double unitPrice;
 
     @OneToOne
+    @JoinColumn(name = "product_id")
     private Product product;
 
     @ManyToOne

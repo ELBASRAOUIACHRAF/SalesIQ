@@ -32,7 +32,7 @@ public class Product {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    @OneToOne
+    @OneToOne(mappedBy = "product")
     private SoldProduct soldProduct;
 
     @ManyToOne
