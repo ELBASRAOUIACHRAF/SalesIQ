@@ -28,7 +28,7 @@ public class Product {
     private double weight;
     private double length;
     private double height;
-    private Boolean isActive;
+    private Boolean isActive = true;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

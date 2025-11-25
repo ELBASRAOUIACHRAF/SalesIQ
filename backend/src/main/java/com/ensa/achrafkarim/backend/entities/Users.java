@@ -21,7 +21,7 @@ public class Users {
     private String phoneNumber;
     private Role role;
     private double hoursLoggedIn;
-    private Boolean isActive;
+    private boolean isActive = true;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime lastLogin;
