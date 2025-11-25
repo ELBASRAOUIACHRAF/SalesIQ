@@ -1,6 +1,9 @@
 package com.ensa.achrafkarim.backend.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 
@@ -11,7 +14,6 @@ import java.util.List;
 @Data
 public class Product {
     @Id
-    @GeneratedValue
     private Long id;
     private String name;
     private double price;
@@ -31,7 +33,4 @@ public class Product {
     private Boolean isActive;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-    @ManyToOne
-    private Category category;
 }
