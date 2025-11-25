@@ -15,4 +15,10 @@ public class Reviews {
     private double rating;
     @Column(nullable = true)
     private LocalDateTime  reviewDate;
+
+    @ManyToOne
+    private User user;
+
+    @ManyToOne
+    private Product product;
 }
