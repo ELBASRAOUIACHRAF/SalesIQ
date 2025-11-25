@@ -2,11 +2,13 @@ package com.ensa.achrafkarim.backend.entities;
 
 import com.ensa.achrafkarim.backend.enums.Role;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Data
 public class User{
     @Id
     @GeneratedValue
