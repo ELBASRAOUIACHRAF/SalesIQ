@@ -1,9 +1,6 @@
 package com.ensa.achrafkarim.backend.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 
@@ -33,4 +30,7 @@ public class Product {
     private Boolean isActive;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    @OneToOne
+    private SoldProduct soldProduct;
 }
