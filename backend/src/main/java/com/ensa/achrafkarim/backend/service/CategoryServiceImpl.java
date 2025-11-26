@@ -5,12 +5,16 @@ import com.ensa.achrafkarim.backend.dto.ProductDto;
 import com.ensa.achrafkarim.backend.entities.Category;
 import com.ensa.achrafkarim.backend.mapper.CategoryMapper;
 import com.ensa.achrafkarim.backend.repository.CategoryRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
+@Transactional
 public class CategoryServiceImpl implements CategoryService {
 
     private CategoryRepository categoryRepository;
