@@ -2,6 +2,7 @@ package com.ensa.achrafkarim.backend.service;
 
 import com.ensa.achrafkarim.backend.dto.SaleDto;
 import com.ensa.achrafkarim.backend.entities.Sale;
+import com.ensa.achrafkarim.backend.entities.Users;
 import com.ensa.achrafkarim.backend.enums.Status;
 import com.ensa.achrafkarim.backend.mapper.SaleMapper;
 import com.ensa.achrafkarim.backend.repository.SaleRepository;
@@ -56,6 +57,28 @@ public class SaleServiceImpl implements SaleService {
                 .map(sale -> saleMapper.toDto(sale))
                 .collect(Collectors.toList());
         return saleDtos;
+    }
+
+    @Override
+    public SaleDto createSale(SaleDto saleDto, Users users) {
+        Sale sale = saleMapper.toEntity(saleDto);
+        sale.setUsers(users);
+        return null;
+    }
+
+    @Override
+    public SaleDto updateSale(Long id, SaleDto saleDto) {
+        return null;
+    }
+
+    @Override
+    public void deleteSale(Long id) {
+
+    }
+
+    @Override
+    public List<SaleDto> getSaleByStatus(Status status) {
+        return List.of();
     }
 
 }
