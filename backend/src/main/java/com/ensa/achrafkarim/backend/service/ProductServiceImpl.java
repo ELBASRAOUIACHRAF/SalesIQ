@@ -37,10 +37,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDto> listProducts() {
         List<Product> productsList = productRepository.findAll();
-        List<ProductDto> productDtosList = productsList.stream()
+        return (productsList.stream()
                 .map(prod -> productMapper.toDto(prod))
-                .collect(Collectors.toList());
-        return productDtosList;
+                .collect(Collectors.toList()));
     }
 
     @Override
@@ -80,8 +79,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto getProduct(Long id) {
-        Product product = productRepository.findById(id).get();
-        return productMapper.toDto(product);
+        return (productMapper.toDto(productRepository.findById(id).orElse(null)));
     }
 
     @Override
