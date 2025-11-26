@@ -26,6 +26,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto createCategory(CategoryDto categoryDto) {
         Category category = categoryMapper.toEntity(categoryDto);
+        category.setCreatedAt(LocalDateTime.now());
+        category.setUpdatedAt(LocalDateTime.now());
         Category categorySaved = categoryRepository.save(category);
         return categoryMapper.toDto(categorySaved);
     }
