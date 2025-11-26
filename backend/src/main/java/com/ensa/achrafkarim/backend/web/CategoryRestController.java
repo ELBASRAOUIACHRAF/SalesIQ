@@ -30,9 +30,20 @@ public class CategoryRestController {
     public void deleteCategory(Long categoryId) {
         categoryService.deleteCategory(categoryId);
     }
-    
+
     @PostMapping("/addCategory")
     public CategoryDto addCategory(@RequestBody CategoryDto categoryDto) {
         return categoryService.createCategory(categoryDto);
     }
+
+    @PutMapping("/category/{categoryId}/activate")
+    public CategoryDto activateCategory(@PathVariable Long categoryId) {
+        return categoryService.activateCategory(categoryId);
+    }
+
+    @PutMapping("/category/{categoryId}/deactivate")
+    public CategoryDto deActivateCategory(@PathVariable Long categoryId) {
+        return categoryService.deactivateCategory(categoryId);
+    }
+
 }

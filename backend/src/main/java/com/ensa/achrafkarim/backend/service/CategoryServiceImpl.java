@@ -66,4 +66,22 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryDtos;
     }
 
+    @Override
+    public CategoryDto activateCategory(Long id) {
+        Category category = categoryRepository.findById(id).orElse(null);
+        if (category == null) return null;
+        category.setActive(true);
+        Category updatedCat = categoryRepository.save(category);
+        return categoryMapper.toDto(updatedCat);
+    }
+
+    @Override
+    public CategoryDto deactivateCategory(Long id) {
+        Category category = categoryRepository.findById(id).orElse(null);
+        if (category == null) return null;
+        category.setActive(false);
+        Category updatedCat = categoryRepository.save(category);
+        return categoryMapper.toDto(updatedCat);
+    }
+
 }
