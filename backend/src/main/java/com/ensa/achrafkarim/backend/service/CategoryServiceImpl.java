@@ -4,6 +4,9 @@ import com.ensa.achrafkarim.backend.dto.CategoryDto;
 import com.ensa.achrafkarim.backend.entities.Category;
 import com.ensa.achrafkarim.backend.mapper.CategoryMapper;
 import com.ensa.achrafkarim.backend.repository.CategoryRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,6 +85,18 @@ public class CategoryServiceImpl implements CategoryService {
         category.setActive(false);
         Category updatedCat = categoryRepository.save(category);
         return categoryMapper.toDto(updatedCat);
+    }
+
+    @Override
+    public Long getTotalCategoriesCount() {
+        return categoryRepository.count();
+    }
+
+    @Override
+    public Page<CategoryDto> listCategoriesWithPagination(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Category>  categories = categoryRepository.findAll(pageable);
+        return categories.map(categoryMapper::toDto);
     }
 
 }
