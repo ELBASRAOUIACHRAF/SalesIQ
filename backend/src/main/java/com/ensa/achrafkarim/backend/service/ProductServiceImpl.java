@@ -7,7 +7,7 @@ import com.ensa.achrafkarim.backend.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +25,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto createProduct(ProductDto productDto) {
-        ProductDto newProductDto = productRepository.findById();
         Product product = productMapper.toEntity(productDto);
         Product productSaved = productRepository.save(product);
         return productMapper.toDto(productSaved);
@@ -43,12 +42,35 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto updateProduct(ProductDto productDto) {
         Product product = productMapper.toEntity(productDto);
+        Product productToUpdate = productRepository.findById(product.getId()).orElse(null);
+        if (productToUpdate == null) return null; // si le produit n'existe pas
 
-        return null;
+        productToUpdate.setUpdatedAt(LocalDateTime.now());
+
+        // Mettre à jour tous les champs
+        productToUpdate.setName(product.getName());
+        productToUpdate.setPrice(product.getPrice());
+        productToUpdate.setRating(product.getRating());
+        productToUpdate.setReviewsCount(product.getReviewsCount());
+        productToUpdate.setAsin(product.getAsin());
+        productToUpdate.setDescription(product.getDescription());
+        productToUpdate.setMark(product.getMark());
+        productToUpdate.setDiscount(product.getDiscount());
+        productToUpdate.setImageUrl(product.getImageUrl());
+        productToUpdate.setImagesGallery(product.getImagesGallery());
+        productToUpdate.setWeight(product.getWeight());
+        productToUpdate.setLength(product.getLength());
+        productToUpdate.setHeight(product.getHeight());
+
+        Product savedProduct = productRepository.save(productToUpdate);
+
+        return productMapper.toDto(savedProduct);
     }
 
     @Override
     public void deleteProduct(Long id) {
+        Product productToDelete = productRepository.findById(id).orElse(null);
+        if (productToDelete == null) return;  // si le produit n'existe pas
         productRepository.deleteById(id);
     }
 
