@@ -5,10 +5,7 @@ import com.ensa.achrafkarim.backend.dto.CategoryDto;
 import com.ensa.achrafkarim.backend.dto.ProductDto;
 import com.ensa.achrafkarim.backend.service.CategoryService;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,5 +29,10 @@ public class CategoryRestController {
     @DeleteMapping("/deleteCat/{categoryId}")
     public void deleteCategory(Long categoryId) {
         categoryService.deleteCategory(categoryId);
+    }
+    
+    @PostMapping("/addCategory")
+    public CategoryDto addCategory(@RequestBody CategoryDto categoryDto) {
+        return categoryService.createCategory(categoryDto);
     }
 }
