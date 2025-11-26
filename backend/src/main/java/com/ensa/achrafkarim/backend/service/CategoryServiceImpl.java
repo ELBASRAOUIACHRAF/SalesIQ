@@ -28,6 +28,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryMapper.toEntity(categoryDto);
         category.setCreatedAt(LocalDateTime.now());
         category.setUpdatedAt(LocalDateTime.now());
+        category.setActive(true);
         Category categorySaved = categoryRepository.save(category);
         return categoryMapper.toDto(categorySaved);
     }

@@ -1,10 +1,7 @@
 package com.ensa.achrafkarim.backend.entities;
 
 import com.ensa.achrafkarim.backend.enums.PaymentMethod;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -14,7 +11,7 @@ import java.util.List;
 @Data
 public class Category {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String description;
