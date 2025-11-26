@@ -25,28 +25,36 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto createProduct(ProductDto productDto) {
-        return null;
+        ProductDto newProductDto = productRepository.findById();
+        Product product = productMapper.toEntity(productDto);
+        Product productSaved = productRepository.save(product);
+        return productMapper.toDto(productSaved);
     }
 
     @Override
     public List<ProductDto> listProducts() {
         List<Product> productsList = productRepository.findAll();
-        List<ProductDto> productDtosList = productsList.stream().map(prod -> productMapper.toDto(prod)).collect(Collectors.toList());
+        List<ProductDto> productDtosList = productsList.stream()
+                .map(prod -> productMapper.toDto(prod))
+                .collect(Collectors.toList());
         return productDtosList;
     }
 
     @Override
     public ProductDto updateProduct(ProductDto productDto) {
+        Product product = productMapper.toEntity(productDto);
+
         return null;
     }
 
     @Override
-    public void deleteProduct(ProductDto productDto) {
-
+    public void deleteProduct(Long id) {
+        productRepository.deleteById(id);
     }
 
     @Override
-    public ProductDto getProduct(ProductDto productDto) {
-        return null;
+    public ProductDto getProduct(Long id) {
+        Product product = productRepository.findById(id).get();
+        return productMapper.toDto(product);
     }
 }

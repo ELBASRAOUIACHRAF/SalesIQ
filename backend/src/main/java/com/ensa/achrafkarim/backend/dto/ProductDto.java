@@ -1,8 +1,10 @@
 package com.ensa.achrafkarim.backend.dto;
 
 
-import java.util.List;
+import lombok.Data;
 
+import java.util.List;
+@Data
 public class ProductDto {
     private Long id;
     private String name;
