@@ -12,6 +12,7 @@ public interface ProductService {
     void deleteProduct(Long id);
     ProductDto getProduct(Long id);
     List<ProductDto> getProductsByCategory(Long categoryId);
-
+    ProductDto increaseStock(Long productId, int quantity);
+    ProductDto decreaseStock(Long productId, int quantity);
 
 }

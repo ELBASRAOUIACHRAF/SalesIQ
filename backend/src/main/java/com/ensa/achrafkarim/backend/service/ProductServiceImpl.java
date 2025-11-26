@@ -86,12 +86,33 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductDto> getProductsByCategory(Long categoryId) {
-        Category category = categoryRepository.findById(categoryId).get();
+        Category category = categoryRepository.findById(categoryId).orElse(null);
         if (category == null) return null;  // si le produit n'existe pas
         List<Product> products = productRepository.findProductByCategory(category);
         List<ProductDto> productDtos = products.stream()
                 .map(prod -> productMapper.toDto(prod))
                 .collect(Collectors.toList());
         return productDtos;
+    }
+
+    @Override
+    public ProductDto increaseStock(Long productId, int quantity) {
+        Product product = productRepository.findById(productId).orElse(null);
+        if (product == null) return null;
+        product.setStock(product.getStock() + quantity);
+        productRepository.save(product);
+        return productMapper.toDto(product);
+    }
+
+    @Override
+    public ProductDto decreaseStock(Long productId, int quantity) {
+        Product product = productRepository.findById(productId).orElse(null);
+        if (product == null) return null;
+        if(product.getStock() >= quantity){
+            product.setStock(product.getStock() - quantity);
+            productRepository.save(product);
+            return productMapper.toDto(product);
+        }
+        return null; // quantite insufisante erreur
     }
 }

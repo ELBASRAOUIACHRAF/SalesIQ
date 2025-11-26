@@ -20,6 +20,7 @@ public class CategoryServiceImpl implements CategoryService {
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;
     }
+
     @Override
     public CategoryDto createCategory(CategoryDto categoryDto) {
         Category category = categoryMapper.toEntity(categoryDto);
@@ -47,7 +48,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto getCategory(Long id) {
-        Category category = categoryRepository.findById(id).get();
+        Category category = categoryRepository.findById(id).orElse(null);
         return categoryMapper.toDto(category);
     }
 
@@ -59,6 +60,5 @@ public class CategoryServiceImpl implements CategoryService {
                 .collect(Collectors.toList());
         return categoryDtos;
     }
-
 
 }
