@@ -1,6 +1,7 @@
 package com.ensa.achrafkarim.backend.service;
 
 import com.ensa.achrafkarim.backend.dto.CategoryDto;
+import com.ensa.achrafkarim.backend.dto.ProductDto;
 import com.ensa.achrafkarim.backend.entities.Category;
 import com.ensa.achrafkarim.backend.mapper.CategoryMapper;
 import com.ensa.achrafkarim.backend.repository.CategoryRepository;
@@ -12,8 +13,8 @@ import java.util.stream.Collectors;
 
 public class CategoryServiceImpl implements CategoryService {
 
-    CategoryRepository categoryRepository;
-    CategoryMapper categoryMapper;
+    private CategoryRepository categoryRepository;
+    private CategoryMapper categoryMapper;
 
     public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
         this.categoryRepository = categoryRepository;

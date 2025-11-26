@@ -1,8 +1,10 @@
 package com.ensa.achrafkarim.backend.service;
 
 import com.ensa.achrafkarim.backend.dto.ProductDto;
+import com.ensa.achrafkarim.backend.entities.Category;
 import com.ensa.achrafkarim.backend.entities.Product;
 import com.ensa.achrafkarim.backend.mapper.ProductMapper;
+import com.ensa.achrafkarim.backend.repository.CategoryRepository;
 import com.ensa.achrafkarim.backend.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,12 +17,14 @@ import java.util.stream.Collectors;
 @Transactional
 public class ProductServiceImpl implements ProductService {
 
-    ProductRepository productRepository;
-    ProductMapper  productMapper;
+    private ProductRepository productRepository;
+    private ProductMapper  productMapper;
+    private CategoryRepository categoryRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository,  ProductMapper productMapper) {
+    public ProductServiceImpl(ProductRepository productRepository,  ProductMapper productMapper,   CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -78,5 +82,16 @@ public class ProductServiceImpl implements ProductService {
     public ProductDto getProduct(Long id) {
         Product product = productRepository.findById(id).get();
         return productMapper.toDto(product);
+    }
+
+    @Override
+    public List<ProductDto> getProductsByCategory(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId).get();
+        if (category == null) return null;  // si le produit n'existe pas
+        List<Product> products = productRepository.findProductByCategory(category);
+        List<ProductDto> productDtos = products.stream()
+                .map(prod -> productMapper.toDto(prod))
+                .collect(Collectors.toList());
+        return productDtos;
     }
 }
