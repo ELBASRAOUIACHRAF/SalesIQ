@@ -45,4 +45,25 @@ public class ProductRestController {
         return productService.getAvailableStock(productID);
     }
 
+    @GetMapping("/pricefilter")
+    public List<ProductDto> filterByprice(@RequestParam double minPrice,@RequestParam double maxPrice){
+        return productService.filterProductsByPriceRange(minPrice,maxPrice);
+    }
+
+    @PutMapping("/updatestock")
+    public ProductDto updateStock(@RequestParam Long productId,@RequestParam int quantity,@RequestParam boolean increase){
+        if (increase) return productService.increaseStock(productId, quantity);
+        else return productService.decreaseStock(productId, quantity);
+    }
+
+    @GetMapping("/categoryproducts/{categoryId}")
+    public List<ProductDto> getCategoryProducts(@PathVariable Long categoryId){
+        return productService.getProductsByCategory(categoryId);
+    }
+
+    @PutMapping("/updateproduct")
+    public ProductDto updateProduct(@RequestBody ProductDto productDto){
+        return productService.updateProduct(productDto);
+    }
+
 }
