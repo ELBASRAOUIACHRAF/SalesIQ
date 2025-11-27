@@ -17,14 +17,16 @@ import java.util.stream.Collectors;
 @Transactional
 public class ProductServiceImpl implements ProductService {
 
+    private final ProductService productService;
     private ProductRepository productRepository;
     private ProductMapper  productMapper;
     private CategoryRepository categoryRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository,  ProductMapper productMapper,   CategoryRepository categoryRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, CategoryRepository categoryRepository, ProductService productService) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.categoryRepository = categoryRepository;
+        this.productService = productService;
     }
 
     @Override
@@ -109,5 +111,28 @@ public class ProductServiceImpl implements ProductService {
         product.setStock(product.getStock() - quantity);
         productRepository.save(product);
         return productMapper.toDto(product); // jps ps kayn lach n returniw tani
+    }
+
+    @Override
+    public List<ProductDto> filterProductsByPriceRange(double minPrice, double maxPrice) {
+        List<Product> productList = productRepository.findByPriceBetween(minPrice, maxPrice);
+        return (productList.stream()
+                .map(product -> productMapper.toDto(product))
+                .collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<ProductDto> getProductsSortedByPrice(boolean ascending) {
+        return List.of();
+    }
+
+    @Override
+    public boolean isProductInStock(Long productId) {
+        return false;
+    }
+
+    @Override
+    public int getAvailableStock(Long productId) {
+        return 0;
     }
 }

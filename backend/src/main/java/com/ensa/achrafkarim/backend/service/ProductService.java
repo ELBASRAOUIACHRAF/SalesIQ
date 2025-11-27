@@ -14,5 +14,8 @@ public interface ProductService {
     List<ProductDto> getProductsByCategory(Long categoryId);
     ProductDto increaseStock(Long productId, int quantity);
     ProductDto decreaseStock(Long productId, int quantity);
-
+    List<ProductDto> filterProductsByPriceRange(double minPrice, double maxPrice);
+    List<ProductDto> getProductsSortedByPrice(boolean ascending);
+    boolean isProductInStock(Long productId);
+    int getAvailableStock(Long productId);
 }
