@@ -141,11 +141,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public boolean isProductInStock(Long productId) {
-        return false;
+        if(productRepository.findById(productId).get().getStock() == 0) return false;
+        return true;
     }
 
     @Override
     public int getAvailableStock(Long productId) {
-        return 0;
+        return productRepository.findById(productId).get().getStock().intValue();
     }
 }

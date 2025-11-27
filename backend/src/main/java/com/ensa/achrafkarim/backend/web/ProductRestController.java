@@ -35,4 +35,14 @@ public class ProductRestController {
         return productService.getProductsSortedByPrice(sortMethod);
     }
 
+    @GetMapping("/stockvalidation/{productID}")
+    public boolean isProductInStock(@PathVariable Long productID){
+        return productService.isProductInStock(productID);
+    }
+
+    @GetMapping("/stockcount/{productID}")
+    public int productStock(@PathVariable Long productID){
+        return productService.getAvailableStock(productID);
+    }
+
 }
