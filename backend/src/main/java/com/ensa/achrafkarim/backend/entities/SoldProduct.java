@@ -11,7 +11,6 @@ public class SoldProduct {
     private Long id;
     private int quantity;
     private double unitPrice;
-    // une relation OnetoMany
     @ManyToOne
     private Product product;
 

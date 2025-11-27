@@ -2,14 +2,17 @@ package com.ensa.achrafkarim.backend.service;
 
 import com.ensa.achrafkarim.backend.dto.ProductDto;
 import com.ensa.achrafkarim.backend.dto.SoldProductDto;
+import com.ensa.achrafkarim.backend.entities.Product;
 import com.ensa.achrafkarim.backend.entities.Sale;
 import com.ensa.achrafkarim.backend.entities.SoldProduct;
+import com.ensa.achrafkarim.backend.mapper.ProductMapper;
 import com.ensa.achrafkarim.backend.repository.SoldProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -17,10 +20,15 @@ import java.util.List;
 public class SoldProductServiceImpl implements SoldProductService {
 
     SoldProductRepository soldProductRepository;
+    ProductMapper  productMapper;
 
     @Override
-    public List<ProductDto> getSoldProductsBySale(Sale sale) {
-        return List.of();
+    public List<ProductDto> getSoldProductsBySale(Long saleId) {
+        List<SoldProduct> soldOfSale = soldProductRepository.findAllBySaleId(saleId);
+        List<Product> productIds = soldOfSale.stream().map(sold -> sold.getProduct()).collect(Collectors.toList());
+        return productIds.stream()
+                .map(prod -> productMapper.toDto(prod))
+                .collect(Collectors.toList());
     }
 
     @Override

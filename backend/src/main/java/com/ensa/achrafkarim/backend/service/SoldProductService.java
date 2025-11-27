@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface SoldProductService {
 
-    List<ProductDto> getSoldProductsBySale(Sale sale);
+    List<ProductDto> getSoldProductsBySale(Long saleId);
     double getTotalPriceBySale(Long saleId);
     double getProfitByProduct(Long productId);
 
