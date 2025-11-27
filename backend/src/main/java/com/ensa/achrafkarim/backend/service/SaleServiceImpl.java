@@ -6,9 +6,11 @@ import com.ensa.achrafkarim.backend.entities.Users;
 import com.ensa.achrafkarim.backend.enums.Status;
 import com.ensa.achrafkarim.backend.mapper.SaleMapper;
 import com.ensa.achrafkarim.backend.repository.SaleRepository;
+import com.ensa.achrafkarim.backend.repository.UsersRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,12 +18,14 @@ import java.util.stream.Collectors;
 @Transactional
 public class SaleServiceImpl implements SaleService {
 
+    private final UsersRepository usersRepository;
     private SaleRepository saleRepository;
     private SaleMapper saleMapper;
 
-    public SaleServiceImpl(SaleRepository saleRepository,  SaleMapper saleMapper) {
+    public SaleServiceImpl(SaleRepository saleRepository, SaleMapper saleMapper, UsersRepository usersRepository) {
         this.saleRepository = saleRepository;
         this.saleMapper = saleMapper;
+        this.usersRepository = usersRepository;
     }
 
     @Override
@@ -60,10 +64,13 @@ public class SaleServiceImpl implements SaleService {
     }
 
     @Override
-    public SaleDto createSale(SaleDto saleDto, Users users) {
+    public SaleDto createSale(SaleDto saleDto, Long userId) {
         Sale sale = saleMapper.toEntity(saleDto);
-        sale.setUsers(users);
-        return null;
+        sale.setUsers(usersRepository.findById(userId).get());
+        sale.setDateOfSale(LocalDateTime.now());
+        sale.setUpdatedAt(LocalDateTime.now());
+        Sale savedSale = saleRepository.save(sale);
+        return saleMapper.toDto(savedSale);
     }
 
     @Override
@@ -73,12 +80,16 @@ public class SaleServiceImpl implements SaleService {
 
     @Override
     public void deleteSale(Long id) {
-
+        if (saleRepository.findById(id) == null ) return;
+        saleRepository.deleteById(id);
     }
 
     @Override
     public List<SaleDto> getSaleByStatus(Status status) {
-        return List.of();
+        List<Sale> salesByStatus = saleRepository.findAllByStatus(status);
+        return salesByStatus.stream()
+                .map(sale ->  saleMapper.toDto(sale))
+                .collect(Collectors.toList());
     }
 
 }

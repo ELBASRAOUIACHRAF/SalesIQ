@@ -12,12 +12,17 @@ import java.util.List;
 @Data
 public class Sale {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDateTime dateOfSale;
+
+    @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
+
+    @Enumerated(EnumType.STRING)
     private Status status;
 
+    private LocalDateTime updatedAt;
     @OneToMany(mappedBy = "sale")
     private List<SoldProduct> soldProducts ;
 

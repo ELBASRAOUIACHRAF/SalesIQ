@@ -19,6 +19,7 @@ public class Users {
     private String email;
     private String password;
     private String phoneNumber;
+    @Enumerated(EnumType.STRING)
     private Role role;
     private double hoursLoggedIn;
     private boolean isActive = true;
