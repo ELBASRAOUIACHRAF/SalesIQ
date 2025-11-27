@@ -2,7 +2,7 @@ package com.ensa.achrafkarim.backend.service;
 
 import com.ensa.achrafkarim.backend.dto.SaleDto;
 import com.ensa.achrafkarim.backend.entities.Sale;
-import com.ensa.achrafkarim.backend.entities.Users;
+import com.ensa.achrafkarim.backend.enums.PaymentMethod;
 import com.ensa.achrafkarim.backend.enums.Status;
 import com.ensa.achrafkarim.backend.mapper.SaleMapper;
 import com.ensa.achrafkarim.backend.repository.SaleRepository;
@@ -90,6 +90,28 @@ public class SaleServiceImpl implements SaleService {
         return salesByStatus.stream()
                 .map(sale ->  saleMapper.toDto(sale))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SaleDto> getSalesByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        List<Sale> salesByDateRange = saleRepository.findByDateOfSaleBetween(startDate, endDate);
+        return salesByDateRange.stream()
+                .map(sale -> saleMapper.toDto(sale))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SaleDto> getSalesByPaymentMethod(PaymentMethod paymentMethod) {
+        List<Sale> salesByPaymentMethod = saleRepository.findAllByPaymentMethod(paymentMethod);
+        return salesByPaymentMethod.stream()
+                .map(sale ->  saleMapper.toDto(sale))
+                .collect(Collectors.toList());
+    }
+
+    // to be implemented
+    @Override
+    public byte[] exportSales(List<Long> saleIds, String format) {
+        return new byte[0];
     }
 
 }

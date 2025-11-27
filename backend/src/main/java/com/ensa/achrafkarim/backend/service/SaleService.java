@@ -1,9 +1,10 @@
 package com.ensa.achrafkarim.backend.service;
 
 import com.ensa.achrafkarim.backend.dto.SaleDto;
-import com.ensa.achrafkarim.backend.entities.Users;
+import com.ensa.achrafkarim.backend.enums.PaymentMethod;
 import com.ensa.achrafkarim.backend.enums.Status;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface SaleService {
@@ -17,4 +18,8 @@ public interface SaleService {
     void deleteSale(Long id);
     List<SaleDto> getSaleByStatus(Status status);
 
+    List<SaleDto> getSalesByDateRange(LocalDateTime startDate, LocalDateTime endDate);
+    List<SaleDto> getSalesByPaymentMethod(PaymentMethod paymentMethod);
+
+    byte[] exportSales(List<Long> saleIds, String format);
 }

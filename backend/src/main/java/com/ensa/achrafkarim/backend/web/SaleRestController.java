@@ -1,13 +1,13 @@
 package com.ensa.achrafkarim.backend.web;
 
 import com.ensa.achrafkarim.backend.dto.SaleDto;
-import com.ensa.achrafkarim.backend.entities.Users;
+import com.ensa.achrafkarim.backend.enums.PaymentMethod;
 import com.ensa.achrafkarim.backend.enums.Status;
-import com.ensa.achrafkarim.backend.repository.SaleRepository;
 import com.ensa.achrafkarim.backend.service.SaleService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -47,6 +47,11 @@ public class SaleRestController {
         return saleService.getSaleByStatus(status);
     }
 
+    @GetMapping("/pymethodsales/{paymentMethod}")
+    public List<SaleDto> getSaleByPaymentMethod(@PathVariable PaymentMethod paymentMethod) {
+        return saleService.getSalesByPaymentMethod(paymentMethod);
+    }
+
     @PutMapping("/updatestatus")
     public SaleDto updateStatus(@RequestParam Long saleId,  @RequestParam Status status) {
         return saleService.updateSaleStatus(saleId, status);
@@ -55,6 +60,11 @@ public class SaleRestController {
     @PutMapping("/updatesale/{saleId}")
     public SaleDto updateSale(@PathVariable Long saleId,  @RequestBody SaleDto saleDto) {
         return saleService.updateSale(saleId, saleDto);
+    }
+
+    @GetMapping("/salesbydate")
+    public List<SaleDto> saleByDateRange(@RequestParam LocalDateTime startDate, @RequestParam LocalDateTime endDate) {
+        return saleService.getSalesByDateRange(startDate, endDate);
     }
 
 }
