@@ -32,8 +32,8 @@ public class Product {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    @OneToOne(mappedBy = "product")
-    private SoldProduct soldProduct;
+    @OneToMany(mappedBy = "product")
+    private List<SoldProduct> soldProducts;
 
     @ManyToOne
     private Category category;

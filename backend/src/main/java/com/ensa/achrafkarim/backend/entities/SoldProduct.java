@@ -11,9 +11,8 @@ public class SoldProduct {
     private Long id;
     private int quantity;
     private double unitPrice;
-
-    @OneToOne
-    @JoinColumn(name = "product_id")
+    // une relation OnetoMany
+    @ManyToOne
     private Product product;
 
     @ManyToOne
