@@ -24,9 +24,15 @@ public class ProductRestController {
     @GetMapping("/deleteOne/{productId}")
     public void deleteProduct(@PathVariable Long productId) {productService.deleteProduct(productId);}
 
-    @GetMapping("/addOne")
+    @PostMapping("/addOne")
     public ProductDto addProduct(@RequestBody ProductDto productDto)
     {
         return productService.createProduct(productDto);
     }
+
+    @GetMapping("/sortedproducts/{sortMethod}")
+    public List<ProductDto> sortedProducts(@PathVariable Boolean sortMethod){
+        return productService.getProductsSortedByPrice(sortMethod);
+    }
+
 }

@@ -32,6 +32,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto createProduct(ProductDto productDto) {
         Product product = productMapper.toEntity(productDto);
+        product.setIsActive(true);
+        product.setReviewsCount(0L);
+        product.setCreatedAt(LocalDateTime.now());
+        product.setUpdatedAt(LocalDateTime.now());
         Product productSaved = productRepository.save(product);
         return productMapper.toDto(productSaved);
     }
@@ -123,7 +127,16 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductDto> getProductsSortedByPrice(boolean ascending) {
-        return List.of();
+        List<Product> product = null;
+        if(ascending) {
+            product = productRepository.findAllByOrderByPriceAsc();
+        }else {
+            product = productRepository.findAllByOrderByPriceDesc();
+        }
+        List<ProductDto> productDtos = product.stream()
+                .map(prod -> productMapper.toDto(prod))
+                .collect(Collectors.toList());
+        return productDtos;
     }
 
     @Override
