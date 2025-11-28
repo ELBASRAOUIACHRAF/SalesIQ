@@ -1,6 +1,7 @@
 package com.ensa.achrafkarim.backend.web;
 
 import com.ensa.achrafkarim.backend.dto.ProductDto;
+import com.ensa.achrafkarim.backend.dto.ProductOrderInfoDto;
 import com.ensa.achrafkarim.backend.dto.SaleDto;
 import com.ensa.achrafkarim.backend.dto.SoldProductDto;
 import com.ensa.achrafkarim.backend.service.SoldProductService;
@@ -37,9 +38,10 @@ public class SoldProductRestController {
             @RequestParam Long saleId,
             @RequestParam Long productId,
             @RequestParam int quantity,
-            @RequestParam Double unitprice
+            @RequestParam Double unitPrice
     ) {
-        return (soldProductService.addSoldProduct(saleId, productId, quantity, unitprice));
+        ProductOrderInfoDto productOrderInfoDto = new ProductOrderInfoDto(productId,quantity,unitPrice);
+        return (soldProductService.addSoldProduct(saleId, productOrderInfoDto));
     }
 
     @DeleteMapping("/deleteSoldProduct/{saleId}")
@@ -57,7 +59,7 @@ public class SoldProductRestController {
         return (soldProductService.getNumberOfTimesSold(productId));
     }
 
-    @PostMapping("/getProductProfitBySaleProductIds")
+    @GetMapping("/getProductProfitBySaleProductIds")
     public double getProductProfitBySaleProductIds(
             @RequestParam Long saleId,
             @RequestParam Long productId
