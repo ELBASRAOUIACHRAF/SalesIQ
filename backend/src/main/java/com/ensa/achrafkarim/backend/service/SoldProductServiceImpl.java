@@ -91,4 +91,11 @@ public class SoldProductServiceImpl implements SoldProductService {
         List<SoldProduct> soldOfProduct = soldProductRepository.findAllByProductId(productId);
         return soldOfProduct.size();
     }
+
+    @Override
+    public double getProductProfitBySaleProductIds(Long saleId, Long productId) {
+        SoldProduct soldProduct = soldProductRepository.findBySaleIdAndProductId(saleId, productId).orElse(null);
+        if (soldProduct == null) return 0;
+        return (soldProduct.getUnitPrice()*soldProduct.getQuantity());
+    }
 }

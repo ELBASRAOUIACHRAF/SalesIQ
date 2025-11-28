@@ -1,11 +1,14 @@
 package com.ensa.achrafkarim.backend.service;
 
 import com.ensa.achrafkarim.backend.dto.SaleDto;
+import com.ensa.achrafkarim.backend.entities.Product;
 import com.ensa.achrafkarim.backend.entities.Sale;
 import com.ensa.achrafkarim.backend.enums.PaymentMethod;
 import com.ensa.achrafkarim.backend.enums.Status;
 import com.ensa.achrafkarim.backend.mapper.SaleMapper;
+import com.ensa.achrafkarim.backend.repository.ProductRepository;
 import com.ensa.achrafkarim.backend.repository.SaleRepository;
+import com.ensa.achrafkarim.backend.repository.SoldProductRepository;
 import com.ensa.achrafkarim.backend.repository.UsersRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

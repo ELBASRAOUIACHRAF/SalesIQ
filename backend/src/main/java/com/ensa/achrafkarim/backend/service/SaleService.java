@@ -17,9 +17,7 @@ public interface SaleService {
     SaleDto updateSale(Long id, SaleDto saleDto);
     void deleteSale(Long id);
     List<SaleDto> getSaleByStatus(Status status);
-
     List<SaleDto> getSalesByDateRange(LocalDateTime startDate, LocalDateTime endDate);
     List<SaleDto> getSalesByPaymentMethod(PaymentMethod paymentMethod);
-
     byte[] exportSales(List<Long> saleIds, String format);
 }

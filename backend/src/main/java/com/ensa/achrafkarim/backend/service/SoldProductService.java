@@ -15,5 +15,6 @@ public interface SoldProductService {
     void deleteSoldProduct(Long soldProductId);
     int getTotalQuantitySoldByProduct(Long productId);
     long getNumberOfTimesSold(Long productId);
+    double getProductProfitBySaleProductIds(Long productId, Long saleId); // method we talked abt it earlier
 
 }

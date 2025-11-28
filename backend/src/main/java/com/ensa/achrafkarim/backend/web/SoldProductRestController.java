@@ -41,4 +41,27 @@ public class SoldProductRestController {
     ) {
         return (soldProductService.addSoldProduct(saleId, productId, quantity, unitprice));
     }
+
+    @DeleteMapping("/deleteSoldProduct/{saleId}")
+    public void deleteSoldProduct(@PathVariable Long saleId) {
+        soldProductService.deleteSoldProduct(saleId);
+    }
+
+    @GetMapping("/getTotalQuantitySoldByProduct/{productId}")
+    public int  getTotalQuantitySoldByProduct(@PathVariable Long productId) {
+        return (soldProductService.getTotalQuantitySoldByProduct(productId));
+    }
+
+    @GetMapping("/getNumberOfTimesSold/{productId}")
+    public long getNumberOfTimesSold(@PathVariable Long productId) {
+        return (soldProductService.getNumberOfTimesSold(productId));
+    }
+
+    @PostMapping("/getProductProfitBySaleProductIds")
+    public double getProductProfitBySaleProductIds(
+            @RequestParam Long saleId,
+            @RequestParam Long productId
+    ) {
+        return (soldProductService.getProductProfitBySaleProductIds(saleId, productId));
+    }
 }
