@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 public class Reviews {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String comment;
     private double rating;
