@@ -6,10 +6,7 @@ import com.ensa.achrafkarim.backend.dto.SoldProductDto;
 import com.ensa.achrafkarim.backend.service.SoldProductService;
 import com.ensa.achrafkarim.backend.service.SoldProductServiceImpl;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,24 +18,27 @@ public class SoldProductRestController {
     private SoldProductService soldProductService;
 
     @GetMapping("/getSoldProductsBySale/{saleId}")
-    public List<ProductDto> getSoldProductsBySale(@PathVariable Long saleId)
-    {
+    public List<ProductDto> getSoldProductsBySale(@PathVariable Long saleId) {
         return (soldProductService.getSoldProductsBySale(saleId));
     }
 
     @GetMapping("/getTotalPriceBySale/{saleId}")
-    public Double getTotalPriceBySale(@PathVariable Long saleId)
-    {
+    public Double getTotalPriceBySale(@PathVariable Long saleId) {
         return (soldProductService.getTotalPriceBySale(saleId));
     }
 
     @GetMapping("/getProfitByProduct/{saleId}")
-    public double getProfitByProduct(@PathVariable Long saleId)
-    {
+    public double getProfitByProduct(@PathVariable Long saleId) {
         return (soldProductService.getProfitByProduct(saleId));
     }
 
-    @GetMapping("/addSoldProduct/{saleId}")
-    public SoldProductDto addSoldProduct(Long saleId, Long productId, int quantity, Double unitPrice) {
-
+    @PostMapping("/addSoldProduct")
+    public SoldProductDto addSoldProduct(
+            @RequestParam Long saleId,
+            @RequestParam Long productId,
+            @RequestParam int quantity,
+            @RequestParam Double unitprice
+    ) {
+        return (soldProductService.addSoldProduct(saleId, productId, quantity, unitprice));
     }
+}
