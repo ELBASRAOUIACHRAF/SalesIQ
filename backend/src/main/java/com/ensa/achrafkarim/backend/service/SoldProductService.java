@@ -11,5 +11,9 @@ public interface SoldProductService {
     List<ProductDto> getSoldProductsBySale(Long saleId);
     double getTotalPriceBySale(Long saleId);
     double getProfitByProduct(Long productId);
+    SoldProductDto addSoldProduct(Long saleId, Long productId, int quantity, Double unitPrice);
+    void deleteSoldProduct(Long soldProductId);
+    int getTotalQuantitySoldByProduct(Long productId);
+    long getNumberOfTimesSold(Long productId);
 
 }

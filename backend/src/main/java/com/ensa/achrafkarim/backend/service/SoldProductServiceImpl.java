@@ -50,4 +50,25 @@ public class SoldProductServiceImpl implements SoldProductService {
         }
         return totalPrice;
     }
+
+    @Override
+    public SoldProductDto addSoldProduct(Long saleId, Long productId, int quantity, Double unitPrice) {
+        SoldProduct  soldProduct;
+        return null;
+    }
+
+    @Override
+    public void deleteSoldProduct(Long soldProductId) {
+
+    }
+
+    @Override
+    public int getTotalQuantitySoldByProduct(Long productId) {
+        return 0;
+    }
+
+    @Override
+    public long getNumberOfTimesSold(Long productId) {
+        return 0;
+    }
 }
