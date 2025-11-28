@@ -6,6 +6,7 @@ import com.ensa.achrafkarim.backend.entities.Product;
 import com.ensa.achrafkarim.backend.mapper.ProductMapper;
 import com.ensa.achrafkarim.backend.repository.CategoryRepository;
 import com.ensa.achrafkarim.backend.repository.ProductRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
