@@ -1,7 +1,6 @@
 package com.ensa.achrafkarim.backend.service;
 
 import com.ensa.achrafkarim.backend.dto.ReviewsDto;
-import com.ensa.achrafkarim.backend.entities.Reviews;
 
 import java.time.LocalDateTime;
 import java.util.List;
