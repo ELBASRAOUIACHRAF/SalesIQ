@@ -6,6 +6,9 @@ import com.ensa.achrafkarim.backend.entities.Product;
 import com.ensa.achrafkarim.backend.entities.Sale;
 import com.ensa.achrafkarim.backend.entities.SoldProduct;
 import com.ensa.achrafkarim.backend.mapper.ProductMapper;
+import com.ensa.achrafkarim.backend.mapper.SoldProductMapper;
+import com.ensa.achrafkarim.backend.repository.ProductRepository;
+import com.ensa.achrafkarim.backend.repository.SaleRepository;
 import com.ensa.achrafkarim.backend.repository.SoldProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,9 @@ public class SoldProductServiceImpl implements SoldProductService {
 
     SoldProductRepository soldProductRepository;
     ProductMapper  productMapper;
+    ProductRepository  productRepository;
+    SaleRepository   saleRepository;
+    SoldProductMapper soldProductMapper;
 
     @Override
     public List<ProductDto> getSoldProductsBySale(Long saleId) {
@@ -53,22 +59,36 @@ public class SoldProductServiceImpl implements SoldProductService {
 
     @Override
     public SoldProductDto addSoldProduct(Long saleId, Long productId, int quantity, Double unitPrice) {
-        SoldProduct  soldProduct;
-        return null;
+        SoldProduct  soldProduct = new SoldProduct();
+        soldProduct.setUnitPrice(unitPrice);
+        soldProduct.setQuantity(quantity);
+        soldProduct.setProduct(productRepository.findById(productId).get());
+        soldProduct.setSale(saleRepository.findById(saleId).get());
+        SoldProduct savedSoldProduct = soldProductRepository.save(soldProduct);
+        return soldProductMapper.toDto(savedSoldProduct);
     }
 
     @Override
     public void deleteSoldProduct(Long soldProductId) {
-
+        if (soldProductRepository.findById(soldProductId)==null) return ;
+        soldProductRepository.deleteById(soldProductId);
     }
 
     @Override
     public int getTotalQuantitySoldByProduct(Long productId) {
-        return 0;
+        if (productRepository.findById(productId)==null) return 0;
+        List<SoldProduct> soldOfProduct = soldProductRepository.findAllByProductId(productId);
+        int totalQuantity = 0;
+        for (SoldProduct sold : soldOfProduct) {
+            totalQuantity += sold.getQuantity();
+        }
+        return totalQuantity;
     }
 
     @Override
     public long getNumberOfTimesSold(Long productId) {
-        return 0;
+        if (productRepository.findById(productId)==null) return 0;
+        List<SoldProduct> soldOfProduct = soldProductRepository.findAllByProductId(productId);
+        return soldOfProduct.size();
     }
 }
