@@ -51,8 +51,11 @@ public class ReviewsServiceImpl implements ReviewsService{
 
     @Override
     public ReviewsDto updateReview(Long reviewId, ReviewsDto reviewsDto) {
-
-        return null;
+        Reviews reviews = reviewsRepository.findById(reviewId).get();
+        reviews.setComment(reviewsDto.getComment());
+        reviews.setRating(reviewsDto.getRating());
+        Reviews savedReview = reviewsRepository.save(reviews);
+        return reviewsMapper.toDto(savedReview);
     }
 
     @Override
@@ -63,7 +66,10 @@ public class ReviewsServiceImpl implements ReviewsService{
 
     @Override
     public List<ReviewsDto> getReviewsByRating(double rating) {
-        return List.of();
+        List<Reviews> reviewsList = reviewsRepository.findByRating(rating);
+        return reviewsList.stream()
+                .map(rev -> reviewsMapper.toDto(rev))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -76,7 +82,10 @@ public class ReviewsServiceImpl implements ReviewsService{
 
     @Override
     public List<ReviewsDto> getReviewsByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-        return List.of();
+        List<Reviews> reviewsList = reviewsRepository.findByReviewDateBetween(startDate, endDate);
+        return reviewsList.stream()
+                .map(rev -> reviewsMapper.toDto(rev))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -87,11 +96,13 @@ public class ReviewsServiceImpl implements ReviewsService{
 
     @Override
     public long getReviewCountByProduct(Long productId) {
-        return 0;
+        List<Reviews> reviewsList = reviewsRepository.findAllByproductId(productId);
+        return reviewsList.size();
     }
 
     @Override
     public long getReviewCountByUser(Long userId) {
-        return 0;
+        List<Reviews> reviewsList = reviewsRepository.findAllByusersId(userId);
+        return reviewsList.size();
     }
 }

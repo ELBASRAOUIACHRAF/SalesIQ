@@ -5,6 +5,7 @@ import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ReviewsRepository extends JpaRepository<Reviews, Long> {
@@ -16,4 +17,7 @@ public interface ReviewsRepository extends JpaRepository<Reviews, Long> {
 
     @Query("SELECT AVG(rev.rating) FROM Reviews rev WHERE rev.product.id = :productId")
     Double findAverageRatingByProductId(Long productId);
+
+    List<Reviews> findByReviewDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+    List<Reviews> findByRating(double rating);
 }
