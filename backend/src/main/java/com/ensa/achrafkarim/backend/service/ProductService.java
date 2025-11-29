@@ -1,6 +1,7 @@
 package com.ensa.achrafkarim.backend.service;
 
 import com.ensa.achrafkarim.backend.dto.ProductDto;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -35,6 +36,7 @@ public interface ProductService {
     List<ProductDto> getLeastSellingProducts(int limit);
     List<ProductDto> getProductsWithNoSales();
     double getProductRevenue(Long productId);
+    List<ProductDto> getTopProfitProduct(); // Didicace l youness lacienne mol l idea
 
     // Availability
     List<ProductDto> getAvailableProducts();

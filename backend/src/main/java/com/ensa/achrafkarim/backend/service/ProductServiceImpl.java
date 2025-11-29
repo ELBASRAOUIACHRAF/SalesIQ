@@ -7,6 +7,8 @@ import com.ensa.achrafkarim.backend.mapper.ProductMapper;
 import com.ensa.achrafkarim.backend.repository.CategoryRepository;
 import com.ensa.achrafkarim.backend.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -183,22 +185,35 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductDto> getBestSellingProducts(int limit) {
-        return List.of();
+        Pageable pageable = PageRequest.of(0, limit);
+        return productRepository.getTopSellingProducts(pageable).stream()
+                                .map(product -> productMapper.toDto(product))
+                                .collect(Collectors.toList());
     }
 
     @Override
     public List<ProductDto> getLeastSellingProducts(int limit) {
-        return List.of();
+        Pageable pageable = PageRequest.of(0, limit);
+        return productRepository.getLeastSellingProducts(pageable).stream()
+                .map(product -> productMapper.toDto(product))
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<ProductDto> getProductsWithNoSales() {
-        return List.of();
+        return productRepository.getProductsWithNoSales().stream()
+                .map(product -> productMapper.toDto(product))
+                .collect(Collectors.toList());
     }
 
     @Override
     public double getProductRevenue(Long productId) {
-        return 0;
+        return productRepository.getProductRevenue(productId);
+    }
+
+    @Override
+    public List<ProductDto> getTopProfitProduct() {
+        return List.of();
     }
 
     @Override
