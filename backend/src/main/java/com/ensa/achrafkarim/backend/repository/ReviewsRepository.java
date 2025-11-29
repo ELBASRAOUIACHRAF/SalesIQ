@@ -1,9 +1,7 @@
 package com.ensa.achrafkarim.backend.repository;
 
-import com.ensa.achrafkarim.backend.dto.ReviewsDto;
 import com.ensa.achrafkarim.backend.entities.Reviews;
 import lombok.NonNull;
-import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,7 +20,7 @@ public interface ReviewsRepository extends JpaRepository<Reviews, Long> {
     @Query("SELECT AVG(rev.rating) FROM Reviews rev WHERE rev.product.id = :productId")
     Double findAverageRatingByProductId(Long productId);
 
-    List<Reviews> findByReviewDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+    Page<@NonNull Reviews> findByReviewDateBetween(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
     List<Reviews> findByRating(double rating);
 
     @Query("SELECT rev.rating, COUNT(rev) FROM Reviews rev WHERE rev.product.id = :productId GROUP BY(rev.rating)")
@@ -31,4 +29,12 @@ public interface ReviewsRepository extends JpaRepository<Reviews, Long> {
     @Query("SELECT rev FROM Reviews rev WHERE rev.product.id = :productId")
     Page<@NonNull Reviews> getReviewsByProduct(Long productId, Pageable pageable);
     // drna non null lfoq lahaqach iqdar chi product ikun mazal ma anedo hta review w aythrowi l program NullptrExc
+
+    @Query("SELECT rev FROM Reviews rev WHERE rev.product.id = :productId ORDER BY rev.reviewDate DESC")
+    Page<@NonNull Reviews> getRecentReviewsByProduct(Long productId, Pageable pageable);
+
+    boolean existsByUsersIdAndProductId(Long userId, Long productId);
+
+    boolean existsById(Long reviewId);
+
 }

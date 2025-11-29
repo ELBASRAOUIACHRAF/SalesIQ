@@ -4,6 +4,7 @@ import com.ensa.achrafkarim.backend.dto.ReviewsDto;
 import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +25,7 @@ public interface ReviewsService {
     // =====================
     List<ReviewsDto> getReviewsByRating(double rating);
     List<ReviewsDto> getReviewsByRatingRange(double minRating, double maxRating);
-    List<ReviewsDto> getReviewsByDateRange(LocalDateTime startDate, LocalDateTime endDate);
+    Page<@NonNull ReviewsDto> getReviewsByDateRange(LocalDateTime startDate, LocalDateTime endDate, int page, int size);
 
     // =====================
     // AGGREGATION & STATS
@@ -46,33 +47,13 @@ public interface ReviewsService {
     // PAGINATION & SORTING
     // =====================
     Page<@NonNull ReviewsDto> getReviewsByProduct(Long productId, int page, int size);
-    Page<@NonNull ReviewsDto> getSortedReviewsByProduct(Long productId, String sortBy, String direction);
+    Page<@NonNull ReviewsDto> getRecentReviewsByProduct(Long productId, int page, int size);
 
     // =====================
     // VALIDATION UTILITIES
     // =====================
     boolean hasUserReviewedProduct(Long userId, Long productId);
     boolean reviewExists(Long reviewId);
-
-    // =====================
-    // HELPFUL / VOTES SYSTEM
-    // =====================
-    void markReviewHelpful(Long reviewId, Long userId);
-    void markReviewNotHelpful(Long reviewId, Long userId);
-    int getHelpfulCount(Long reviewId);
-    int getNotHelpfulCount(Long reviewId);
-
-    // =====================
-    // ADVANCED ANALYTICS
-    // =====================
-    ReviewsDto getMostHelpfulReviewForProduct(Long productId);
-    ReviewsDto getLatestReviewForProduct(Long productId);
-
-    // =====================
-    // SEARCH & COMBINED FILTER
-    // =====================
-    List<ReviewsDto> searchReviews(String keyword);
-    List<ReviewsDto> filterReviews(Long productId, Double rating, LocalDateTime dateMin, LocalDateTime dateMax);
 
     // =====================
     // MODERATION (ADMIN)

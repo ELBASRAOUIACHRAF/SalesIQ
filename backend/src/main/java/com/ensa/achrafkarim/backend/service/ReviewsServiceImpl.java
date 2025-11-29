@@ -85,11 +85,10 @@ public class ReviewsServiceImpl implements ReviewsService{
     }
 
     @Override
-    public List<ReviewsDto> getReviewsByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-        List<Reviews> reviewsList = reviewsRepository.findByReviewDateBetween(startDate, endDate);
-        return reviewsList.stream()
-                .map(rev -> reviewsMapper.toDto(rev))
-                .collect(Collectors.toList());
+    public Page<@NonNull ReviewsDto> getReviewsByDateRange(LocalDateTime startDate, LocalDateTime endDate, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<@NonNull Reviews> reviewsPage = reviewsRepository.findByReviewDateBetween(startDate, endDate, pageable);
+        return reviewsPage.map(rev -> reviewsMapper.toDto(rev));
     }
 
     @Override
@@ -122,58 +121,19 @@ public class ReviewsServiceImpl implements ReviewsService{
     }
 
     @Override
-    public List<ReviewsDto> getSortedReviewsByProduct(Long productId, String sortBy, String direction) {
-        return List.of();
+    public Page<@NonNull ReviewsDto> getRecentReviewsByProduct(Long productId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return reviewsRepository.getRecentReviewsByProduct(productId, pageable).map(rev -> reviewsMapper.toDto(rev));
     }
 
     @Override
     public boolean hasUserReviewedProduct(Long userId, Long productId) {
-        return false;
+        return reviewsRepository.existsByUsersIdAndProductId(userId, productId);
     }
 
     @Override
     public boolean reviewExists(Long reviewId) {
-        return false;
-    }
-
-    @Override
-    public void markReviewHelpful(Long reviewId, Long userId) {
-
-    }
-
-    @Override
-    public void markReviewNotHelpful(Long reviewId, Long userId) {
-
-    }
-
-    @Override
-    public int getHelpfulCount(Long reviewId) {
-        return 0;
-    }
-
-    @Override
-    public int getNotHelpfulCount(Long reviewId) {
-        return 0;
-    }
-
-    @Override
-    public ReviewsDto getMostHelpfulReviewForProduct(Long productId) {
-        return null;
-    }
-
-    @Override
-    public ReviewsDto getLatestReviewForProduct(Long productId) {
-        return null;
-    }
-
-    @Override
-    public List<ReviewsDto> searchReviews(String keyword) {
-        return List.of();
-    }
-
-    @Override
-    public List<ReviewsDto> filterReviews(Long productId, Double rating, LocalDateTime dateMin, LocalDateTime dateMax) {
-        return List.of();
+        return reviewsRepository.existsById(reviewId);
     }
 
     @Override

@@ -5,6 +5,8 @@ import com.ensa.achrafkarim.backend.entities.Reviews;
 import com.ensa.achrafkarim.backend.service.ReviewsService;
 import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -43,8 +45,8 @@ public class ReviewsRestController {
     }
 
     @GetMapping("/daterange")
-    public List<ReviewsDto> getDateRangeReviews(@RequestParam LocalDateTime minDate, @RequestParam LocalDateTime maxDate){
-        return reviewsService.getReviewsByDateRange(minDate, maxDate);
+    public Page<@NonNull ReviewsDto> getDateRangeReviews(@RequestParam LocalDateTime minDate, @RequestParam LocalDateTime maxDate, @RequestParam int page, @RequestParam int size){
+        return reviewsService.getReviewsByDateRange(minDate, maxDate, page, size);
     }
 
     @GetMapping("/userreviews/{userId}")
