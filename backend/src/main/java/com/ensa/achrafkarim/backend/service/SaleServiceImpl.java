@@ -1,5 +1,6 @@
 package com.ensa.achrafkarim.backend.service;
 
+import com.ensa.achrafkarim.backend.dto.ProductOrderInfoDto;
 import com.ensa.achrafkarim.backend.dto.SaleDto;
 import com.ensa.achrafkarim.backend.entities.Product;
 import com.ensa.achrafkarim.backend.entities.Sale;
@@ -24,11 +25,13 @@ public class SaleServiceImpl implements SaleService {
     private final UsersRepository usersRepository;
     private SaleRepository saleRepository;
     private SaleMapper saleMapper;
+    private SoldProductService soldProductService;
 
-    public SaleServiceImpl(SaleRepository saleRepository, SaleMapper saleMapper, UsersRepository usersRepository) {
+    public SaleServiceImpl(SaleRepository saleRepository, SaleMapper saleMapper, UsersRepository usersRepository, SoldProductService  soldProductService) {
         this.saleRepository = saleRepository;
         this.saleMapper = saleMapper;
         this.usersRepository = usersRepository;
+        this.soldProductService = soldProductService;
     }
 
     @Override
@@ -73,6 +76,10 @@ public class SaleServiceImpl implements SaleService {
         sale.setDateOfSale(LocalDateTime.now());
         sale.setUpdatedAt(LocalDateTime.now());
         Sale savedSale = saleRepository.save(sale);
+        List<ProductOrderInfoDto> productOrderInfoDtoList = saleDto.getProductOrderInfoList();
+        for (ProductOrderInfoDto productOrderInfoDto1 : productOrderInfoDtoList) {
+            soldProductService.addSoldProduct(savedSale.getId(), productOrderInfoDto1);
+        }
         return saleMapper.toDto(savedSale);
     }
 

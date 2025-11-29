@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
+@RequestMapping("/reviews")
 @AllArgsConstructor
 public class ReviewsRestController {
 

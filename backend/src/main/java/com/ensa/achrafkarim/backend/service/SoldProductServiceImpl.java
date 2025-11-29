@@ -1,6 +1,7 @@
 package com.ensa.achrafkarim.backend.service;
 
 import com.ensa.achrafkarim.backend.dto.ProductDto;
+import com.ensa.achrafkarim.backend.dto.ProductOrderInfoDto;
 import com.ensa.achrafkarim.backend.dto.SoldProductDto;
 import com.ensa.achrafkarim.backend.entities.Product;
 import com.ensa.achrafkarim.backend.entities.Sale;
@@ -58,11 +59,11 @@ public class SoldProductServiceImpl implements SoldProductService {
     }
 
     @Override
-    public SoldProductDto addSoldProduct(Long saleId, Long productId, int quantity, Double unitPrice) {
+    public SoldProductDto addSoldProduct(Long saleId, ProductOrderInfoDto productOrderInfoDto) {
         SoldProduct  soldProduct = new SoldProduct();
-        soldProduct.setUnitPrice(unitPrice);
-        soldProduct.setQuantity(quantity);
-        soldProduct.setProduct(productRepository.findById(productId).get());
+        soldProduct.setUnitPrice(productOrderInfoDto.getUnitPrice());
+        soldProduct.setQuantity(productOrderInfoDto.getQuantity());
+        soldProduct.setProduct(productRepository.findById(productOrderInfoDto.getProductId()).get());
         soldProduct.setSale(saleRepository.findById(saleId).get());
         SoldProduct savedSoldProduct = soldProductRepository.save(soldProduct);
         return soldProductMapper.toDto(savedSoldProduct);
