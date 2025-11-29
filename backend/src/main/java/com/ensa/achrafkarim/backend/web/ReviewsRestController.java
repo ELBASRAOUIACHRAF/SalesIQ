@@ -74,4 +74,18 @@ public class ReviewsRestController {
         return reviewsService.updateReview(reviewId, reviewsDto);
     }
 
+    @GetMapping("/reviewsByProduct}")
+    public Page<@NonNull ReviewsDto> getReviewsByProduct(@RequestParam Long productId, @RequestParam int page, @RequestParam int size) {
+        return reviewsService.getReviewsByProduct(productId, page, size);
+    }
+
+    @GetMapping("/recentReviewsByProduct")
+    public Page<@NonNull ReviewsDto> recentReviewsByProduct(@RequestParam Long productId, @RequestParam int page, @RequestParam int size) {
+        return reviewsService.getRecentReviewsByProduct(productId, page, size);
+    }
+
+    @GetMapping("/ratingDistributionByProduct")
+    public Page<Object[]> ratingDistributionByProduct(@RequestParam Long productId, @RequestParam int page, @RequestParam int size) {
+        return reviewsService.getRatingDistributionByProduct(productId, page, size);
+    }
 }

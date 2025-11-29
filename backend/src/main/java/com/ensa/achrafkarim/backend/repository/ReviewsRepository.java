@@ -24,7 +24,7 @@ public interface ReviewsRepository extends JpaRepository<Reviews, Long> {
     List<Reviews> findByRating(double rating);
 
     @Query("SELECT rev.rating, COUNT(rev) FROM Reviews rev WHERE rev.product.id = :productId GROUP BY(rev.rating)")
-    List<Object[]> getRatingDistributionByProduct(Long productId);
+    Page<Object[]> getRatingDistributionByProduct(Long productId, Pageable pageable);
 
     @Query("SELECT rev FROM Reviews rev WHERE rev.product.id = :productId")
     Page<@NonNull Reviews> getReviewsByProduct(Long productId, Pageable pageable);

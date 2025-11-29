@@ -41,7 +41,7 @@ public interface ReviewsService {
     //  count of 2-star reviews,
     //  count of 1-star reviews
     //  ]
-    List<Object[]> getRatingDistributionByProduct(Long productId);
+    Page<Object[]> getRatingDistributionByProduct(Long productId, int page, int size);
 
     // =====================
     // PAGINATION & SORTING
@@ -54,35 +54,4 @@ public interface ReviewsService {
     // =====================
     boolean hasUserReviewedProduct(Long userId, Long productId);
     boolean reviewExists(Long reviewId);
-
-    // =====================
-    // MODERATION (ADMIN)
-    // =====================
-    void approveReview(Long reviewId);
-    void rejectReview(Long reviewId);
-    List<ReviewsDto> getPendingReviews();
-
-    // =====================
-    // REVIEWS WITH IMAGES (OPTIONAL)
-    // =====================
-    List<ReviewsDto> getReviewsWithImages(Long productId);
-
-    // =====================
-    // SOFT DELETE
-    // =====================
-    void softDeleteReview(Long reviewId);
-    void restoreDeletedReview(Long reviewId);
-
-    // =====================
-    // REPLIES SYSTEM
-    // =====================
-    ReviewsDto replyToReview(Long reviewId, String replyMessage, Long adminId);
-    ReviewsDto updateReviewReply(Long reviewId, String replyMessage);
-    void deleteReviewReply(Long reviewId);
-
-    // =====================
-    // FEATURED REVIEW
-    // =====================
-    void setFeaturedReview(Long productId, Long reviewId);
-    ReviewsDto getFeaturedReview(Long productId);
 }

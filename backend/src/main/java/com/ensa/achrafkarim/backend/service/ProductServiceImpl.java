@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 @Transactional
 public class ProductServiceImpl implements ProductService {
 
-    private final ProductService productService;
     //private final ProductService productService;
     private ProductRepository productRepository;
     private ProductMapper  productMapper;
@@ -35,8 +34,6 @@ public class ProductServiceImpl implements ProductService {
         this.productMapper = productMapper;
         this.categoryRepository = categoryRepository;
 
-        //this.productService = productService;
-        this.productService = productService;
     }
 
     @Override

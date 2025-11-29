@@ -93,8 +93,7 @@ public class ReviewsServiceImpl implements ReviewsService{
 
     @Override
     public double getAverageRatingByProduct(Long productId) {
-        double averageRating = reviewsRepository.findAverageRatingByProductId(productId);
-        return averageRating;
+        return reviewsRepository.findAverageRatingByProductId(productId);
     }
 
     @Override
@@ -110,8 +109,9 @@ public class ReviewsServiceImpl implements ReviewsService{
     }
 
     @Override
-    public List<Object[]> getRatingDistributionByProduct(Long productId) {
-        return (reviewsRepository.getRatingDistributionByProduct(productId));
+    public Page<Object[]> getRatingDistributionByProduct(Long productId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return (reviewsRepository.getRatingDistributionByProduct(productId, pageable));
     }
 
     @Override
@@ -134,60 +134,5 @@ public class ReviewsServiceImpl implements ReviewsService{
     @Override
     public boolean reviewExists(Long reviewId) {
         return reviewsRepository.existsById(reviewId);
-    }
-
-    @Override
-    public void approveReview(Long reviewId) {
-
-    }
-
-    @Override
-    public void rejectReview(Long reviewId) {
-
-    }
-
-    @Override
-    public List<ReviewsDto> getPendingReviews() {
-        return List.of();
-    }
-
-    @Override
-    public List<ReviewsDto> getReviewsWithImages(Long productId) {
-        return List.of();
-    }
-
-    @Override
-    public void softDeleteReview(Long reviewId) {
-
-    }
-
-    @Override
-    public void restoreDeletedReview(Long reviewId) {
-
-    }
-
-    @Override
-    public ReviewsDto replyToReview(Long reviewId, String replyMessage, Long adminId) {
-        return null;
-    }
-
-    @Override
-    public ReviewsDto updateReviewReply(Long reviewId, String replyMessage) {
-        return null;
-    }
-
-    @Override
-    public void deleteReviewReply(Long reviewId) {
-
-    }
-
-    @Override
-    public void setFeaturedReview(Long productId, Long reviewId) {
-
-    }
-
-    @Override
-    public ReviewsDto getFeaturedReview(Long productId) {
-        return null;
     }
 }
