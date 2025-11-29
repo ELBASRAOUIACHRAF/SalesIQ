@@ -6,7 +6,7 @@ import com.ensa.achrafkarim.backend.entities.Product;
 import com.ensa.achrafkarim.backend.mapper.ProductMapper;
 import com.ensa.achrafkarim.backend.repository.CategoryRepository;
 import com.ensa.achrafkarim.backend.repository.ProductRepository;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,11 +22,14 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
     private ProductMapper  productMapper;
     private CategoryRepository categoryRepository;
+    @Value("${stock.low.lowStock}")
+    private int lowStock;
 
     public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.categoryRepository = categoryRepository;
+
         //this.productService = productService;
     }
 
@@ -47,6 +50,16 @@ public class ProductServiceImpl implements ProductService {
         return (productsList.stream()
                 .map(prod -> productMapper.toDto(prod))
                 .collect(Collectors.toList()));
+    }
+
+    @Override
+    public List<ProductDto> searchProducts(String keyword) {
+        return List.of();
+    }
+
+    @Override
+    public List<ProductDto> filterProducts(String name, Long categoryId, Double minPrice, Double maxPrice) {
+        return List.of();
     }
 
     @Override
@@ -142,12 +155,99 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public boolean isProductInStock(Long productId) {
-        if(productRepository.findById(productId).get().getStock() == 0) return false;
-        return true;
+        return productRepository.findById(productId)
+                .map(product -> product.getStock() != 0)
+                .orElse(false);
     }
 
     @Override
-    public int getAvailableStock(Long productId) {
-        return productRepository.findById(productId).get().getStock().intValue();
+    public long getAvailableStock(Long productId) {
+        return productRepository.findById(productId)
+                .map(Product::getStock).orElse(0L);
+    }
+
+    @Override
+    // I defined what a low stock is in the app's properties
+    public boolean isLowStock(Long productId) {
+        return (this.getAvailableStock(productId) < this.lowStock);
+    }
+
+    @Override
+    public List<ProductDto> getLowStockProducts() {
+        // look in the jpa repository
+        return productRepository.findByStockLessThan(this.lowStock)
+                .stream()
+                .map(product -> productMapper.toDto(product))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductDto> getBestSellingProducts(int limit) {
+        return List.of();
+    }
+
+    @Override
+    public List<ProductDto> getLeastSellingProducts(int limit) {
+        return List.of();
+    }
+
+    @Override
+    public List<ProductDto> getProductsWithNoSales() {
+        return List.of();
+    }
+
+    @Override
+    public double getProductRevenue(Long productId) {
+        return 0;
+    }
+
+    @Override
+    public List<ProductDto> getAvailableProducts() {
+        return List.of();
+    }
+
+    @Override
+    public List<ProductDto> getUnavailableProducts() {
+        return List.of();
+    }
+
+    @Override
+    public void markProductAsUnavailable(Long id) {
+
+    }
+
+    @Override
+    public void markProductAsAvailable(Long id) {
+
+    }
+
+    @Override
+    public List<ProductDto> listProducts(int page, int size) {
+        return List.of();
+    }
+
+    @Override
+    public List<ProductDto> searchProducts(String keyword, int page, int size) {
+        return List.of();
+    }
+
+    @Override
+    public List<ProductDto> createProductsBulk(List<ProductDto> products) {
+        return List.of();
+    }
+
+    @Override
+    public void deleteProductsBulk(List<Long> productIds) {
+
+    }
+
+    @Override
+    public ProductDto addImageToProduct(Long productId, String imageUrl) {
+        return null;
+    }
+
+    @Override
+    public ProductDto removeImageFromProduct(Long productId, String imageUrl) {
+        return null;
     }
 }
