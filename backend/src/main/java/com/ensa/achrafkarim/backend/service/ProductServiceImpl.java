@@ -59,11 +59,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDto> searchProducts(String keyword) {
-        return List.of();
-    }
-
-    @Override
     public List<ProductDto> filterProducts(String name, Long categoryId, Double minPrice, Double maxPrice) {
         return List.of();
     }
