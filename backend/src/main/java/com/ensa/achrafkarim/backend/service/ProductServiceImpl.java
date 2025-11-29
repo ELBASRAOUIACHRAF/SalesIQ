@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class ProductServiceImpl implements ProductService {
 
+    private final ProductService productService;
     //private final ProductService productService;
     private ProductRepository productRepository;
     private ProductMapper  productMapper;
@@ -27,12 +28,13 @@ public class ProductServiceImpl implements ProductService {
     @Value("${stock.low.lowStock}")
     private int lowStock;
 
-    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, CategoryRepository categoryRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, CategoryRepository categoryRepository, ProductService productService) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.categoryRepository = categoryRepository;
 
         //this.productService = productService;
+        this.productService = productService;
     }
 
     @Override
@@ -212,48 +214,49 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDto> getTopProfitProduct() {
-        return List.of();
+    public List<ProductDto> getTopProfitProducts(int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        return productRepository.getTopProfitProducts(pageable).stream()
+                .map(product -> productMapper.toDto(product))
+                .collect(Collectors.toList());
+
+
     }
 
     @Override
     public List<ProductDto> getAvailableProducts() {
-        return List.of();
+        return productRepository.findByStockGreaterThan(0L).stream()
+                .map(product -> productMapper.toDto(product))
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<ProductDto> getUnavailableProducts() {
-        return List.of();
+        return productRepository.findByStockLessThan(0L).stream()
+                .map(product -> productMapper.toDto(product))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public void markProductAsUnavailable(Long id) {
-
+    public ProductDto markProductAsUnavailable(ProductDto productDto) {
+        Product product = productMapper.toEntity(productDto);
+        Product productUpdated = productRepository.findById(product.getId()).orElse(null);
+        if (productUpdated == null) return null; // si le produit n'existe pas
+        productUpdated.setUpdatedAt(LocalDateTime.now());
+        productUpdated.setIsActive(false);
+        productRepository.save(productUpdated);
+        return productMapper.toDto(productUpdated);
     }
 
     @Override
-    public void markProductAsAvailable(Long id) {
-
-    }
-
-    @Override
-    public List<ProductDto> listProducts(int page, int size) {
-        return List.of();
-    }
-
-    @Override
-    public List<ProductDto> searchProducts(String keyword, int page, int size) {
-        return List.of();
-    }
-
-    @Override
-    public List<ProductDto> createProductsBulk(List<ProductDto> products) {
-        return List.of();
-    }
-
-    @Override
-    public void deleteProductsBulk(List<Long> productIds) {
-
+    public ProductDto markProductAsAvailable(ProductDto productDto) {
+        Product product = productMapper.toEntity(productDto);
+        Product productUpdated = productRepository.findById(product.getId()).orElse(null);
+        if (productUpdated == null) return null; // si le produit n'existe pas
+        productUpdated.setUpdatedAt(LocalDateTime.now());
+        productUpdated.setIsActive(true);
+        productRepository.save(productUpdated);
+        return productMapper.toDto(productUpdated);
     }
 
     @Override

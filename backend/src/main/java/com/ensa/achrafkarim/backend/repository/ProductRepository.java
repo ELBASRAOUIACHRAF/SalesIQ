@@ -1,5 +1,6 @@
 package com.ensa.achrafkarim.backend.repository;
 
+import com.ensa.achrafkarim.backend.dto.ProductDto;
 import com.ensa.achrafkarim.backend.entities.Category;
 import com.ensa.achrafkarim.backend.entities.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,6 +27,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p LEFT JOIN p.soldProducts sp GROUP BY p HAVING COALESCE(SUM(sp.quantity), 0) = 0")
     List<Product> getProductsWithNoSales();
     // Query for getting product revenue
-    @Query("SELECT COALESCE(SUM(sp.quantity * sp.unitPrice), 0) FROM Product p JOIN p.soldProducts sp")
+    @Query("SELECT COALESCE(SUM(sp.quantity * sp.unitPrice), 0) FROM Product p JOIN p.soldProducts sp WHERE p.id = :productId")
     double getProductRevenue(Long productId);
+    // Query to get products based on to profit
+    @Query("SELECT COALESCE(SUM(sp.quantity * sp.unitPrice), 0) FROM Product p JOIN p.soldProducts sp")
+    List<Product> getTopProfitProducts(Pageable pageable);
+    List<Product> findByStockGreaterThan(Long stock);
+    List<Product> findByStockLessThan(Long stock);
 }

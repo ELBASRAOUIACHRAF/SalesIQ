@@ -36,21 +36,13 @@ public interface ProductService {
     List<ProductDto> getLeastSellingProducts(int limit);
     List<ProductDto> getProductsWithNoSales();
     double getProductRevenue(Long productId);
-    List<ProductDto> getTopProfitProduct(); // Didicace l youness lacienne mol l idea
+    List<ProductDto> getTopProfitProducts(int limit); // Didicace l youness lacienne mol l idea
 
     // Availability
     List<ProductDto> getAvailableProducts();
     List<ProductDto> getUnavailableProducts();
-    void markProductAsUnavailable(Long id);
-    void markProductAsAvailable(Long id);
-
-    // Pagination
-    List<ProductDto> listProducts(int page, int size);
-    List<ProductDto> searchProducts(String keyword, int page, int size);
-
-    // Bulk operations
-    List<ProductDto> createProductsBulk(List<ProductDto> products);
-    void deleteProductsBulk(List<Long> productIds);
+    ProductDto markProductAsUnavailable(ProductDto productDto);
+    ProductDto markProductAsAvailable(ProductDto productDto);
 
     // Images
     ProductDto addImageToProduct(Long productId, String imageUrl);
