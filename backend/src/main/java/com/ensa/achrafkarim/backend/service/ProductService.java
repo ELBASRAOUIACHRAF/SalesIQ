@@ -15,7 +15,6 @@ public interface ProductService {
     List<ProductDto> listProducts();
 
     // Filtering & Search
-    List<ProductDto> searchProducts(String keyword);
     List<ProductDto> filterProducts(String name, Long categoryId, Double minPrice, Double maxPrice);
     List<ProductDto> getProductsByCategory(Long categoryId);
 

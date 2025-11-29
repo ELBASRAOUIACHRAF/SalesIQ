@@ -87,7 +87,7 @@ public class ProductRestController {
     }
 
     @GetMapping("/leastSellingProducts/{limit}")
-    public List<ProductDto>  leastSellingProducts(int limit){
+    public List<ProductDto> leastSellingProducts(int limit){
         return productService.getLeastSellingProducts(limit);
     }
 
@@ -96,8 +96,8 @@ public class ProductRestController {
         return productService.getProductsWithNoSales();
     }
 
-    @GetMapping("/unAvailabaleProducts")
-    public List<ProductDto>  unAvailabaleProducts(){
+    @GetMapping("/unavailabaleProducts")
+    public List<ProductDto> getUnavailabaleProducts(){
         return productService.getUnavailableProducts();
     }
 
@@ -109,29 +109,23 @@ public class ProductRestController {
         return productService.filterProducts(name, categoryId, minPrice, maxPrice);
     }
 
-    @GetMapping("/topPofitProducts")
-    public List<ProductDto>  topPofitProducts(){
-        return productService.getTopProfitProduct();
+    @GetMapping("/topPofitProducts/{limit}")
+    public List<ProductDto> getTopProfitProducts(@PathVariable Integer limit){
+        return productService.getTopProfitProducts(limit);
     }
 
-    @PutMapping("/markProductAvailable/{productaId}")
-    public void markProductAvailable(@PathVariable Long productaId){
-        productService.markProductAsAvailable(productaId);
+    @GetMapping("/productProfit/{productId}")
+    public double getProductProfit(@PathVariable Long productId){
+        return productService.getProductRevenue(productId);
     }
 
-    @PutMapping("/markProductUnAvailable/{productaId}")
-    public void markProductUnAvailable(@PathVariable Long productaId){
-        productService.markProductAsUnavailable(productaId);
+    @PutMapping("/markProductAvailable")
+    public void markProductAvailable(@RequestBody ProductDto productDto) {
+        productService.markProductAsAvailable(productDto);
     }
 
-    @PostMapping("/createProductsBulk")
-    public List<ProductDto>  createProductsBulk(@RequestBody List<ProductDto> products){
-        return productService.createProductsBulk(products);
+    @PutMapping("/markProductUnAvailable")
+    public void markProductUnAvailable(@RequestBody ProductDto productDto) {
+        productService.markProductAsUnavailable(productDto);
     }
-
-    @DeleteMapping("/deleteProductsBulk")
-    public void  deleteProductsBulk(@RequestBody List<Long> products){
-        productService.deleteProductsBulk(products);
-    }
-
 }
