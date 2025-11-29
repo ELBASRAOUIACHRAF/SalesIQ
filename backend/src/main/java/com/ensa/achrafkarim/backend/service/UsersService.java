@@ -28,4 +28,6 @@ public interface UsersService {
     UsersDto addRoleToUser(Long usersId, Role role);
     UsersDto activateUser(Long usersId);
     UsersDto deactivateUser(Long usersId);
+
+    void updateHoursLoggedIn(Long usersId);
 }

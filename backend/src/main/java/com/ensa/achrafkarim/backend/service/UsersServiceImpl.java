@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -166,5 +167,21 @@ public class UsersServiceImpl implements UsersService{
         user.setActive(false);
         Users savedUser = usersRepository.save(user);
         return usersMapper.toDto(savedUser);
+    }
+
+    @Override
+    public void updateHoursLoggedIn(Long usersId) {
+        LocalDateTime now =  LocalDateTime.now();
+        Users user = usersRepository.findById(usersId).get();
+        LocalDateTime lastLogin = user.getLastLogin();
+
+        if (lastLogin != null) {
+            long minutes = Duration.between(lastLogin, now).toMinutes();
+            double hours = minutes / 60.0;
+
+
+            user.setHoursLoggedIn(user.getHoursLoggedIn() + hours);
+        }
+        usersRepository.save(user);
     }
 }
