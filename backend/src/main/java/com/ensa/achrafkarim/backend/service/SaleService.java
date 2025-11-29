@@ -22,6 +22,6 @@ public interface SaleService {
     List<SaleDto> getSalesByDateRange(LocalDateTime startDate, LocalDateTime endDate);
     List<SaleDto> getSalesByPaymentMethod(PaymentMethod paymentMethod);
     byte[] exportSales(List<Long> saleIds, String format);
-    
+
     Page<SaleDto> getSalesPage(int size, int page);
 }
