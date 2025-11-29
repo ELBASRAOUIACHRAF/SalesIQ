@@ -19,7 +19,7 @@ public class SoldProductRestController {
     private SoldProductService soldProductService;
 
     @GetMapping("/getSoldProductsBySale/{saleId}")
-    public List<ProductDto> getSoldProductsBySale(@PathVariable Long saleId) {
+    public List<ProductDto> getProductsSoldBySale(@PathVariable Long saleId) {
         return (soldProductService.getSoldProductsBySale(saleId));
     }
 
@@ -28,9 +28,9 @@ public class SoldProductRestController {
         return (soldProductService.getTotalPriceBySale(saleId));
     }
 
-    @GetMapping("/getProfitByProduct/{saleId}")
-    public double getProfitByProduct(@PathVariable Long saleId) {
-        return (soldProductService.getProfitByProduct(saleId));
+    @GetMapping("/getProfitByProduct/{productId}")
+    public double getProfitByProduct(@PathVariable Long productId) {
+        return (soldProductService.getProfitByProduct(productId));
     }
 
     @PostMapping("/addSoldProduct")
@@ -65,5 +65,16 @@ public class SoldProductRestController {
             @RequestParam Long productId
     ) {
         return (soldProductService.getProductProfitBySaleProductIds(saleId, productId));
+    }
+
+    @GetMapping("/soldproductsbysale/{saleId}")
+    public List<SoldProductDto> getSoldProductsBySale(@PathVariable Long saleId) {
+        return soldProductService.getAllSoldProductsBySale(saleId);
+    }
+
+
+    @GetMapping("/totalAmounts")
+    public Double getTotalAmount() {
+        return soldProductService.getTotalSalesAmount();
     }
 }

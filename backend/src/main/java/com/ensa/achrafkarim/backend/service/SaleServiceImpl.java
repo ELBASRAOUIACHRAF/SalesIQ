@@ -39,8 +39,8 @@ public class SaleServiceImpl implements SaleService {
         Sale sale = saleRepository.findById(saleId).orElse(null);
         if (sale == null) return null; // if sale does not exist
         sale.setStatus(newStatus);
+        sale.setUpdatedAt(LocalDateTime.now());
         Sale saleUpdated = saleRepository.save(sale);
-
         return saleMapper.toDto(saleUpdated);
     }
 
@@ -83,9 +83,15 @@ public class SaleServiceImpl implements SaleService {
         return saleMapper.toDto(savedSale);
     }
 
+    // A supprimer
     @Override
-    public SaleDto updateSale(Long id, SaleDto saleDto) {
-        return null;
+    public SaleDto updateSale(Long saleId, SaleDto saleDto) {
+        Sale sale = saleRepository.findById(saleId).orElse(null);
+        if (sale == null) return null;
+        sale.setUpdatedAt(LocalDateTime.now());
+        sale.setStatus(saleDto.getStatus());
+        Sale saleUpdated = saleRepository.save(sale);
+        return saleMapper.toDto(saleUpdated);
     }
 
     @Override

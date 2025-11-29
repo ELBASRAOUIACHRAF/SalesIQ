@@ -15,7 +15,7 @@ public interface SaleService {
     List<SaleDto> listSales();
     List<SaleDto> getSalesByUser(Long userId);
     SaleDto createSale(SaleDto saleDto, Long userId);
-    SaleDto updateSale(Long id, SaleDto saleDto);
+    SaleDto updateSale(Long saleId, SaleDto saleDto);
     void deleteSale(Long id);
     List<SaleDto> getSaleByStatus(Status status);
     List<SaleDto> getSalesByDateRange(LocalDateTime startDate, LocalDateTime endDate);

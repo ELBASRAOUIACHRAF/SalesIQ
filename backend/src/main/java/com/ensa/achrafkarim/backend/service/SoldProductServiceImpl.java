@@ -28,6 +28,7 @@ public class SoldProductServiceImpl implements SoldProductService {
     ProductRepository  productRepository;
     SaleRepository   saleRepository;
     SoldProductMapper soldProductMapper;
+    ProductService productService;
 
     @Override
     public List<ProductDto> getSoldProductsBySale(Long saleId) {
@@ -36,6 +37,24 @@ public class SoldProductServiceImpl implements SoldProductService {
         return productIds.stream()
                 .map(prod -> productMapper.toDto(prod))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SoldProductDto> getAllSoldProductsBySale(Long saleId) {
+        List<SoldProduct> soldProductList = soldProductRepository.findAllBySaleId(saleId);
+        return soldProductList.stream()
+                .map(sol -> soldProductMapper.toDto(sol))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public double getTotalSalesAmount() {
+        List<SoldProduct> soldProductList = soldProductRepository.findAll();
+        double totalAmount = 0;
+        for (SoldProduct soldProduct : soldProductList) {
+            totalAmount +=  soldProduct.getUnitPrice()*soldProduct.getQuantity();
+        }
+        return totalAmount;
     }
 
     @Override
@@ -50,6 +69,7 @@ public class SoldProductServiceImpl implements SoldProductService {
 
     @Override
     public double getProfitByProduct(Long productId) {
+        if (productRepository.findById(productId)==null) return 0;
         List<SoldProduct> soldOfProduct = soldProductRepository.findAllByProductId(productId);
         double totalPrice = 0;
         for (SoldProduct sold : soldOfProduct) {
@@ -61,10 +81,11 @@ public class SoldProductServiceImpl implements SoldProductService {
     @Override
     public SoldProductDto addSoldProduct(Long saleId, ProductOrderInfoDto productOrderInfoDto) {
         SoldProduct  soldProduct = new SoldProduct();
-        soldProduct.setUnitPrice(productOrderInfoDto.getUnitPrice());
+        soldProduct.setUnitPrice(productOrderInfoDto.getUnitPrice());// pour le discount "est ce que on doit sauvgarder le prix aprés le discount ou avant"
         soldProduct.setQuantity(productOrderInfoDto.getQuantity());
         soldProduct.setProduct(productRepository.findById(productOrderInfoDto.getProductId()).get());
         soldProduct.setSale(saleRepository.findById(saleId).get());
+        productService.decreaseStock(productOrderInfoDto.getProductId(), productOrderInfoDto.getQuantity());
         SoldProduct savedSoldProduct = soldProductRepository.save(soldProduct);
         return soldProductMapper.toDto(savedSoldProduct);
     }
