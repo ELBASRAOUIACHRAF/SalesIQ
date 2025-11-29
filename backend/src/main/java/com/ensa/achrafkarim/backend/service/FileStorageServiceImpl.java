@@ -26,7 +26,7 @@ public class FileStorageServiceImpl implements FileStorageService {
         String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
         Path filePath = uploadPath.resolve(fileName);
 
-        // Sauvegarde du fichier sur le serveur
+        // Sauvegarde du fichier sur le serveu
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
         // Retourner l'URL publique

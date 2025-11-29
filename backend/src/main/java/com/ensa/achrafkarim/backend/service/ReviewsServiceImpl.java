@@ -7,6 +7,10 @@ import com.ensa.achrafkarim.backend.repository.ProductRepository;
 import com.ensa.achrafkarim.backend.repository.ReviewsRepository;
 import com.ensa.achrafkarim.backend.repository.UsersRepository;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -104,5 +108,126 @@ public class ReviewsServiceImpl implements ReviewsService{
     public long getReviewCountByUser(Long userId) {
         List<Reviews> reviewsList = reviewsRepository.findAllByusersId(userId);
         return reviewsList.size();
+    }
+
+    @Override
+    public List<Object[]> getRatingDistributionByProduct(Long productId) {
+        return (reviewsRepository.getRatingDistributionByProduct(productId));
+    }
+
+    @Override
+    public Page<@NonNull ReviewsDto> getReviewsByProduct(Long productId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return reviewsRepository.getReviewsByProduct(productId, pageable).map(rev -> reviewsMapper.toDto(rev));
+    }
+
+    @Override
+    public List<ReviewsDto> getSortedReviewsByProduct(Long productId, String sortBy, String direction) {
+        return List.of();
+    }
+
+    @Override
+    public boolean hasUserReviewedProduct(Long userId, Long productId) {
+        return false;
+    }
+
+    @Override
+    public boolean reviewExists(Long reviewId) {
+        return false;
+    }
+
+    @Override
+    public void markReviewHelpful(Long reviewId, Long userId) {
+
+    }
+
+    @Override
+    public void markReviewNotHelpful(Long reviewId, Long userId) {
+
+    }
+
+    @Override
+    public int getHelpfulCount(Long reviewId) {
+        return 0;
+    }
+
+    @Override
+    public int getNotHelpfulCount(Long reviewId) {
+        return 0;
+    }
+
+    @Override
+    public ReviewsDto getMostHelpfulReviewForProduct(Long productId) {
+        return null;
+    }
+
+    @Override
+    public ReviewsDto getLatestReviewForProduct(Long productId) {
+        return null;
+    }
+
+    @Override
+    public List<ReviewsDto> searchReviews(String keyword) {
+        return List.of();
+    }
+
+    @Override
+    public List<ReviewsDto> filterReviews(Long productId, Double rating, LocalDateTime dateMin, LocalDateTime dateMax) {
+        return List.of();
+    }
+
+    @Override
+    public void approveReview(Long reviewId) {
+
+    }
+
+    @Override
+    public void rejectReview(Long reviewId) {
+
+    }
+
+    @Override
+    public List<ReviewsDto> getPendingReviews() {
+        return List.of();
+    }
+
+    @Override
+    public List<ReviewsDto> getReviewsWithImages(Long productId) {
+        return List.of();
+    }
+
+    @Override
+    public void softDeleteReview(Long reviewId) {
+
+    }
+
+    @Override
+    public void restoreDeletedReview(Long reviewId) {
+
+    }
+
+    @Override
+    public ReviewsDto replyToReview(Long reviewId, String replyMessage, Long adminId) {
+        return null;
+    }
+
+    @Override
+    public ReviewsDto updateReviewReply(Long reviewId, String replyMessage) {
+        return null;
+    }
+
+    @Override
+    public void deleteReviewReply(Long reviewId) {
+
+    }
+
+    @Override
+    public void setFeaturedReview(Long productId, Long reviewId) {
+
+    }
+
+    @Override
+    public ReviewsDto getFeaturedReview(Long productId) {
+        return null;
     }
 }
