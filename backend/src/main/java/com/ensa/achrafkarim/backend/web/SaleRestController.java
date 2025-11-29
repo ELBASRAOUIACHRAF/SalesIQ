@@ -1,11 +1,13 @@
 package com.ensa.achrafkarim.backend.web;
 
+import com.ensa.achrafkarim.backend.dto.CategoryDto;
 import com.ensa.achrafkarim.backend.dto.ProductOrderInfoDto;
 import com.ensa.achrafkarim.backend.dto.SaleDto;
 import com.ensa.achrafkarim.backend.enums.PaymentMethod;
 import com.ensa.achrafkarim.backend.enums.Status;
 import com.ensa.achrafkarim.backend.service.SaleService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -41,6 +43,12 @@ public class SaleRestController {
     @DeleteMapping("/deletesale/{saleId}")
     public void deleteSale(@PathVariable Long saleId) {
         saleService.deleteSale(saleId);
+    }
+
+    @GetMapping("/salesPage")
+    public Page<SaleDto> getSalesPage(@RequestParam(defaultValue = "0") int page,
+                                      @RequestParam(defaultValue = "10") int size) {
+        return saleService.getSalesPage(page,  size);
     }
 
     @GetMapping("/statussales/{status}")

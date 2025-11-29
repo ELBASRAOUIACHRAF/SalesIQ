@@ -2,6 +2,7 @@ package com.ensa.achrafkarim.backend.service;
 
 import com.ensa.achrafkarim.backend.dto.ProductOrderInfoDto;
 import com.ensa.achrafkarim.backend.dto.SaleDto;
+import com.ensa.achrafkarim.backend.entities.Category;
 import com.ensa.achrafkarim.backend.entities.Product;
 import com.ensa.achrafkarim.backend.entities.Sale;
 import com.ensa.achrafkarim.backend.enums.PaymentMethod;
@@ -11,6 +12,9 @@ import com.ensa.achrafkarim.backend.repository.ProductRepository;
 import com.ensa.achrafkarim.backend.repository.SaleRepository;
 import com.ensa.achrafkarim.backend.repository.SoldProductRepository;
 import com.ensa.achrafkarim.backend.repository.UsersRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -128,6 +132,13 @@ public class SaleServiceImpl implements SaleService {
     @Override
     public byte[] exportSales(List<Long> saleIds, String format) {
         return new byte[0];
+    }
+
+    @Override
+    public Page<SaleDto> getSalesPage(int size, int page) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Sale>  categories = saleRepository.findAll(pageable);
+        return categories.map(saleMapper::toDto);
     }
 
 }
