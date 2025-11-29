@@ -88,4 +88,14 @@ public class ReviewsRestController {
     public Page<Object[]> ratingDistributionByProduct(@RequestParam Long productId, @RequestParam int page, @RequestParam int size) {
         return reviewsService.getRatingDistributionByProduct(productId, page, size);
     }
+
+    @GetMapping("/hasUserLeftAReview")
+    public boolean hasUserLeftAReview(@RequestParam Long userId, @RequestParam Long productId) {
+        return reviewsService.hasUserReviewedProduct(userId, productId);
+    }
+
+    @GetMapping("/doesReviewExists")
+    public boolean doesReviewExists(@RequestParam Long reviewId) {
+        return reviewsService.reviewExists(reviewId);
+    }
 }
