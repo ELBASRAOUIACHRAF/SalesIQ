@@ -2,7 +2,9 @@ package com.ensa.achrafkarim.backend.service;
 
 import com.ensa.achrafkarim.backend.dto.ProductDto;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface ProductService {
@@ -45,7 +47,7 @@ public interface ProductService {
     ProductDto markProductAsAvailable(ProductDto productDto);
 
     // Images
-    ProductDto addImageToProduct(Long productId, String imageUrl);
+    ProductDto addImageToProduct(Long productId, MultipartFile file) throws IOException;
     ProductDto removeImageFromProduct(Long productId, String imageUrl);
 }
 

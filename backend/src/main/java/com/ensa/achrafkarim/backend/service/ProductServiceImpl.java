@@ -11,7 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +26,7 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
     private ProductMapper  productMapper;
     private CategoryRepository categoryRepository;
+    private FileStorageService fileStorageService;
     @Value("${stock.low.lowStock}")
     private int lowStock;
 
@@ -260,12 +262,28 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto addImageToProduct(Long productId, String imageUrl) {
-        return null;
+    public ProductDto addImageToProduct(Long productId, MultipartFile file) throws IOException {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        String imageUrl = fileStorageService.saveImage(file);
+
+        // ajouter l’URL à la liste
+        product.getImagesGallery().add(imageUrl);
+
+        productRepository.save(product);
+        return productMapper.toDto(product);
     }
 
     @Override
     public ProductDto removeImageFromProduct(Long productId, String imageUrl) {
-        return null;
+        Product product = productRepository.findById(productId).orElse(null);
+        if (product == null) return null;
+
+        // Supprimer l’URL de la liste
+        product.getImagesGallery().remove(imageUrl);
+
+        productRepository.save(product);
+        return productMapper.toDto(product);
     }
 }
