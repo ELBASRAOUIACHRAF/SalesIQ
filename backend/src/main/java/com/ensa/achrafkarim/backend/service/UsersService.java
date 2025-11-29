@@ -26,8 +26,6 @@ public interface UsersService {
     long getDaysSinceLastLogin(Long usersId);
     UsersDto resetPassword(String email);
     UsersDto addRoleToUser(Long usersId, Role role);
-    UsersDto activateUser(Long usersId);
-    UsersDto deactivateUser(Long usersId);
-
+    UsersDto activateOrDeactivateUser(Long usersId, boolean activate);
     void updateHoursLoggedIn(Long usersId);
 }

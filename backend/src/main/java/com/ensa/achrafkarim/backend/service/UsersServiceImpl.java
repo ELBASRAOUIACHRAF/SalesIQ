@@ -151,20 +151,13 @@ public class UsersServiceImpl implements UsersService{
         return usersMapper.toDto(savedUser);
     }
 
-    @Override
-    public UsersDto activateUser(Long usersId) {
-        if (!usersRepository.existsById(usersId)) return null;
-        Users user = usersRepository.findById(usersId).get();
-        user.setActive(true);
-        Users savedUser = usersRepository.save(user);
-        return usersMapper.toDto(savedUser);
-    }
 
     @Override
-    public UsersDto deactivateUser(Long usersId) {
+    public UsersDto activateOrDeactivateUser(Long usersId, boolean activate) {
         if (!usersRepository.existsById(usersId)) return null;
         Users user = usersRepository.findById(usersId).get();
-        user.setActive(false);
+        if(activate) user.setActive(true);
+        else user.setActive(false);
         Users savedUser = usersRepository.save(user);
         return usersMapper.toDto(savedUser);
     }
