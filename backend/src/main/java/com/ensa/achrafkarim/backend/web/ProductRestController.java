@@ -3,8 +3,11 @@ package com.ensa.achrafkarim.backend.web;
 import com.ensa.achrafkarim.backend.dto.ProductDto;
 import com.ensa.achrafkarim.backend.service.ProductService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -127,5 +130,16 @@ public class ProductRestController {
     @PutMapping("/markProductUnAvailable")
     public void markProductUnAvailable(@RequestBody ProductDto productDto) {
         productService.markProductAsUnavailable(productDto);
+    }
+
+    @PutMapping(
+            value = "/addProductImages/{productId}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ProductDto addProductImages(
+            @PathVariable("productId") Long productId,
+            @RequestPart("file") MultipartFile file
+    ) throws IOException {
+        return productService.addImageToProduct(productId, file);
     }
 }

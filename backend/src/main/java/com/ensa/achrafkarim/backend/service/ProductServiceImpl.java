@@ -6,6 +6,7 @@ import com.ensa.achrafkarim.backend.entities.Product;
 import com.ensa.achrafkarim.backend.mapper.ProductMapper;
 import com.ensa.achrafkarim.backend.repository.CategoryRepository;
 import com.ensa.achrafkarim.backend.repository.ProductRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+
 public class ProductServiceImpl implements ProductService {
 
     //private final ProductService productService;
@@ -29,10 +31,10 @@ public class ProductServiceImpl implements ProductService {
     @Value("${stock.low.lowStock}")
     private int lowStock;
 
-    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, CategoryRepository categoryRepository) {
+    public ProductServiceImpl(ProductRepository productRepository,FileStorageService fileStorageService, ProductMapper productMapper, CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
-
+        this.fileStorageService=fileStorageService;
 
     }
 
