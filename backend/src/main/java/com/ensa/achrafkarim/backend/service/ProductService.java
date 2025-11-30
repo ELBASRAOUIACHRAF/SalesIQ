@@ -10,7 +10,7 @@ import java.util.List;
 public interface ProductService {
 
     // CRUD
-    ProductDto createProduct(ProductDto productDto);
+    ProductDto createProduct(ProductDto productDto, Long categoryId);
     ProductDto updateProduct(ProductDto productDto);
     void deleteProduct(Long id);
     ProductDto getProduct(Long id);

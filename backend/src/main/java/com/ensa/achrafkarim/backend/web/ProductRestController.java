@@ -28,9 +28,9 @@ public class ProductRestController {
     public void deleteProduct(@PathVariable Long productId) {productService.deleteProduct(productId);}
 
     @PostMapping("/addOne")
-    public ProductDto addProduct(@RequestBody ProductDto productDto)
+    public ProductDto addProduct(@RequestBody ProductDto productDto,@RequestParam Long categoryId)
     {
-        return productService.createProduct(productDto);
+        return productService.createProduct(productDto, categoryId);
     }
 
     @GetMapping("/sortedproducts/{sortMethod}")

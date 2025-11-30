@@ -39,8 +39,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto createProduct(ProductDto productDto) {
+    public ProductDto createProduct(ProductDto productDto, Long categoryId) {
         Product product = productMapper.toEntity(productDto);
+        product.setCategory(categoryRepository.findById(categoryId).get());
         product.setIsActive(true);
         product.setReviewsCount(0L);
         product.setCreatedAt(LocalDateTime.now());
