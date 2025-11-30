@@ -30,7 +30,9 @@ public class UsersServiceImpl implements UsersService{
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
         user.setHoursLoggedIn(0);
+        user.setLastLogin(LocalDateTime.now());
         user.setActive(true);
+        user.setPassword("null"); // a changer
 
         Users savedUser = usersRepository.save(user);
         return usersMapper.toDto(savedUser);
@@ -153,11 +155,11 @@ public class UsersServiceImpl implements UsersService{
 
 
     @Override
-    public UsersDto activateOrDeactivateUser(Long usersId, boolean activate) {
-        if (!usersRepository.existsById(usersId)) return null;
-        Users user = usersRepository.findById(usersId).get();
-        if(activate) user.setActive(true);
-        else user.setActive(false);
+    public UsersDto activateOrDeactivateUser(Long userId, boolean activate) {
+        Users user = usersRepository.findById(userId).orElse(null);
+        if(user == null) return null;
+        user.setActive(activate);
+        user.setUpdatedAt(LocalDateTime.now());
         Users savedUser = usersRepository.save(user);
         return usersMapper.toDto(savedUser);
     }

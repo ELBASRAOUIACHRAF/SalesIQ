@@ -22,7 +22,7 @@ public class Users {
     @Enumerated(EnumType.STRING)
     private Role role;
     private double hoursLoggedIn;
-    private boolean isActive = true;
+    private boolean active = true;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime lastLogin;

@@ -74,7 +74,7 @@ public class ReviewsRestController {
         return reviewsService.updateReview(reviewId, reviewsDto);
     }
 
-    @GetMapping("/reviewsByProduct}")
+    @GetMapping("/reviewsByProduct")
     public Page<@NonNull ReviewsDto> getReviewsByProduct(@RequestParam Long productId, @RequestParam int page, @RequestParam int size) {
         return reviewsService.getReviewsByProduct(productId, page, size);
     }

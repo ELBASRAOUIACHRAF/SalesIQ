@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@RestController("users")
+@RestController("/users")
 @AllArgsConstructor
 public class UsersRestController {
 
@@ -57,7 +57,7 @@ public class UsersRestController {
         return usersService.getUsersPage(page, size);
     }
 
-    @PutMapping("/getUsersByStatus")
+    @GetMapping("/getUsersByStatus")
     public List<UsersDto> getUsersByStatus(@RequestParam boolean status) {
         return usersService.getActiveOrInActiveUsers(status);
     }

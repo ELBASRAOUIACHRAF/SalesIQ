@@ -1,9 +1,13 @@
 package com.ensa.achrafkarim.backend.dto;
 
 import com.ensa.achrafkarim.backend.enums.Role;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@Data
+@AllArgsConstructor
 public class UsersDto {
     private Long id;
     private String username;

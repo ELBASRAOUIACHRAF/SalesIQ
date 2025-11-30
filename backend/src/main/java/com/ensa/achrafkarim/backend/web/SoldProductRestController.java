@@ -20,7 +20,7 @@ public class SoldProductRestController {
 
     @GetMapping("/getSoldProductsBySale/{saleId}")
     public List<ProductDto> getProductsSoldBySale(@PathVariable Long saleId) {
-        return (soldProductService.getSoldProductsBySale(saleId));
+        return soldProductService.getSoldProductsBySale(saleId);
     }
 
     @GetMapping("/getTotalPriceBySale/{saleId}")
@@ -66,7 +66,7 @@ public class SoldProductRestController {
     ) {
         return (soldProductService.getProductProfitBySaleProductIds(saleId, productId));
     }
-
+    // A Modifier ---------------------------------------------------
     @GetMapping("/soldproductsbysale/{saleId}")
     public List<SoldProductDto> getSoldProductsBySale(@PathVariable Long saleId) {
         return soldProductService.getAllSoldProductsBySale(saleId);

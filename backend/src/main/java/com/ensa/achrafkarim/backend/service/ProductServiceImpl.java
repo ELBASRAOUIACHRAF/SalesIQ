@@ -29,10 +29,10 @@ public class ProductServiceImpl implements ProductService {
     @Value("${stock.low.lowStock}")
     private int lowStock;
 
-    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, CategoryRepository categoryRepository, ProductService productService) {
+    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
-        this.categoryRepository = categoryRepository;
+
 
     }
 
