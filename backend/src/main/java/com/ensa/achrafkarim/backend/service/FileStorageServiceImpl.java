@@ -1,6 +1,5 @@
 package com.ensa.achrafkarim.backend.service;
 
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +28,7 @@ public class FileStorageServiceImpl implements FileStorageService {
         String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
         Path filePath = uploadPath.resolve(fileName);
 
-        // Sauvegarde du fichier sur le serveu
+        // Sauvegarde du fichier sur le serveur
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
         // Retourner l'URL publique
