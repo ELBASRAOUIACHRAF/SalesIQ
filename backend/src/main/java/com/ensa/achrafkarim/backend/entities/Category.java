@@ -1,6 +1,5 @@
 package com.ensa.achrafkarim.backend.entities;
 
-import com.ensa.achrafkarim.backend.enums.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.Data;
 

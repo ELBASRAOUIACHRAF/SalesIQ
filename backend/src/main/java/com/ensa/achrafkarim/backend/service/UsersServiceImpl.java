@@ -51,7 +51,7 @@ public class UsersServiceImpl implements UsersService{
 
     @Override
     public UsersDto getUsers(Long usersId) {
-        Users user = usersRepository.findById(usersId).get();
+        Users user = usersRepository.findById(usersId).orElse(null);
         return usersMapper.toDto(user);
     }
 
