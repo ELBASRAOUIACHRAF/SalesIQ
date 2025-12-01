@@ -180,4 +180,9 @@ public class UsersServiceImpl implements UsersService{
         }
         usersRepository.save(user);
     }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return usersRepository.existsByEmail(email);
+    }
 }

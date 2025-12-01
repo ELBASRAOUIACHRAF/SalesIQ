@@ -20,6 +20,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private CategoryRepository categoryRepository;
     private CategoryMapper categoryMapper;
+    private ProductService productService;
 
     public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
         this.categoryRepository = categoryRepository;
@@ -97,6 +98,13 @@ public class CategoryServiceImpl implements CategoryService {
         Pageable pageable = PageRequest.of(page, size);
         Page<Category>  categories = categoryRepository.findAll(pageable);
         return categories.map(categoryMapper::toDto);
+    }
+
+    // Vérifier s'il y a des produits dans la catégorie avant suppression :
+    @Override
+    public boolean canDeleteCategory(Long id) {
+        if (productService.countProductsInCategory(id) == 0) return true;
+        return false;
     }
 
 }

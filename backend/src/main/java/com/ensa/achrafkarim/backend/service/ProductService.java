@@ -45,6 +45,7 @@ public interface ProductService {
     ProductDto markProductAsUnavailable(ProductDto productDto);
     ProductDto markProductAsAvailable(ProductDto productDto);
 
+    int countProductsInCategory(Long categoryId);
     // Images
     ProductDto addImageToProduct(Long productId, MultipartFile file) throws IOException;
     ProductDto removeImageFromProduct(Long productId, String imageUrl);
