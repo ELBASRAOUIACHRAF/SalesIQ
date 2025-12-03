@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UsersServiceImpl implements UsersService{
 
+    // private PasswordEncoder passwordEncoder;
     UsersRepository  usersRepository;
     UsersMapper  usersMapper;
 
@@ -51,7 +52,7 @@ public class UsersServiceImpl implements UsersService{
 
     @Override
     public UsersDto getUsers(Long usersId) {
-        Users user = usersRepository.findById(usersId).get();
+        Users user = usersRepository.findById(usersId).orElse(null);
         return usersMapper.toDto(user);
     }
 
@@ -178,5 +179,10 @@ public class UsersServiceImpl implements UsersService{
             user.setHoursLoggedIn(user.getHoursLoggedIn() + hours);
         }
         usersRepository.save(user);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return usersRepository.existsByEmail(email);
     }
 }

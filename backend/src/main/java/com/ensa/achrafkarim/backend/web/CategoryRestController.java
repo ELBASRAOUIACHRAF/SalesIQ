@@ -38,9 +38,19 @@ public class CategoryRestController {
         return categoryService.listCategoriesWithPagination(page,  size);
     }
 
+    @GetMapping("/canDeleteCategory/{categoryId}")
+    public boolean canDeleteCategory(@PathVariable Long categoryId) {
+        return categoryService.canDeleteCategory(categoryId);
+    }
+
     @DeleteMapping("/deleteCat/{categoryId}")
-    public void deleteCategory(Long categoryId) {
+    public void deleteCategory(@PathVariable Long categoryId) {
         categoryService.deleteCategory(categoryId);
+    }
+
+    @PutMapping("/updateCategory/{categoryId}")
+    public CategoryDto updateCategory(@PathVariable Long categoryId, @RequestBody CategoryDto categoryDto) {
+        return categoryService.updateCategory(categoryId, categoryDto);
     }
 
     @PostMapping("/addCategory")

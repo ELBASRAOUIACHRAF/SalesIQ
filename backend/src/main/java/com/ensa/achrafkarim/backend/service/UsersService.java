@@ -28,4 +28,5 @@ public interface UsersService {
     UsersDto addRoleToUser(Long usersId, Role role);
     UsersDto activateOrDeactivateUser(Long usersId, boolean activate);
     void updateHoursLoggedIn(Long usersId);
+    boolean existsByEmail(String email);
 }

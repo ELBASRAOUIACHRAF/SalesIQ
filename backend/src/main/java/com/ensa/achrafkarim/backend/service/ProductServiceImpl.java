@@ -257,6 +257,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public int countProductsInCategory(Long categoryId) {
+        return this.getProductsByCategory(categoryId).size();
+    }
+
+    @Override
     public ProductDto addImageToProduct(Long productId, MultipartFile file) throws IOException {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));

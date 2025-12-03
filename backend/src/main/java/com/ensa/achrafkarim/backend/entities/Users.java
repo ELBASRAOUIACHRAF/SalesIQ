@@ -32,4 +32,7 @@ public class Users {
 
     @OneToMany(mappedBy = "users")
     private List<Reviews>  reviews;
+
+    @OneToMany(mappedBy = "user")
+    private List<SearchHistory>  searchHistory;
 }

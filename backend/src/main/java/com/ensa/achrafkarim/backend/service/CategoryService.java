@@ -16,4 +16,5 @@ public interface CategoryService {
     CategoryDto deactivateCategory(Long id);
     Long getTotalCategoriesCount();
     Page<CategoryDto> listCategoriesWithPagination(int page, int size);
+    boolean canDeleteCategory(Long id);
 }
