@@ -210,11 +210,7 @@ public interface AdvancedAnalyticsService {
      */
     //ConversionFunnelDto analyzeConversionFunnel(LocalDateTime startDate, LocalDateTime endDate);
 
-    /**
-     * Calcul du ROI (Return on Investment)
-     * Formule : ((Gain - Coût) / Coût) × 100
-     */
-    double calculateROI(Long campaignId);
+
 
     /**
      * Analyse de la performance par canal de vente

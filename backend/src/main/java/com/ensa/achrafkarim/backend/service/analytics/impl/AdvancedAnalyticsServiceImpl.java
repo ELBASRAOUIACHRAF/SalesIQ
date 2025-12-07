@@ -38,10 +38,6 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
         return 0;
     }
 
-    @Override
-    public double calculateROI(Long campaignId) {
-        return 0;
-    }
 
     @Override
     public List<CustomerSegmentDto> segmentCustomers(int numberOfSegments) {
