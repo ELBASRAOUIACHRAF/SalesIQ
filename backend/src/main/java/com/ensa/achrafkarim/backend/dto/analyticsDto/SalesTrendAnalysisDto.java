@@ -15,7 +15,7 @@ public class SalesTrendAnalysisDto {
     // aggregate sales that we got by time stamps
     private TimeGranularity timeGranularity;
 
-    private List<>
+//    private List<>
 
     private Double revenue;
     private long salesCount;
