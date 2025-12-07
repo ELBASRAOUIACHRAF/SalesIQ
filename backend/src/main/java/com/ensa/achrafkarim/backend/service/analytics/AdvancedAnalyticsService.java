@@ -5,6 +5,7 @@ package com.ensa.achrafkarim.backend.service.analytics;
 // ============================================
 
 import com.ensa.achrafkarim.backend.dto.analyticsDto.CustomerSegmentDto;
+import com.ensa.achrafkarim.backend.dto.analyticsDto.ReviewsSentimentAnalysisDto;
 
 import java.util.List;
 
@@ -292,7 +293,7 @@ public interface AdvancedAnalyticsService {
      * Analyse de sentiment des avis clients
      * Utilise NLP pour classifier : Positif, Neutre, Négatif
      */
-    //SentimentAnalysisDto analyzeSentiment(Long productId);
+    List<ReviewsSentimentAnalysisDto> analyzeSentiment();
 
     /**
      * Extraction de topics des avis (Topic Modeling)

@@ -1,8 +1,10 @@
 package com.ensa.achrafkarim.backend.service.analytics.impl;
 
+import com.ensa.achrafkarim.backend.dto.ProductDto;
 import com.ensa.achrafkarim.backend.dto.SaleDto;
 import com.ensa.achrafkarim.backend.dto.UsersDto;
 import com.ensa.achrafkarim.backend.dto.analyticsDto.CustomerSegmentDto;
+import com.ensa.achrafkarim.backend.dto.analyticsDto.ReviewsSentimentAnalysisDto;
 import com.ensa.achrafkarim.backend.entities.Users;
 import com.ensa.achrafkarim.backend.enums.Role;
 import com.ensa.achrafkarim.backend.service.*;
@@ -28,10 +30,16 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
     ReviewsService  reviewsService;
     SearchHistoryService searchHistoryService;
     SoldProductService  soldProductService;
+    ProductService  productService;
 
 
     @Override
     public double calculateCustomerLifetimeValue(Long userId) {
+        return 0;
+    }
+
+    @Override
+    public double calculateROI(Long campaignId) {
         return 0;
     }
 
@@ -66,7 +74,20 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
     }
 
     @Override
-    public double calculateROI(Long campaignId) {
-        return 0;
+    public List<ReviewsSentimentAnalysisDto> analyzeSentiment() {
+        List<ProductDto> productDtoList = productService.listProducts();
+
+        List<Map>  data = new ArrayList<>();
+        for (ProductDto productDto : productDtoList) {
+            Map<String,Object> map = new HashMap<>();
+            Long productId = productDto.getId();
+
+            map.put("productId", productId);
+            map.put("productReviews",  reviewsService.getReviewsByProduct(productId));
+
+            data.add(map);
+        }
+
+        return null;
     }
 }
