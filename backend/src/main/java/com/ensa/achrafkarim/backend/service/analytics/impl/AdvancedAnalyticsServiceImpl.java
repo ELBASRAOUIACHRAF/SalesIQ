@@ -50,7 +50,7 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
             for (SaleDto sale : sales) {
                 totalSalesAmount += soldProductService.getTotalPriceBySale(sale.getId());
             }
-            int totalSales = saleService.getSalesByUser(customerId).size()
+            int totalSales = saleService.getSalesByUser(customerId).size();
 
             map.put("usersId", customerId);
             map.put("totalSales", totalSales);
