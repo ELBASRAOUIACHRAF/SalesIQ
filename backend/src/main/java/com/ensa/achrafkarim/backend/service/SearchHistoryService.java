@@ -12,6 +12,8 @@ public interface SearchHistoryService {
     void deleteSearchHistory(Long searchHistoryId);
     Page<SearchHistoryDto> getSearchHistory(Long usersId, int page, int size);
 
+    Long getCountSearchHistory(Long usersId);
+
     List<SearchHistoryDto> searchHistoryByQuery(Long usersId, String keyword);
     List<String> getTrendingSearches(Long usersId, int days, int limit);
     Page<SearchHistoryDto> getRecentSearchHistory(Long usersId, int page, int size);

@@ -52,8 +52,13 @@ public class SearchHistoryServiceImpl implements SearchHistoryService {
     @Override
     public Page<SearchHistoryDto> getSearchHistory(Long usersId, int page, int size) {
         Pageable  pageable = PageRequest.of(page, size);
-        Page<SearchHistory> searchHistoryPage = searchHistoryRepository.findAll(pageable);
+        Page<SearchHistory> searchHistoryPage = searchHistoryRepository.findAllByUserId(usersId,pageable);
         return searchHistoryPage.map(searchHistoryMapper::toDto);
+    }
+
+    @Override
+    public Long getCountSearchHistory(Long usersId) {
+        return searchHistoryRepository.countByUserId(usersId);
     }
 
     @Override

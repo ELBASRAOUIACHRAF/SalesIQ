@@ -4,6 +4,10 @@ package com.ensa.achrafkarim.backend.service.analytics;
 // Méthodes de Statistiques et d'Analyse Avancées
 // ============================================
 
+import com.ensa.achrafkarim.backend.dto.analyticsDto.CustomerSegmentDto;
+
+import java.util.List;
+
 public interface AdvancedAnalyticsService {
 
     // ========================================
@@ -170,7 +174,7 @@ public interface AdvancedAnalyticsService {
     /**
      * Segmentation client automatique (K-Means Clustering)
      */
-    //List<CustomerSegmentDto> segmentCustomers(int numberOfSegments);
+    List<CustomerSegmentDto> segmentCustomers(int numberOfSegments);
 
     /**
      * Analyse du comportement d'achat par segment

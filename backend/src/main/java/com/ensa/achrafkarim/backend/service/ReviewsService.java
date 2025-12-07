@@ -43,6 +43,8 @@ public interface ReviewsService {
     //  ]
     Page<Object[]> getRatingDistributionByProduct(Long productId, int page, int size);
 
+    double getAverageRatingByUser(Long userId);
+
     // =====================
     // PAGINATION & SORTING
     // =====================

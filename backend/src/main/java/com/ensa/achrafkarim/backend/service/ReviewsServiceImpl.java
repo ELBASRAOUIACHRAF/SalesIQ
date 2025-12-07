@@ -115,6 +115,16 @@ public class ReviewsServiceImpl implements ReviewsService{
     }
 
     @Override
+    public double getAverageRatingByUser(Long userId) {
+        List<ReviewsDto> reviewsDtoList = getReviewsByUserId(userId);
+        int somme = 0;
+        for (ReviewsDto reviewsDto : reviewsDtoList) {
+            somme +=  reviewsDto.getRating();
+        }
+        return somme/reviewsDtoList.size();
+    }
+
+    @Override
     public Page<@NonNull ReviewsDto> getReviewsByProduct(Long productId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return reviewsRepository.getReviewsByProduct(productId, pageable).map(rev -> reviewsMapper.toDto(rev));
