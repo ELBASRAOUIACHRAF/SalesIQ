@@ -5,20 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 public class SalesTrendAnalysisDto {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-
-    // aggregate sales that we got by time stamps
     private TimeGranularity timeGranularity;
 
-//    private List<>
-
-    private Double revenue;
-    private long salesCount;
-    private long quantitySold;
-    private Double averageSaleValue;
+    List<SalesTrendPointDto> points;
 }

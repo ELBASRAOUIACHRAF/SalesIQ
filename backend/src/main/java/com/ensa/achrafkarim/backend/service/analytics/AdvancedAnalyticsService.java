@@ -6,10 +6,14 @@ package com.ensa.achrafkarim.backend.service.analytics;
 
 import com.ensa.achrafkarim.backend.dto.analyticsDto.CustomerSegmentDto;
 import com.ensa.achrafkarim.backend.dto.analyticsDto.ReviewsSentimentAnalysisDto;
+import com.ensa.achrafkarim.backend.dto.analyticsDto.SalesTrendAnalysisDto;
+import com.ensa.achrafkarim.backend.enums.analyticsEnum.TimeGranularity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-public interface AdvancedAnalyticsService {
+public interface
+AdvancedAnalyticsService {
 
     // ========================================
     // 1. ANALYSES DE VENTES (SALES ANALYTICS)
@@ -19,7 +23,7 @@ public interface AdvancedAnalyticsService {
      * Analyse des tendances de ventes sur une période
      * Retourne : évolution quotidienne/hebdomadaire/mensuelle
      */
-    //SalesTrendAnalysisDto analyzeSalesTrend(LocalDateTime startDate, LocalDateTime endDate, TimeGranularity granularity);
+    SalesTrendAnalysisDto analyzeSalesTrend(LocalDateTime startDate, LocalDateTime endDate, TimeGranularity granularity);
 
     /**
      * Calcul du taux de croissance des ventes (Growth Rate)
