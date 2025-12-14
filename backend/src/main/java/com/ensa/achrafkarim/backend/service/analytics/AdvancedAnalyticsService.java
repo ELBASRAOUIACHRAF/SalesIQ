@@ -29,7 +29,7 @@ AdvancedAnalyticsService {
      * Calcul du taux de croissance des ventes (Growth Rate)
      * Formule : ((Ventes actuelles - Ventes précédentes) / Ventes précédentes) * 100
      */
-    //double calculateSalesGrowthRate(LocalDateTime period1Start, LocalDateTime period1End, LocalDateTime period2Start, LocalDateTime period2End);
+    double calculateSalesGrowthRate(LocalDateTime period1Start, LocalDateTime period1End, LocalDateTime period2Start, LocalDateTime period2End);
 
     /**
      * Analyse de saisonnalité des ventes (Seasonal Decomposition)

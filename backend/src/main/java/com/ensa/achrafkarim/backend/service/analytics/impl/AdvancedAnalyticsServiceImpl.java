@@ -115,6 +115,25 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
     }
 
     @Override
+    public double calculateSalesGrowthRate(LocalDateTime period1Start, LocalDateTime period1End, LocalDateTime period2Start, LocalDateTime period2End) {
+        List<Sale> period1Sales = saleRepository.findByDateOfSaleBetween(period1Start, period1End);
+        List<Sale> period2Sales = saleRepository.findByDateOfSaleBetween(period2Start, period2End);
+
+        double revenue1 = period1Sales.stream()
+                .flatMap(sale -> sale.getSoldProducts().stream())
+                .mapToDouble(sp -> sp.getUnitPrice() * sp.getQuantity())
+                .sum();
+        double revenue2 = period2Sales.stream()
+                .flatMap(sale -> sale.getSoldProducts().stream())
+                .mapToDouble(sp -> sp.getUnitPrice() * sp.getQuantity())
+                .sum();
+        if (revenue1 == 0) {
+            return revenue2 == 0 ? 0 : 100.0; // avoid division by zero
+        }
+        return ((revenue2 - revenue1) / revenue1) * 100;
+    }
+
+    @Override
     public double calculateCustomerLifetimeValue(Long userId) {
         return 0;
     }
