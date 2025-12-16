@@ -13,6 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("products")
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class ProductRestController {
 
     private ProductService productService;
@@ -141,5 +142,12 @@ public class ProductRestController {
             @RequestPart("file") MultipartFile file
     ) throws IOException {
         return productService.addImageToProduct(productId, file);
+    }
+
+    @PostMapping("/by-categories")
+    public List<ProductDto> getProductsByCategories(
+            @RequestBody List<Long> categoryIds
+    ) {
+        return productService.getProductsByCategories(categoryIds);
     }
 }

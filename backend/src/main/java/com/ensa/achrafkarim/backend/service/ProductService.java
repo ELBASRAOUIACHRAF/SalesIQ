@@ -49,5 +49,7 @@ public interface ProductService {
     // Images
     ProductDto addImageToProduct(Long productId, MultipartFile file) throws IOException;
     ProductDto removeImageFromProduct(Long productId, String imageUrl);
+
+    List<ProductDto> getProductsByCategories(List<Long> categoryIds);
 }
 

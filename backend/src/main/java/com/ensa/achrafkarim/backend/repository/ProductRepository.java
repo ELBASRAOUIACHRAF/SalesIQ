@@ -34,4 +34,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> getTopProfitProducts(Pageable pageable);
     List<Product> findByStockGreaterThan(Long stock);
     List<Product> findByStockLessThan(Long stock);
+
+    List<Product> findByCategoryIdIn(List<Long> categoryIds);
 }
