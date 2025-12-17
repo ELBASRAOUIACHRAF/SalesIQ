@@ -1,5 +1,6 @@
 package com.ensa.achrafkarim.backend.service;
 
+import com.ensa.achrafkarim.backend.dto.ReviewsDetailsDto;
 import com.ensa.achrafkarim.backend.dto.ReviewsDto;
 import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
@@ -15,6 +16,9 @@ public interface ReviewsService {
     // CORE CRUD OPERATIONS
     // =====================
     List<ReviewsDto> getReviewsByProduct(Long productId);
+
+    List<ReviewsDetailsDto> getReviewsByProductWithUsers(Long productId);
+
     List<ReviewsDto> getReviewsByUserId(Long userId);
     ReviewsDto createReview(ReviewsDto reviewsDto, Long productId, Long userId);
     ReviewsDto updateReview(Long reviewId, ReviewsDto reviewsDto);

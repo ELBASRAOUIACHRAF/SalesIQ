@@ -1,5 +1,6 @@
 package com.ensa.achrafkarim.backend.web;
 
+import com.ensa.achrafkarim.backend.dto.ReviewsDetailsDto;
 import com.ensa.achrafkarim.backend.dto.ReviewsDto;
 import com.ensa.achrafkarim.backend.entities.Reviews;
 import com.ensa.achrafkarim.backend.service.ReviewsService;
@@ -22,6 +23,11 @@ public class ReviewsRestController {
     @GetMapping("/productreviews/{productId}")
     public List<ReviewsDto> getReviewsByProduct(@PathVariable Long productId){
         return reviewsService.getReviewsByProduct(productId);
+    }
+
+    @GetMapping("/productreviewsdetails/{productId}")
+    public List<ReviewsDetailsDto> getReviewsByProductDetails(@PathVariable Long productId){
+        return reviewsService.getReviewsByProductWithUsers(productId);
     }
 
     @GetMapping("/productreviewscount/{productId}")

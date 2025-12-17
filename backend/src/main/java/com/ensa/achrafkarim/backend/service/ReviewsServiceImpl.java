@@ -1,7 +1,9 @@
 package com.ensa.achrafkarim.backend.service;
 
+import com.ensa.achrafkarim.backend.dto.ReviewsDetailsDto;
 import com.ensa.achrafkarim.backend.dto.ReviewsDto;
 import com.ensa.achrafkarim.backend.entities.Reviews;
+import com.ensa.achrafkarim.backend.mapper.ReviewsDetailsMapper;
 import com.ensa.achrafkarim.backend.mapper.ReviewsMapper;
 import com.ensa.achrafkarim.backend.repository.ProductRepository;
 import com.ensa.achrafkarim.backend.repository.ReviewsRepository;
@@ -27,12 +29,21 @@ public class ReviewsServiceImpl implements ReviewsService{
     ReviewsMapper reviewsMapper;
     ProductRepository productRepository;
     UsersRepository usersRepository;
+    ReviewsDetailsMapper reviewsDetailsMapper;
 
     @Override
     public List<ReviewsDto> getReviewsByProduct(Long productId) {
         List<Reviews> reviewsList = reviewsRepository.findAllByproductId(productId);
         return reviewsList.stream()
                 .map(rev -> reviewsMapper.toDto(rev))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ReviewsDetailsDto> getReviewsByProductWithUsers(Long productId) {
+        List<Reviews> reviewsList = reviewsRepository.findAllByproductIdWithUser(productId);
+        return reviewsList.stream()
+                .map(rev -> reviewsDetailsMapper.toDto(rev))
                 .collect(Collectors.toList());
     }
 

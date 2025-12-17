@@ -11,7 +11,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ReviewsRepository extends JpaRepository<Reviews, Long> {
-    List<Reviews> findAllByproductId(Long productId);
+
+    @Query("""
+    SELECT r
+    FROM Reviews r
+    JOIN FETCH r.users
+    WHERE r.product.id = :productId
+        """)
+    List<Reviews> findAllByproductIdWithUser(Long productId);
 
     List<Reviews> findAllByusersId(Long usersId);
 
@@ -41,4 +48,5 @@ public interface ReviewsRepository extends JpaRepository<Reviews, Long> {
 
     boolean existsById(Long reviewId);
 
+    List<Reviews> findAllByproductId(Long productId);
 }
