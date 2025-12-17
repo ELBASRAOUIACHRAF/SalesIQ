@@ -1,8 +1,10 @@
 package com.ensa.achrafkarim.backend.service;
 
+import com.ensa.achrafkarim.backend.dto.ProductDetailsDto;
 import com.ensa.achrafkarim.backend.dto.ProductDto;
 import com.ensa.achrafkarim.backend.entities.Category;
 import com.ensa.achrafkarim.backend.entities.Product;
+import com.ensa.achrafkarim.backend.mapper.ProductDetailsMapper;
 import com.ensa.achrafkarim.backend.mapper.ProductMapper;
 import com.ensa.achrafkarim.backend.repository.CategoryRepository;
 import com.ensa.achrafkarim.backend.repository.ProductRepository;
@@ -27,16 +29,19 @@ public class ProductServiceImpl implements ProductService {
     //private final ProductService productService;
     private ProductRepository productRepository;
     private ProductMapper  productMapper;
+    private ProductDetailsMapper productDetailsMapper;
     private CategoryRepository categoryRepository;
     private FileStorageService fileStorageService;
+    private ReviewsService reviewsService;
     @Value("${stock.low.lowStock}")
     private int lowStock;
 
-    public ProductServiceImpl(ProductRepository productRepository,FileStorageService fileStorageService, ProductMapper productMapper, CategoryRepository categoryRepository) {
+    public ProductServiceImpl(ReviewsService reviewsService, ProductRepository productRepository,FileStorageService fileStorageService, ProductMapper productMapper, CategoryRepository categoryRepository, ProductDetailsMapper productDetailsMapper) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.fileStorageService=fileStorageService;
-
+        this.productDetailsMapper = productDetailsMapper;
+        this.reviewsService = reviewsService;
     }
 
     @Override
@@ -44,7 +49,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = productMapper.toEntity(productDto);
         product.setCategory(categoryRepository.findById(categoryId).get());
         product.setIsActive(true);
-        product.setReviewsCount(0L);
+        //product.setReviewsCount(0L);
         product.setCreatedAt(LocalDateTime.now());
         product.setUpdatedAt(LocalDateTime.now());
         Product productSaved = productRepository.save(product);
@@ -57,6 +62,15 @@ public class ProductServiceImpl implements ProductService {
         return (productsList.stream()
                 .map(prod -> productMapper.toDto(prod))
                 .collect(Collectors.toList()));
+    }
+
+    @Override
+    public ProductDetailsDto getProductDetails(Long productId) {
+        Product product = productRepository.findById(productId).get();
+        ProductDetailsDto productDetailsDto = productDetailsMapper.toDto(product);
+        productDetailsDto.setReviewsCount(reviewsService.getReviewCountByProduct(productId));
+        productDetailsDto.setRating(reviewsService.getAverageRatingByProduct(productId));
+        return productDetailsDto;
     }
 
     @Override
@@ -75,8 +89,8 @@ public class ProductServiceImpl implements ProductService {
         // Mettre à jour tous les champs
         productToUpdate.setName(product.getName());
         productToUpdate.setPrice(product.getPrice());
-        productToUpdate.setRating(product.getRating());
-        productToUpdate.setReviewsCount(product.getReviewsCount());
+        //productToUpdate.setRating(product.getRating());
+        //productToUpdate.setReviewsCount(product.getReviewsCount());
         productToUpdate.setAsin(product.getAsin());
         productToUpdate.setDescription(product.getDescription());
         productToUpdate.setMark(product.getMark());

@@ -17,7 +17,11 @@ public interface ReviewsRepository extends JpaRepository<Reviews, Long> {
 
     List<Reviews> findByRatingBetween(double minRating, double maxRating);
 
-    @Query("SELECT AVG(rev.rating) FROM Reviews rev WHERE rev.product.id = :productId")
+    @Query("""
+    SELECT COALESCE(AVG(rev.rating), 0)
+    FROM Reviews rev
+    WHERE rev.product.id = :productId
+    """)
     Double findAverageRatingByProductId(Long productId);
 
     Page<@NonNull Reviews> findByReviewDateBetween(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);

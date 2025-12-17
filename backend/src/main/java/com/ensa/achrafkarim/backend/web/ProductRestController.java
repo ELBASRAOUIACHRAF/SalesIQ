@@ -1,5 +1,6 @@
 package com.ensa.achrafkarim.backend.web;
 
+import com.ensa.achrafkarim.backend.dto.ProductDetailsDto;
 import com.ensa.achrafkarim.backend.dto.ProductDto;
 import com.ensa.achrafkarim.backend.service.ProductService;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,10 @@ public class ProductRestController {
 
     private ProductService productService;
 
+    @GetMapping("/productDetails/{productId}")
+    public ProductDetailsDto getProductDetails(@PathVariable Long productId){
+        return productService.getProductDetails(productId);
+    }
 
     @GetMapping("/getOne/{productId}")
     public ProductDto getProduct(@PathVariable Long productId) {return productService.getProduct(productId); }

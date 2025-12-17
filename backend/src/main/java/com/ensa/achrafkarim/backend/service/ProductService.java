@@ -1,5 +1,6 @@
 package com.ensa.achrafkarim.backend.service;
 
+import com.ensa.achrafkarim.backend.dto.ProductDetailsDto;
 import com.ensa.achrafkarim.backend.dto.ProductDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +16,7 @@ public interface ProductService {
     void deleteProduct(Long id);
     ProductDto getProduct(Long id);
     List<ProductDto> listProducts();
+    ProductDetailsDto getProductDetails(Long productId);
 
     // Filtering & Search
     List<ProductDto> filterProducts(String name, Long categoryId, Double minPrice, Double maxPrice);
