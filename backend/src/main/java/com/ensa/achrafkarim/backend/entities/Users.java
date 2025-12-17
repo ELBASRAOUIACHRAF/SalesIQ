@@ -30,9 +30,19 @@ public class Users {
     @OneToMany(mappedBy = "users")
     private List<Sale> sales;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Basket basket;
+
     @OneToMany(mappedBy = "users")
     private List<Reviews>  reviews;
 
     @OneToMany(mappedBy = "user")
     private List<SearchHistory>  searchHistory;
+
+    @PrePersist
+    private void initBasket() {
+        if (basket == null) {
+            basket = new Basket(this);
+        }
+    }
 }

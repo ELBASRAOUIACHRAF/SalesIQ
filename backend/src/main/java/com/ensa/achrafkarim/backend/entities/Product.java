@@ -35,6 +35,9 @@ public class Product {
     @OneToMany(mappedBy = "product")
     private List<SoldProduct> soldProducts;
 
+    @OneToMany(mappedBy = "product")
+    private List<BasketItem> basketItems;
+
     @ManyToOne
     private Category category;
 
