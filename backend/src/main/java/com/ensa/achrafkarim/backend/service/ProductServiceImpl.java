@@ -58,10 +58,15 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductDto> listProducts() {
-        List<Product> productsList = productRepository.findAll();
-        return (productsList.stream()
-                .map(prod -> productMapper.toDto(prod))
-                .collect(Collectors.toList()));
+        return productRepository.findAll()
+                .stream()
+                .map(product -> {
+                    ProductDto dto = productMapper.toDto(product);
+                    dto.setReviewsCount(reviewsService.getReviewCountByProduct(product.getId()));
+                    dto.setRating(reviewsService.getAverageRatingByProduct(product.getId()));
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override

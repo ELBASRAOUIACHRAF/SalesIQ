@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController("/users")
+@CrossOrigin(origins = "http://localhost:4200")
 @AllArgsConstructor
 public class UsersRestController {
 
