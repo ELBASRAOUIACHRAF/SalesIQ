@@ -4,6 +4,7 @@ import com.ensa.achrafkarim.backend.entities.Users;
 import com.ensa.achrafkarim.backend.enums.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface UsersRepository extends JpaRepository<Users, Long> {
@@ -14,4 +15,5 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
     List<Users> findByUsernameContaining(String username);
 
     boolean existsByEmail(String email);
+    List<Users> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 }
