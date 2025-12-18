@@ -45,12 +45,12 @@ AdvancedAnalyticsService {
      * Analyse de cohort (Cohorte Analysis)
      * Groupe les clients par date d'inscription et analyse leur comportement
      */
-    //CohortAnalysisDto analyzeCohorts(LocalDateTime startDate, LocalDateTime endDate);
+    CohortAnalysisDto analyzeCohorts(LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Calcul du panier moyen (Average Basket/Cart Value)
      */
-    //double calculateAverageBasketValue(LocalDateTime startDate, LocalDateTime endDate);
+    double calculateAverageBasketValue(LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Analyse de la fréquence d'achat par client

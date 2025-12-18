@@ -11,6 +11,7 @@ import com.ensa.achrafkarim.backend.enums.Role;
 import com.ensa.achrafkarim.backend.enums.analyticsEnum.SeasonalityType;
 import com.ensa.achrafkarim.backend.enums.analyticsEnum.TimeGranularity;
 import com.ensa.achrafkarim.backend.repository.SaleRepository;
+import com.ensa.achrafkarim.backend.repository.UsersRepository;
 import com.ensa.achrafkarim.backend.service.*;
 import com.ensa.achrafkarim.backend.service.analytics.AdvancedAnalyticsService;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
 
     private final SaleRepository saleRepository;
+    private final UsersRepository usersRepository;
     UsersService  usersService;
     SaleService  saleService;
     ReviewsService  reviewsService;
@@ -293,6 +296,40 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
         dto.setSeasonalityType(seasonalityType);
 
         return dto;
+    }
+
+    @Override
+    public CohortAnalysisDto analyzeCohorts(LocalDateTime startDate, LocalDateTime endDate) {
+        List<Users> users = usersRepository.findByCreatedAtBetween(startDate, endDate);
+        Map<YearMonth, List<Users>> cohorts = users.stream()
+                .collect(Collectors.groupingBy(
+                        u -> YearMonth.from(u.getCreatedAt())
+                ));
+        int totalUsers =  users.size();
+        int totalCohots = cohorts.size();
+        int activeUsers = (int)users.stream()
+                .filter(Users::isActive)
+                .count();
+        double avgUsersPerCohort =
+                totalCohots == 0 ? 0 : (double) totalUsers / totalCohots;
+        return new CohortAnalysisDto(
+                totalUsers,
+                totalCohots,
+                activeUsers,
+                avgUsersPerCohort
+        );
+    }
+
+    @Override
+    public double calculateAverageBasketValue(LocalDateTime startDate, LocalDateTime endDate) {
+
+        List<Sale> sales = saleRepository.findByDateOfSaleBetween(startDate, endDate);
+        if (sales.isEmpty()) {return 0.0;}
+        double totalRevenue = sales.stream()
+                .flatMap(s -> s.getSoldProducts().stream())
+                .mapToDouble(sp -> sp.getQuantity() * sp.getUnitPrice())
+                .sum();
+        return totalRevenue / sales.size();
     }
 
     @Override
