@@ -4,9 +4,7 @@ package com.ensa.achrafkarim.backend.service.analytics;
 // Méthodes de Statistiques et d'Analyse Avancées
 // ============================================
 
-import com.ensa.achrafkarim.backend.dto.analyticsDto.CustomerSegmentDto;
-import com.ensa.achrafkarim.backend.dto.analyticsDto.ReviewsSentimentAnalysisDto;
-import com.ensa.achrafkarim.backend.dto.analyticsDto.SalesTrendAnalysisDto;
+import com.ensa.achrafkarim.backend.dto.analyticsDto.*;
 import com.ensa.achrafkarim.backend.enums.analyticsEnum.TimeGranularity;
 
 import java.time.LocalDateTime;
@@ -35,7 +33,7 @@ AdvancedAnalyticsService {
      * Analyse de saisonnalité des ventes (Seasonal Decomposition)
      * Identifie les patterns saisonniers, tendances et cycles
      */
-    //SeasonalityAnalysisDto analyzeSeasonality(LocalDateTime startDate, LocalDateTime endDate);
+    SeasonalityAnalysisDto analyzeSeasonality(LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Prévision des ventes futures (Sales Forecasting)
@@ -69,7 +67,7 @@ AdvancedAnalyticsService {
      * Classe B: 30% produits générant 15% revenu
      * Classe C: 50% produits générant 5% revenu
      */
-    //ABCAnalysisDto performABCAnalysis();
+    ABCAnalysisDto performABCAnalysis();
 
     /**
      * Analyse de corrélation entre produits (Product Affinity Analysis)
