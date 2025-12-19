@@ -1,6 +1,7 @@
 package com.ensa.achrafkarim.backend.web;
 
 
+import com.ensa.achrafkarim.backend.dto.ProfileDto;
 import com.ensa.achrafkarim.backend.dto.UsersDto;
 import com.ensa.achrafkarim.backend.enums.Role;
 import com.ensa.achrafkarim.backend.service.UsersService;
@@ -17,6 +18,11 @@ import java.util.List;
 public class UsersRestController {
 
     UsersService usersService;
+
+    @GetMapping("/profile/{usersId}")
+    public ProfileDto getProfile(@PathVariable Long usersId) {
+        return usersService.getUsersProfile(usersId);
+    }
 
     @PostMapping("/addUser")
     public UsersDto addUser(@RequestBody UsersDto usersDto) {

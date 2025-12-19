@@ -16,6 +16,7 @@ public class ProductDto {
     private String asin;
     private String description;
     private String mark;
+    private Long stock;
     private double discount;
     private String imageUrl;
     private List<String> imagesGallery;

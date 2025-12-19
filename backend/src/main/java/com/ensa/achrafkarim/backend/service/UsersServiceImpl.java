@@ -1,5 +1,6 @@
 package com.ensa.achrafkarim.backend.service;
 
+import com.ensa.achrafkarim.backend.dto.ProfileDto;
 import com.ensa.achrafkarim.backend.dto.UsersDto;
 import com.ensa.achrafkarim.backend.entities.Users;
 import com.ensa.achrafkarim.backend.enums.Role;
@@ -184,5 +185,37 @@ public class UsersServiceImpl implements UsersService{
     @Override
     public boolean existsByEmail(String email) {
         return usersRepository.existsByEmail(email);
+    }
+
+    @Override
+    public ProfileDto getUsersProfile(Long usersId) {
+        return usersRepository.findById(usersId)
+                .map(user -> {
+                    ProfileDto dto = new ProfileDto();
+
+                    // --- Header & Personal Info ---
+                    dto.setId(user.getId());
+                    dto.setFirstName(user.getFirstName());
+                    dto.setLastName(user.getLastName());
+                    dto.setUsername(user.getUsername());
+                    dto.setEmail(user.getEmail());
+                    dto.setPhoneNumber(user.getPhoneNumber());
+                    dto.setRole(user.getRole());
+                    dto.setBio(user.getBio());
+
+                    // --- Account Activity ---
+                    dto.setHoursLoggedIn(user.getHoursLoggedIn());
+                    dto.setLastLogin(user.getLastLogin());
+                    dto.setCreatedAt(user.getCreatedAt());
+                    dto.setUpdatedAt(user.getUpdatedAt());
+
+                    // --- Address Section ---
+                    dto.setCountry(user.getCountry());
+                    dto.setCity(user.getCity());
+                    dto.setPostalCode(user.getPostalCode());
+
+                    return dto;
+                })
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'ID : " + usersId));
     }
 }

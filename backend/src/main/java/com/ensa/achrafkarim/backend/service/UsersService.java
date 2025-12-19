@@ -1,5 +1,6 @@
 package com.ensa.achrafkarim.backend.service;
 
+import com.ensa.achrafkarim.backend.dto.ProfileDto;
 import com.ensa.achrafkarim.backend.dto.UsersDto;
 import com.ensa.achrafkarim.backend.enums.Role;
 import org.springframework.data.domain.Page;
@@ -29,4 +30,6 @@ public interface UsersService {
     UsersDto activateOrDeactivateUser(Long usersId, boolean activate);
     void updateHoursLoggedIn(Long usersId);
     boolean existsByEmail(String email);
+
+    ProfileDto getUsersProfile(Long usersId);
 }

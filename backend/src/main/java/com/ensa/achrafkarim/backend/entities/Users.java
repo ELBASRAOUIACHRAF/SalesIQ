@@ -27,6 +27,15 @@ public class Users {
     private LocalDateTime updatedAt;
     private LocalDateTime lastLogin;
 
+    @Column(length = 500) // Pour permettre un texte un peu long
+    private String bio;
+
+    // --- Nouveaux attributs pour la section ADDRESS ---
+    private String country;
+    private String city; // Ou séparer en 'city' et 'state'
+    private String postalCode;
+    // --------------------------------------------------
+
     @OneToMany(mappedBy = "users")
     private List<Sale> sales;
 
