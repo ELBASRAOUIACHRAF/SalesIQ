@@ -11,4 +11,7 @@ public interface BasketService {
 
     boolean addToBasket(Long productId, Long basketId, Long quantity);
 
+    Long getBasketItemsCount(Long basketId);
+
+    boolean deleteItem(Long basketItemId);
 }

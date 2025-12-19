@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface BasketItemRepository extends JpaRepository<BasketItem, Long> {
 
     Optional<BasketItem> findByBasketIdAndProductId(Long basketId, Long productId);
+
+    Long countByBasketId(Long basketId);
 }

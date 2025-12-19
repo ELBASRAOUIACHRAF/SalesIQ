@@ -5,6 +5,7 @@ import com.ensa.achrafkarim.backend.dto.BasketItemDto;
 import com.ensa.achrafkarim.backend.entities.BasketItem;
 import com.ensa.achrafkarim.backend.service.BasketService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,4 +31,15 @@ public class BasketRestController {
         return basketService.addToBasket(productId, basketId, quantity);
     }
 
+    @GetMapping("/itemscount/{basketId}")
+    public Long getBasketItemsCount(@PathVariable Long basketId) {
+        return basketService.getBasketItemsCount(basketId);
+    }
+
+    @DeleteMapping("/deleteBasketItem")
+    public boolean deleteFromBasket(
+            @RequestParam Long basketItemId) {
+
+        return basketService.deleteItem(basketItemId);
+    }
 }

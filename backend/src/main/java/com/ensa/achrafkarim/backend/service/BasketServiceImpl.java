@@ -80,5 +80,19 @@ public class BasketServiceImpl implements BasketService {
         return true;
     }
 
+    @Override
+    public Long getBasketItemsCount(Long basketId) {
+        return basketItemRepository.countByBasketId(basketId);
+    }
+
+    @Override
+    public boolean deleteItem(Long basketItemId) {
+
+        BasketItem item = basketItemRepository.findById(basketItemId).orElseThrow(() -> new RuntimeException("Product not found in basket"));
+
+        basketItemRepository.delete(item);
+        return true;
+    }
+
 
 }
