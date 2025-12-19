@@ -27,6 +27,8 @@ import java.time.YearMonth;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.ensa.achrafkarim.backend.client.FastApiClient;  // ← ADD THIS
+
 @Service
 @Transactional
 @Data
@@ -41,6 +43,8 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
     SearchHistoryService searchHistoryService;
     SoldProductService  soldProductService;
     ProductService  productService;
+
+    private final FastApiClient fastApiClient;  // ← ADD THIS
 
 
     private LocalDateTime truncateDate(LocalDateTime date, TimeGranularity timeGranularity) {
@@ -296,6 +300,47 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
         dto.setSeasonalityType(seasonalityType);
 
         return dto;
+    }
+
+    @Override
+    public SalesForecastDto forecastSales(int daysAhead) {
+
+        List<Object[]> rawData = saleRepository.findAllSalesWithTotals();
+
+        Map<LocalDate, Double> dailySales = rawData.stream()
+                .collect(Collectors.groupingBy(
+                        row -> {
+                            Object dateObj = row[0];
+                            if (dateObj instanceof LocalDate) {
+                                return (LocalDate) dateObj;
+                            } else if (dateObj instanceof LocalDateTime) {
+                                return ((LocalDateTime) dateObj).toLocalDate();
+                            }
+                            throw new IllegalStateException("Unexpected date type");
+                        },
+                        // Sum the sales amounts from row[1]
+                        Collectors.summingDouble(row -> ((Number) row[1]).doubleValue())
+                ));
+
+        // Step 3: Convert Map to sorted List of ForecastPointDto (historical data)
+        List<ForecastPointDto> historicalSeries =
+                dailySales.entrySet().stream()
+                        // Sort by date ascending
+                        .sorted(Map.Entry.comparingByKey())
+                        // Create DTO with date and actual sales
+                        .map(e -> new ForecastPointDto(e.getKey(), e.getValue()))
+                        .toList();
+
+        // Create DTO that contains the historical data
+        SalesForecastDto requestDto = new SalesForecastDto();
+        requestDto.setModel("ARIMA");
+        requestDto.setForecast(historicalSeries);
+        requestDto.setDaysAhead(daysAhead);
+
+        // Step 5: Call FastAPI service
+        SalesForecastDto forecastResponse = fastApiClient.getForecast(requestDto);
+
+        return forecastResponse;
     }
 
     @Override

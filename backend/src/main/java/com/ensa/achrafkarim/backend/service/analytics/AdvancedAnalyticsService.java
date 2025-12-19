@@ -39,7 +39,7 @@ AdvancedAnalyticsService {
      * Prévision des ventes futures (Sales Forecasting)
      * Utilise des modèles de séries temporelles (ARIMA, Moving Average)
      */
-    //SalesForecastDto forecastSales(int daysAhead);
+    SalesForecastDto forecastSales(int daysAhead);
 
     /**
      * Analyse de cohort (Cohorte Analysis)
