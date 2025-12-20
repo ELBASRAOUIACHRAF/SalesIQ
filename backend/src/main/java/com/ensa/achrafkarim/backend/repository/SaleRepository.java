@@ -23,4 +23,11 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     group by s.dateOfSale
 """)
     List<Object[]> findAllSalesWithTotals();
+
+    @Query("""
+        SELECT s.users.id, s.users.username, COUNT(s)
+        FROM Sale s
+        GROUP BY s.users.id, s.users.username
+    """)
+    List<Object[]> countSalesByUser();
 }

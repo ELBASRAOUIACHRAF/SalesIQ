@@ -387,6 +387,31 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
     }
 
     @Override
+    public List<PurchaseFrequencyAnalysisDto> analyzePurchaseFrequency(){
+
+        List<Object[]> results = saleRepository.countSalesByUser();
+        List<PurchaseFrequencyAnalysisDto> analysis = new ArrayList<>();
+
+        for (Object[] row : results) {
+            Long userId = (Long) row[0];
+            String username = (String) row[1];
+            Long totalSales = (Long) row[2];
+
+            double avgPerMonth = (double) totalSales / 12 ;
+
+            analysis.add(
+                    new PurchaseFrequencyAnalysisDto(
+                            userId,
+                            username,
+                            totalSales,
+                            avgPerMonth
+                    )
+            );
+        }
+        return analysis ;
+    }
+
+    @Override
     public ABCAnalysisDto performABCAnalysis() {
 
         List<Sale> sales = saleRepository.findAll();

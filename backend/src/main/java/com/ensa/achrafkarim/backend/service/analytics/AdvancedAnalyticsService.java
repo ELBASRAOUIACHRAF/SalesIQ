@@ -55,7 +55,7 @@ AdvancedAnalyticsService {
     /**
      * Analyse de la fréquence d'achat par client
      */
-    //PurchaseFrequencyAnalysisDto analyzePurchaseFrequency();
+    public List<PurchaseFrequencyAnalysisDto> analyzePurchaseFrequency();
 
     // ========================================
     // 2. ANALYSES DE PRODUITS (PRODUCT ANALYTICS)
