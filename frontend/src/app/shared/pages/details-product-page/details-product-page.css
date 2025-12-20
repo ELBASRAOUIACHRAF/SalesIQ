@@ -1,0 +1,64 @@
+.page-container {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+  }
+  
+  /* Layout principal du produit */
+  .product-main-layout {
+    display: grid;
+    grid-template-columns: 40% 35% 25%; /* Répartition type Amazon */
+    gap: 30px;
+    margin-bottom: 40px;
+  }
+  
+  /* Rendre la carte d'achat fixe lors du scroll */
+  .col-buy {
+    position: sticky;
+    top: 20px;
+    align-self: start;
+  }
+  
+  .section-divider {
+    border: 0;
+    border-top: 1px solid #e7e7e7;
+    margin: 40px 0;
+  }
+  
+  /* Layout des avis */
+  .reviews-layout {
+    display: flex;
+    gap: 50px;
+  }
+  
+  .col-rating-stats {
+    flex: 0 0 300px; /* Largeur fixe pour les stats d'étoiles */
+  }
+  
+  .col-reviews-list {
+    flex: 1;
+  }
+  
+  /* --- RESPONSIVE --- */
+  @media (max-width: 1200px) {
+    .product-main-layout {
+      grid-template-columns: 50% 50%;
+    }
+    .col-buy {
+      grid-column: span 2;
+      position: static;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .product-main-layout {
+      grid-template-columns: 100%;
+    }
+    .col-buy, .col-details, .col-images {
+      grid-column: span 1;
+    }
+    .reviews-layout {
+      flex-direction: column;
+    }
+  }

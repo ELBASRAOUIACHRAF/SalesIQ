@@ -1,0 +1,98 @@
+<div *ngIf="filteredProducts.length === 0" class="no-products-message">
+  <p>Aucun produit ne correspond aux filtres sélectionnés.</p>
+</div>
+
+<div class="product-grid" *ngIf="filteredProducts.length > 0">
+  <div class="product-card" *ngFor="let product of paginatedProducts">
+
+        <button (click)="onAddToWishlist(product)" class="wishlist-button">
+            <mat-icon>favorite_border</mat-icon>
+        </button>
+
+
+
+        <div class="product-image-container" [routerLink]="['/product', product.id]" style="cursor: pointer;">
+        
+          <div *ngIf="product.discount > 0" class="discount-badge">
+            -{{ product.discount }}%
+          </div>
+          <img [src]="product.imageUrl" [alt]="product.name" class="product-image">
+        
+      </div>
+        <div class="product-details">
+          <h2 class="product-name" [routerLink]="['/product', product.id]" style="cursor: pointer;">
+            {{ product.name }}
+        </h2>
+      
+          <p class="product-options">Options: {{ product.optionsText }}</p>
+      
+          <div class="product-rating" [title]="(product.rating | number:'1.1-1') + ' / 5'">
+            <mat-icon *ngFor="let i of [1,2,3,4,5] | slice:0:fullStars(product.rating)" class="star">
+              star
+            </mat-icon>
+          
+            <mat-icon *ngIf="hasHalfStar(product.rating)" class="star">
+              star_half
+            </mat-icon>
+          
+            <mat-icon *ngFor="let i of [1,2,3,4,5] | slice:0:(5 - fullStars(product.rating) - (hasHalfStar(product.rating) ? 1 : 0))" class="star empty">
+              star_outline
+            </mat-icon>
+          
+            <span class="review-count">({{ product.reviewsCount }})</span>
+          </div>
+          
+          <p class="product-purchase-count">{{ product.purchaseCount }}</p>
+      
+          <div class="product-price-section">
+            <ng-container *ngIf="product.discount > 0; else noDiscount">
+                <span class="current-price discounted">
+                  ${{ product.price | number:'1.2-2' }}
+                </span>
+                <span class="list-price">
+                    ${{ product.price / (1 - product.discount / 100) | number:'1.2-2' }}
+                  </span>
+              </ng-container>
+
+              <ng-template #noDiscount>
+                <span class="current-price">
+                  ${{ product.price | number:'1.2-2' }}
+                </span>
+              </ng-template>
+
+          </div>
+
+          <p class="stock-status" [ngClass]="{'in-stock': product.stock > 10, 'low-stock': product.stock <= 10 && product.stock > 0, 'out-of-stock': product.stock === 0}">
+            <span *ngIf="product.stock > 10">En stock</span>
+            <span *ngIf="product.stock <= 10 && product.stock > 0">Plus que {{ product.stock }} articles !</span>
+            <span *ngIf="product.stock === 0">Rupture de stock</span>
+          </p>
+      
+          <button (click)="onAddToCart(product)" class="add-to-cart-button" [disabled]="product.stock === 0">
+            {{ product.stock === 0 ? 'Indisponible' : 'Add to cart' }}
+          </button>
+        </div>
+      </div>
+</div>
+
+<div class="pagination-container" *ngIf="totalPages > 1 && filteredProducts.length > 0">
+  <button
+    class="page-button"
+    (click)="goToPage(currentPage - 1)"
+    [disabled]="currentPage === 1"
+  >
+    Précédent
+  </button>
+
+  <span class="page-info">
+    Page {{ currentPage }} / {{ totalPages }}
+  </span>
+
+  <button
+    class="page-button"
+    (click)="goToPage(currentPage + 1)"
+    [disabled]="currentPage === totalPages"
+  >
+    Suivant
+  </button>
+</div>

@@ -1,0 +1,110 @@
+
+.page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+  }
+  
+  /* --- SECTION PRODUIT (3 COLONNES) --- */
+  .product-main-layout {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    align-items: flex-start; /* Aligne tout en haut */
+    margin-bottom: 40px;
+  }
+  
+  .col-images {
+    flex: 0 0 40%; /* Prend 40% de la largeur */
+  }
+  
+  .col-details {
+    flex: 1; /* Prend l'espace restant au centre */
+  }
+  
+  .col-buy {
+    flex: 0 0 280px; /* Largeur fixe pour la carte de paiement */
+  }
+  
+  /* --- SÉPARATEUR --- */
+  .section-divider {
+    border: 0;
+    border-top: 1px solid #e2e8f0;
+    margin: 40px 0;
+  }
+  
+  /* --- SECTION AVIS (2 COLONNES) --- */
+  .reviews-layout {
+    display: flex;
+    flex-direction: row;
+    gap: 50px;
+  }
+  
+  .col-rating-stats {
+    flex: 0 0 320px; /* Largeur du composant Customer Reviews */
+  }
+  
+  .col-reviews-list {
+    flex: 1; /* Liste des commentaires à droite */
+  }
+  
+  /* --- RESPONSIVE (Passage en une seule colonne sur mobile) --- */
+  @media (max-width: 1024px) {
+    .product-main-layout, .reviews-layout {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .col-images, .col-details, .col-buy, .col-rating-stats, .col-reviews-list {
+      width: 100%;
+      flex: none;
+    }
+  }
+
+
+
+
+
+
+
+
+
+  .basket-page-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+    max-width: 1500px; /* Largeur maximale pour éviter l'étirement sur très grands écrans */
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #eaeded; /* Fond gris clair type Amazon */
+    align-items: flex-start;
+  }
+  
+  .basket-content {
+    flex: 3; /* Occupe environ 75% de l'espace */
+    min-width: 0; /* Évite les débordements de flexbox */
+  }
+  
+  .recommendations-column {
+    flex: 1; /* Occupe environ 25% de l'espace */
+    position: sticky;
+    top: 20px; /* Garde les recommandations visibles lors du défilement */
+  }
+  
+  /* --- RESPONSIVE : Passage en colonne sur tablettes et mobiles --- */
+  @media (max-width: 1024px) {
+    .basket-page-wrapper {
+      flex-direction: column;
+      padding: 10px;
+    }
+  
+    .recommendations-column {
+      width: 100%;
+      position: static; /* Désactive le sticky sur mobile pour un défilement naturel */
+    }
+  
+    .basket-content {
+      width: 100%;
+    }
+  }

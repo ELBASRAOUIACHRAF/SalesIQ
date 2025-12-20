@@ -1,0 +1,65 @@
+/* --- Configuration globale du composant --- */
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Force le footer en bas */
+  background-color: #eaeded; /* Gris clair typique E-commerce */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* --- Conteneur Principal --- */
+.basket-page-wrapper {
+  flex: 1; /* Prend tout l'espace disponible */
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+  max-width: 1600px; /* Limite la largeur sur les très grands écrans */
+  margin: 0 auto;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+/* --- Zone du Panier (Gauche) --- */
+.basket-content {
+  flex: 1; /* Prend tout l'espace restant */
+  min-width: 0; /* Évite les bugs de débordement flexbox */
+  max-width: 1200px;
+}
+
+/* --- Colonne de Recommandations (Droite) --- */
+.recommendations-column {
+  width: 300px; /* Largeur fixe standard pour une sidebar */
+  flex-shrink: 0; /* Empêche la sidebar de rétrécir */
+  position: sticky; /* Reste visible au scroll */
+  top: 24px;
+  height: fit-content;
+}
+
+/* --- Responsive : Tablettes et Petits Laptops (< 1200px) --- */
+@media (max-width: 1200px) {
+  .basket-page-wrapper {
+    flex-direction: column; /* On empile verticalement */
+    align-items: center;
+  }
+
+  .basket-content {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .recommendations-column {
+    width: 100%; /* La sidebar prend toute la largeur */
+    max-width: 100%;
+    margin-top: 20px;
+    position: static; /* On désactive le sticky car elle est en bas */
+  }
+}
+
+/* --- Responsive : Mobiles (< 600px) --- */
+@media (max-width: 600px) {
+  .basket-page-wrapper {
+    padding: 10px; /* Marges réduites sur mobile */
+    gap: 15px;
+  }
+}

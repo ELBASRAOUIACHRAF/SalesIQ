@@ -1,0 +1,48 @@
+
+@if (ratingsStats) {
+<div class="rating-details-container">
+    <h2 class="section-title">Customer reviews</h2>
+    
+    <div class="overall-rating">
+      <div class="stars">
+        <mat-icon *ngFor="let s of [1,2,3,4,5]" 
+                  [ngClass]="{'active': s <= Math.round(ratingsStats.averageRating)}">
+          star
+        </mat-icon>
+      </div>
+      <span class="rating-text">{{ ratingsStats.averageRating | number }} out of 5</span>
+    </div>
+  
+    <p class="global-count">{{ ratingsStats.totalRatings | number }} global ratings</p>
+  
+    <div class="stats-list">
+      <div class="stat-item" *ngFor="let stat of ratingsStats.percentages">
+        <span class="star-label">{{ stat.stars }} star</span>
+        <div class="progress-bar-container">
+          <div class="progress-fill" [style.width.%]="stat.percentage"></div>
+        </div>
+        <span class="percentage-label">{{ stat.percentage }}%</span>
+      </div>
+    </div>
+  
+    <div class="how-it-works">
+      <button mat-button color="primary">
+        How customer reviews and ratings work
+        <mat-icon>expand_more</mat-icon>
+      </button>
+    </div>
+  
+    <mat-divider></mat-divider>
+  
+    <div class="write-review-section">
+      <h3>Review this product</h3>
+      <p>Share your thoughts with other customers</p>
+      <button mat-stroked-button class="btn-write" (click)="onWriteReview()">
+        Write a customer review
+      </button>
+    </div>
+  </div>
+
+} @else {
+  <div class="loading-spinner">Calcul des statistiques en cours...</div>
+}

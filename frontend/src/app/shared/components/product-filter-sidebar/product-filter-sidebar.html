@@ -1,0 +1,93 @@
+<aside class="filter-sidebar">
+
+    <!-- CATEGORIES -->
+    <section class="filter-section">
+      <h4>Categories</h4>
+      <div *ngFor="let category of visibleCategories">
+        <label class="checkbox">
+          <input type="checkbox"
+                 [checked]="isCategorySelected(category)"
+                 (change)="toggleArrayFilter('categories', category, $event)">
+          {{ category.name }}
+        </label>
+      </div>
+      <a *ngIf="shouldShowCategoriesSeeMore" 
+         class="see-more" 
+         (click)="toggleCategoriesVisibility()">
+        {{ showAllCategories ? 'See less' : 'See more' }}
+      </a>
+    </section>
+  
+    <!-- BRANDS -->
+    <section class="filter-section">
+      <h4>Brands</h4>
+      <div *ngFor="let brand of visibleBrands">
+        <label class="checkbox">
+          <input type="checkbox"
+                 [checked]="isBrandSelected(brand)"
+                 (change)="toggleArrayFilter('brands', brand, $event)">
+          {{ brand }}
+        </label>
+      </div>
+      <a *ngIf="shouldShowBrandsSeeMore" 
+         class="see-more" 
+         (click)="toggleBrandsVisibility()">
+        {{ showAllBrands ? 'See less' : 'See more' }}
+      </a>
+    </section>
+  
+    <!-- PRICE -->
+    <section class="filter-section">
+      <h4>Price</h4>
+      
+      <div class="price-filter">
+        <p class="price-display">${{ filterState.priceMin }} – ${{ filterState.priceMax }}</p>
+        
+        <mat-slider
+          min="0"
+          max="10600"
+          step="100"
+          (input)="onPriceChange()"
+          (change)="onPriceChange()"
+          class="price-slider">
+          <input matSliderStartThumb [(ngModel)]="filterState.priceMin">
+          <input matSliderEndThumb [(ngModel)]="filterState.priceMax">
+        </mat-slider>
+      </div>
+  
+      <ul class="price-ranges">
+        <li *ngFor="let range of priceRanges">
+          <a (click)="selectPriceRange(range)" class="price-range-link">
+            {{ range.label }}
+          </a>
+        </li>
+      </ul>
+    </section>
+  
+    <!-- DEALS -->
+    <section class="filter-section">
+      <h4>Deals & Discounts</h4>
+      <a class="filter-link">All Discounts</a>
+      <a class="filter-link">Today's Deals</a>
+    </section>
+  
+    <!-- REVIEWS -->
+    <section class="filter-section">
+      <h4>Customer Reviews</h4>
+      <div class="rating-filter"
+           *ngFor="let r of availableRatings"
+           [class.selected]="isRatingSelected(r)"
+           (click)="setRating(r)">
+        <span class="stars">{{ getStarsForRating(r) }}</span>
+        <span>& Up</span>
+      </div>
+    </section>
+  
+    <!-- RESET BUTTON (Optionnel mais recommandé) -->
+    <section class="filter-section">
+      <button class="reset-button" (click)="resetFilters()">
+        Reset All Filters
+      </button>
+    </section>
+  
+  </aside>

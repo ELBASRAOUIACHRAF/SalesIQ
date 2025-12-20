@@ -1,0 +1,43 @@
+@if (productReviews && productReviews.length > 0) {
+  @for (rev of productReviews; track rev.id) {
+    <div class="review-card">
+      <div class="user-info">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQf1fiSQO7JfDw0uv1Ae_Ye-Bo9nhGNg27dwg&s" 
+             alt="avatar" class="avatar">
+        <span class="username">{{ rev.userName || 'Anonymous' }}</span>
+      </div>
+    
+      <div class="rating-row">
+        <div class="stars">
+          <mat-icon *ngFor="let star of [1,2,3,4,5]" 
+                    [ngClass]="{'active': star <= rev.rating}">
+            star
+          </mat-icon>
+        </div>
+        <span class="review-title">Verified Review</span>
+      </div>
+    
+      <div class="meta-info">
+        Reviewed on {{ rev.reviewDate | date:'MMMM d, y' }}
+      </div>
+      
+      <div class="purchase-status">
+        <span class="verified">Verified Purchase</span>
+      </div>
+    
+      <p class="comment-text">
+        {{ rev.comment }}
+      </p>
+    
+      <div class="actions">
+        <div class="button-group">
+          <button mat-stroked-button class="btn-helpful">Helpful</button>
+          <span class="divider">|</span>
+          <button mat-button class="btn-report">Report</button>
+        </div>
+      </div>
+    </div>
+  }
+} @else {
+  <p class="no-reviews">No reviews found for this product.</p>
+}

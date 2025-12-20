@@ -1,0 +1,102 @@
+.main-footer {
+    background-color: #1a242f; /* Bleu foncé assorti à votre header */
+    color: #ffffff;
+    padding: 60px 0 20px 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-top: 50px;
+  }
+  
+  .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 2fr;
+    gap: 40px;
+    padding: 0 20px;
+  }
+  
+  .footer-column h3 {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    font-weight: 600;
+    position: relative;
+  }
+  
+  .footer-column ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .footer-column ul li {
+    margin-bottom: 12px;
+  }
+  
+  .footer-column ul li a {
+    color: #bdc3c7;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .footer-column ul li a:hover {
+    color: #ffc107; /* Jaune assorti à vos boutons 'Add to cart' */
+  }
+  
+  /* Newsletter */
+  .newsletter-form {
+    display: flex;
+    margin-top: 15px;
+  }
+  
+  .newsletter-form input {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px 0 0 4px;
+    flex: 1;
+  }
+  
+  .btn-subscribe {
+    background-color: #ffc107; /* Couleur jaune de vos boutons existants */
+    border: none;
+    color: #000;
+    padding: 10px 20px;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  /* Bottom footer */
+  .footer-divider {
+    border: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 40px 0 20px 0;
+  }
+  
+  .footer-bottom {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    color: #95a5a6;
+    font-size: 0.9rem;
+  }
+
+  .payment-icons {
+    display: flex;
+    align-items: center;
+    gap: 16px;              /* espace entre les logos */
+  }
+  
+  .payment-icons img {
+    height: 25px;
+    margin-left: 15px;
+    filter: grayscale(1) brightness(1.5);
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .footer-container {
+      grid-template-columns: 1fr 1fr;
+    }
+  }

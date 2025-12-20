@@ -1,0 +1,74 @@
+<nav class="navbar-container">
+
+    <div class="main-header">
+      <div class="content-wrapper">
+        <div class="header-left">
+          <div class="logo" routerLink="/">
+            <span class="logo-text">SalesIQ</span> 
+          </div>
+          <ul class="top-nav-links">
+            <li *ngFor="let link of topNavLinks">
+              <a [routerLink]="link.route">{{ link.label }}</a>
+            </li>
+          </ul>
+        </div>
+  
+        <div class="search-bar-container">
+          <input type="text" placeholder="Search for products, brands and more" class="search-input">
+          <button class="search-icon">
+            <mat-icon>search</mat-icon>
+          </button>
+        </div>
+  
+        <div class="action-icons">
+            <a routerLink="/account" class="icon-link">
+              <mat-icon>person</mat-icon>
+            </a>
+          
+            <a routerLink="/wishlist" class="icon-link">
+              <mat-icon>favorite_border</mat-icon>
+            </a>
+          
+            <a routerLink="/cart" class="icon-link cart-icon">
+              <mat-icon>shopping_cart</mat-icon>
+              @if (cartCount > 0) {
+                <span class="cart-count">{{ cartCount }}</span>
+              }
+            </a>
+          </div>
+      </div>
+    </div>
+  
+    <div class="secondary-nav-bar">
+      <div class="content-wrapper">
+        <ul class="main-nav-links">
+          @for (link of mainNavLinks; track link.label) {
+            <li [class.has-dropdown]="link.hasDropdown" 
+                [class.megamenu-active]="link.label === 'Megamenu' && isMegamenuOpen">
+              
+              <a [routerLink]="link.route" (click)="link.label === 'Megamenu' ? toggleMegamenu($event) : null">
+                {{ link.label }}
+                @if (link.hasDropdown) {
+                  <span class="dropdown-arrow">▼</span>
+                }
+              </a>
+              
+              @if (link.label === 'Megamenu' && isMegamenuOpen) {
+                <div class="megamenu-dropdown">
+                  <h5 style="margin-top:0">Quick Access</h5>
+                  <ul>
+                    <li><a href="#">New Arrivals</a></li>
+                    <li><a href="#">Best Sellers</a></li>
+                    <li><a href="#">Discounted Items</a></li>
+                  </ul>
+                </div>
+              }
+            </li>
+          }
+        </ul>
+        
+        <span class="shipping-info">Free Shipping on Orders up to $50</span>
+      </div>
+    </div>
+    
+  </nav>

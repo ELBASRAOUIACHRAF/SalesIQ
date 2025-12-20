@@ -1,0 +1,29 @@
+<div class="dialog-container">
+    <div class="dialog-header">
+      <div>
+        <h2 mat-dialog-title>{{ data.title }}</h2>
+        <p class="subtitle">Update your details to keep your profile up-to-date.</p>
+      </div>
+      <button mat-icon-button (click)="onClose()" class="close-btn">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  
+    <mat-dialog-content [formGroup]="editForm">
+      <div class="form-grid">
+        <div *ngFor="let field of data.fields" 
+             [class.full-width]="field.fullWidth" 
+             class="form-field-wrapper">
+          <label [for]="field.name">{{ field.label }}</label>
+          <mat-form-field appearance="outline">
+            <input matInput [formControlName]="field.name" [id]="field.name" [placeholder]="field.placeholder">
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-dialog-content>
+  
+    <mat-dialog-actions align="end">
+      <button mat-button class="btn-secondary" (click)="onClose()">Close</button>
+      <button mat-raised-button color="primary" class="btn-primary" (click)="onSave()">Save Changes</button>
+    </mat-dialog-actions>
+  </div>

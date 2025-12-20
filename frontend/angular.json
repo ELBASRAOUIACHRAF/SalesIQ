@@ -3,11 +3,11 @@
   "version": 1,
   "cli": {
     "packageManager": "npm",
-    "analytics": false
+    "analytics": "ae47724e-b117-4638-bcaf-d1882e03c45d"
   },
   "newProjectRoot": "projects",
   "projects": {
-    "frontend": {
+    "user_page_front": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -27,7 +27,12 @@
             ],
             "styles": [
               "src/styles.css"
-            ]
+            ],
+            "server": "src/main.server.ts",
+            "outputMode": "server",
+            "ssr": {
+              "entry": "src/server.ts"
+            }
           },
           "configurations": {
             "production": {
@@ -57,10 +62,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "frontend:build:production"
+              "buildTarget": "user_page_front:build:production"
             },
             "development": {
-              "buildTarget": "frontend:build:development"
+              "buildTarget": "user_page_front:build:development"
             }
           },
           "defaultConfiguration": "development"

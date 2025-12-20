@@ -1,0 +1,140 @@
+@if (profileModel) {
+<div class="profile-container">
+    <h2>Profile</h2>
+  
+    <!-- ================= HEADER ================= -->
+    <mat-card class="info-card header-section">
+      <div class="user-main-info">
+        <img
+          src="https://i.pravatar.cc/300?img=12"
+          alt="Profile Picture"
+          class="avatar"
+        />
+  
+        <div class="name-role">
+          <h3>{{ profileModel.firstName }} {{ profileModel.lastName }}</h3>
+          <p>
+            {{ profileModel.role | titlecase }}
+            <span *ngIf="profileModel.city">
+              | {{ profileModel.city }}
+            </span>
+          </p>
+        </div>
+      </div>
+  
+      <div class="actions-group">
+        <div class="social-links"> 
+            <a href="facebook" class="social-item"><mat-icon>facebook</mat-icon></a> 
+            <a href="twitter" class="social-item x-logo"> <svg viewBox="0 0 24 24" width="18px"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.045 4.126H5.078z"/></svg> </a> 
+            <a href="linkedin" class="social-item"><mat-icon>linkedin</mat-icon></a> 
+            <a href="instagram" class="social-item"><mat-icon>camera_alt</mat-icon></a> 
+        </div>
+  
+        <button mat-stroked-button (click)="onEdit('personal')">
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
+      </div>
+    </mat-card>
+  
+    <!-- ================= PERSONAL INFO ================= -->
+    <mat-card class="info-card">
+      <div class="card-header">
+        <h4>Personal Information</h4>
+        <button mat-stroked-button (click)="onEdit('personal')">
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
+      </div>
+  
+      <div class="grid-layout">
+        <div class="info-group">
+          <label>profileModelname</label>
+          <p>{{ profileModel.username || '—' }}</p>
+        </div>
+  
+        <div class="info-group">
+          <label>Email</label>
+          <p>{{ profileModel.email || '—' }}</p>
+        </div>
+  
+        <div class="info-group">
+          <label>Phone</label>
+          <p>{{ profileModel.phoneNumber || '—' }}</p>
+        </div>
+  
+        <div class="info-group">
+          <label>Role</label>
+          <p>{{ profileModel.role | titlecase }}</p>
+        </div>
+  
+        <div class="info-group full-width">
+          <label>Bio</label>
+          <p>{{ profileModel.bio || 'No bio provided.' }}</p>
+        </div>
+      </div>
+    </mat-card>
+  
+    <!-- ================= ACCOUNT ACTIVITY ================= -->
+    <mat-card class="info-card">
+      <div class="card-header">
+        <h4>Account Activity</h4>
+      </div>
+  
+      <div class="grid-layout">
+        <div class="info-group">
+          <label>Hours Logged</label>
+          <p>{{ profileModel.hoursLoggedIn }} h</p>
+        </div>
+  
+        <div class="info-group">
+          <label>Last Login</label>
+          <p>{{ profileModel.lastLogin | date:'medium' }}</p>
+        </div>
+  
+        <div class="info-group">
+          <label>Created At</label>
+          <p>{{ profileModel.createdAt | date:'mediumDate' }}</p>
+        </div>
+  
+        <div class="info-group">
+          <label>Last Update</label>
+          <p>{{ profileModel.updatedAt | date:'mediumDate' }}</p>
+        </div>
+      </div>
+    </mat-card>
+  
+    <!-- ================= ADDRESS ================= -->
+    <mat-card class="info-card" *ngIf="profileModel">
+      <div class="card-header">
+        <h4>Address</h4>
+        <button mat-stroked-button (click)="onEdit('address')">
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
+      </div>
+  
+      <div class="grid-layout">
+        <div class="info-group">
+          <label>Country</label>
+          <p>{{ profileModel.country || '—' }}</p>
+        </div>
+  
+        <div class="info-group">
+          <label>City </label>
+          <p>{{ profileModel.city || '—' }}</p>
+        </div>
+  
+        <div class="info-group">
+          <label>Postal Code</label>
+          <p>{{ profileModel.postalCode || '—' }}</p>
+        </div>
+  
+      </div>
+    </mat-card>
+  </div>
+} @else {
+  <div class="loading-spinner">
+    <p>Chargement du profil...</p>
+  </div>
+} 
