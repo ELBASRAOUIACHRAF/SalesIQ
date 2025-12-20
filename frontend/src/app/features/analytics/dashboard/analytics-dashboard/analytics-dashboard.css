@@ -1,3 +1,19 @@
+
+.dashboard-shell {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	min-height: 100vh;
+	background: #f3f4f6;
+}
+
+.dashboard-nav {
+	position: sticky;
+	top: 0;
+	align-self: start;
+	height: 100vh;
+	z-index: 50;
+}
+
 .dashboard-layout {
 	display: block;
 	padding: 1.5rem;
@@ -160,6 +176,15 @@
 }
 
 @media (max-width: 1000px) {
+	.dashboard-shell {
+		grid-template-columns: 1fr;
+	}
+
+	.dashboard-nav {
+		position: static;
+		height: auto;
+	}
+
 	.dashboard-layout {
 		padding: 1rem;
 	}
@@ -190,6 +215,10 @@
 }
 
 @media (max-width: 768px) {
+	.dashboard-shell {
+		grid-template-columns: 1fr;
+	}
+
 	.dashboard-layout {
 		padding: 0.75rem;
 	}
