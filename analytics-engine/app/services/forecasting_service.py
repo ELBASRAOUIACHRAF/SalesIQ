@@ -1,7 +1,10 @@
+from typing import List
 import pandas as pd
 from datetime import timedelta
+from sklearn.cluster import KMeans
 # REMOVE statsmodels import from here
 from app.api.models.salesforecast_model import (
+    CustomerData,
     SalesForecastRequest,
     SalesForecastResponse,
     ForecastPoint
@@ -90,3 +93,41 @@ def _simple_average_forecast(
         model=f"{model_name} (fallback: Simple Average)",
         forecast=forecast_points
     )
+
+
+# --- LOGIQUE DE SEGMENTATION (K-MEANS) ---
+def segment_customers(self, customers: List[CustomerData], n_segments: int):
+        
+    df = pd.DataFrame([c.model_dump() for c in customers])
+        
+    if df.empty or len(df) < n_segments:
+        return []
+
+        # Entraînement sur TOUTES les features sauf l'ID
+    X = df.drop(columns=['usersId'])
+    X = X.fillna(0) # Sécurité pour les divisions par zéro de Java
+
+    model = KMeans(n_clusters=n_segments, random_state=42, n_init='auto')
+    df['segment'] = model.fit_predict(X)
+
+        # Identification des segments
+    profiles = df.groupby('segment')['totalSpent'].mean()
+    vip_idx = profiles.idxmax()
+    low_idx = profiles.idxmin()
+
+    def label_mapping(s):
+        if s == vip_idx: return 'VIP'
+        if s == low_idx: return 'LOW_ENGAGEMENT'
+        return 'ACTIVE_BUYER'
+
+    df['segment_label'] = df['segment'].apply(label_mapping)
+
+        # Formatage du retour
+    results = []
+    for label, group in df.groupby('segment_label'):
+        results.append({
+                "segmentId": label,
+                "customerIds": group['usersId'].tolist(),
+                "description": f"{label} - {len(group)} clients"
+        })
+    return results

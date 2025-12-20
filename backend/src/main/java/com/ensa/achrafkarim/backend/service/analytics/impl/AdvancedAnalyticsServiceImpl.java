@@ -17,6 +17,10 @@ import com.ensa.achrafkarim.backend.service.analytics.AdvancedAnalyticsService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.cglib.core.Local;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +32,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.ensa.achrafkarim.backend.client.FastApiClient;  // ← ADD THIS
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @Transactional
@@ -44,7 +49,8 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
     SoldProductService  soldProductService;
     ProductService  productService;
 
-    private final FastApiClient fastApiClient;  // ← ADD THIS
+    private final FastApiClient fastApiClient;
+    private final RestTemplate restTemplate;// ← ADD THIS
 
 
     private LocalDateTime truncateDate(LocalDateTime date, TimeGranularity timeGranularity) {
@@ -506,8 +512,17 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
             map.put("avgBasketSpent", totalSalesAmount/totalSales);
             data.add(map);
         }
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("n_segments", numberOfSegments);
+        requestBody.put("customers", data);
 
-        return List.of();
+        String url = "http://localhost:8000/api/v1/analytics/segment";
+        ResponseEntity<List<CustomerSegmentDto>> response = restTemplate.exchange(
+                url, HttpMethod.POST, new HttpEntity<>(requestBody),
+                new ParameterizedTypeReference<List<CustomerSegmentDto>>() {}
+        );
+
+        return response.getBody();
     }
 
     @Override
