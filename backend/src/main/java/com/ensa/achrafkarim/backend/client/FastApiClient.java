@@ -1,6 +1,8 @@
 package com.ensa.achrafkarim.backend.client;
 
 import com.ensa.achrafkarim.backend.dto.analyticsDto.SalesForecastDto;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,7 +24,7 @@ public class FastApiClient {
     }
 
     public SalesForecastDto getForecast(SalesForecastDto request) {
-        String url = fastApiBaseUrl + "/forecast";
+        String url = fastApiBaseUrl + "/api/v1/analytics/forecastSales";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
