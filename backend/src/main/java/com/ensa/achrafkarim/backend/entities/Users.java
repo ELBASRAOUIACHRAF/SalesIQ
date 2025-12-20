@@ -1,6 +1,7 @@
 package com.ensa.achrafkarim.backend.entities;
 
 import com.ensa.achrafkarim.backend.enums.Role;
+import com.ensa.achrafkarim.backend.enums.Segment;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -35,6 +36,9 @@ public class Users {
     private String city; // Ou séparer en 'city' et 'state'
     private String postalCode;
     // --------------------------------------------------
+
+    @Enumerated(EnumType.STRING)
+    private Segment segment;
 
     @OneToMany(mappedBy = "users")
     private List<Sale> sales;

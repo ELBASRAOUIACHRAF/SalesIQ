@@ -97,7 +97,7 @@ def _simple_average_forecast(
 
 
 # --- LOGIQUE DE SEGMENTATION (K-MEANS) ---
-def segment_customers(self, customers: List[CustomerData], n_segments: int):
+def segment_customers(customers: List[CustomerData], n_segments: int):
         
     df = pd.DataFrame([c.model_dump() for c in customers])
         
@@ -127,8 +127,8 @@ def segment_customers(self, customers: List[CustomerData], n_segments: int):
     results = []
     for label, group in df.groupby('segment_label'):
         results.append({
-                "segmentId": label,
+                "segmentName": label,
                 "customerIds": group['usersId'].tolist(),
-                "description": f"{label} - {len(group)} clients"
+                "customerCount": len(group)
         })
     return results

@@ -4,6 +4,7 @@ import com.ensa.achrafkarim.backend.dto.ProfileDto;
 import com.ensa.achrafkarim.backend.dto.UsersDto;
 import com.ensa.achrafkarim.backend.entities.Users;
 import com.ensa.achrafkarim.backend.enums.Role;
+import com.ensa.achrafkarim.backend.enums.Segment;
 import com.ensa.achrafkarim.backend.mapper.UsersMapper;
 import com.ensa.achrafkarim.backend.repository.UsersRepository;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,13 @@ public class UsersServiceImpl implements UsersService{
     UsersRepository  usersRepository;
     UsersMapper  usersMapper;
 
+
+    @Override
+    public void updateUsersSegment(Long usersId, Segment segment) {
+        Users users = usersRepository.findById(usersId).get();
+        users.setSegment(segment);
+        usersRepository.save(users);
+    }
 
     @Override
     public UsersDto addUsers(UsersDto usersDto) {

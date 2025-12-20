@@ -37,4 +37,9 @@ public class AnalyticsController {
                     .body(null);
         }
     }
+
+    @GetMapping("/segmentCustomers")
+    public void segmentationOfCustomers(@RequestParam int nbSegments){
+        advancedAnalyticsService.segmentCustomers(nbSegments);
+    }
 }

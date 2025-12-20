@@ -3,12 +3,14 @@ package com.ensa.achrafkarim.backend.service;
 import com.ensa.achrafkarim.backend.dto.ProfileDto;
 import com.ensa.achrafkarim.backend.dto.UsersDto;
 import com.ensa.achrafkarim.backend.enums.Role;
+import com.ensa.achrafkarim.backend.enums.Segment;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface UsersService {
+    void updateUsersSegment(Long usersId, Segment segment);
     UsersDto addUsers(UsersDto usersDto);
     UsersDto updateUsers(UsersDto usersDto);
     void deleteUsers(Long usersId);

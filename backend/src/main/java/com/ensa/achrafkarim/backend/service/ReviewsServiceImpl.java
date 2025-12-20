@@ -132,6 +132,7 @@ public class ReviewsServiceImpl implements ReviewsService{
         for (ReviewsDto reviewsDto : reviewsDtoList) {
             somme +=  reviewsDto.getRating();
         }
+        if (reviewsDtoList.size() == 0) return 0;
         return somme/reviewsDtoList.size();
     }
 

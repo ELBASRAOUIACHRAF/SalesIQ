@@ -52,6 +52,8 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
     private final FastApiClient fastApiClient;
     private final RestTemplate restTemplate;// ← ADD THIS
 
+    private final UsersServiceImpl usersServiceImpl;
+
 
     private LocalDateTime truncateDate(LocalDateTime date, TimeGranularity timeGranularity) {
         switch(timeGranularity) {
@@ -546,6 +548,13 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
                 url, HttpMethod.POST, new HttpEntity<>(requestBody),
                 new ParameterizedTypeReference<List<CustomerSegmentDto>>() {}
         );
+        List<CustomerSegmentDto> segments = response.getBody();
+
+        for(CustomerSegmentDto segment : segments) {
+            for(Long usersId: segment.getCustomerIds()){
+                usersService.updateUsersSegment(usersId, segment.getSegmentName());
+            }
+        }
 
         return response.getBody();
     }

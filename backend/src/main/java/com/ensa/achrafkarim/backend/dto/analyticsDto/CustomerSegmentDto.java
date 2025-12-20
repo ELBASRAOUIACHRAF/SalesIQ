@@ -1,6 +1,7 @@
 package com.ensa.achrafkarim.backend.dto.analyticsDto;
 
 import com.ensa.achrafkarim.backend.dto.UsersDto;
+import com.ensa.achrafkarim.backend.enums.Segment;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,10 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerSegmentDto {
-    private String segmentName;
+    private Segment segmentName;
     private Long customerCount;
-    //private Double averageRevenue;
-    //private Double totalRevenue;
-    //private List<String> characteristics;
-    private List<UsersDto> customers;
+    private List<Long> customerIds;
 }
