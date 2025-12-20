@@ -528,18 +528,34 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
     @Override
     public List<ReviewsSentimentAnalysisDto> analyzeSentiment() {
         List<ProductDto> productDtoList = productService.listProducts();
+        List<Map<String, Object>> productsData = new ArrayList<>();
 
-        List<Map>  data = new ArrayList<>();
+
         for (ProductDto productDto : productDtoList) {
             Map<String,Object> map = new HashMap<>();
             Long productId = productDto.getId();
 
             map.put("productId", productId);
+
+            List<String> reviewTexts = reviewsService.getReviewsByProduct(productId)
+                                        .stream().map(reviewsDto -> reviewsDto.getComment()).toList();
             map.put("productReviews",  reviewsService.getReviewsByProduct(productId));
 
-            data.add(map);
+            productsData.add(map);
         }
 
-        return null;
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("products", productsData);
+
+        String url = "http://localhost:8000/api/v1/analytics/analyze-sentiment";
+
+        ResponseEntity<List<ReviewsSentimentAnalysisDto>> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                new HttpEntity<>(requestBody),
+                new ParameterizedTypeReference<List<ReviewsSentimentAnalysisDto>>() {}
+        );
+
+        return response.getBody();
     }
 }

@@ -28,3 +28,19 @@ class CustomerData(BaseModel):
 class SegmentationRequest(BaseModel):
     n_segments: int
     customers: List[CustomerData]
+
+class ProductReviews(BaseModel):
+    productId: int
+    productReviews: List[str]  
+
+class SentimentAnalysisRequest(BaseModel):
+    products: List[ProductReviews]
+
+class SentimentStats(BaseModel):
+    positive: int
+    negative: int
+    neutral: int
+
+class ProductSentimentResponse(BaseModel):
+    productId: int
+    sentimentStats: SentimentStats
