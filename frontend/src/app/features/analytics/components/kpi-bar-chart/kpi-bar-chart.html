@@ -1,0 +1,153 @@
+<div class="bar-kpi" role="group" [attr.aria-label]="title" [style.--accent-color]="color">
+  <div class="card-glow" [style.background]="color"></div>
+  
+  <div class="meta">
+    <div class="text">
+      <div class="title">{{ title }}</div>
+      <div class="subtitle" *ngIf="subtitle">{{ subtitle }}</div>
+    </div>
+    <div class="value">{{ formatValue() }}</div>
+  </div>
+
+  <div class="chart-wrap" *ngIf="bars.length">
+    <div class="chart-stats" *ngIf="stats">
+      <div class="stat-item">
+        <span class="stat-label">Total</span>
+        <span class="stat-value">{{ formatNumber(stats.total) }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Avg</span>
+        <span class="stat-value">{{ formatNumber(stats.avg) }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Peak</span>
+        <span class="stat-value">{{ formatNumber(stats.max) }}</span>
+      </div>
+      <div class="stat-item trend" [class.trend-up]="stats.trend === 'up'" [class.trend-down]="stats.trend === 'down'">
+        <span class="stat-label">Change</span>
+        <span class="stat-value">{{ stats.trend === 'up' ? '↑' : stats.trend === 'down' ? '↓' : '→' }} {{ stats.trendPercent.toFixed(1) }}%</span>
+      </div>
+    </div>
+    
+    <svg [attr.viewBox]="'0 0 ' + chartW + ' ' + chartH" preserveAspectRatio="none" aria-hidden="true" [class.animated]="barsAnimated" class="chart-svg">
+      <defs>
+        <linearGradient [attr.id]="gradientId()" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" [attr.stop-color]="color" stop-opacity="0.4"/>
+          <stop offset="50%" [attr.stop-color]="color" stop-opacity="0.25"/>
+          <stop offset="100%" [attr.stop-color]="color" stop-opacity="0.08"/>
+        </linearGradient>
+        <filter [attr.id]="'bar-glow-' + gradientId()">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
+      <!-- Grid lines (Y-axis) -->
+      <g class="grid-lines" *ngIf="showAxis">
+        <line
+          *ngFor="let tick of getYAxisTicks()"
+          [attr.x1]="padding.left"
+          [attr.x2]="chartW - padding.right"
+          [attr.y1]="getYAxisPosition(tick)"
+          [attr.y2]="getYAxisPosition(tick)"
+          stroke="#e5e7eb"
+          stroke-width="1"
+          stroke-dasharray="2,2"
+        />
+      </g>
+
+      <!-- Y-axis labels -->
+      <g class="y-axis-labels" *ngIf="showAxis">
+        <text
+          *ngFor="let tick of getYAxisTicks()"
+          [attr.x]="padding.left - 8"
+          [attr.y]="getYAxisPosition(tick) + 4"
+          fill="#6b7280"
+          font-size="10"
+          font-weight="500"
+          text-anchor="end"
+          class="axis-label"
+        >{{ formatNumber(tick) }}</text>
+      </g>
+
+      <!-- X-axis line -->
+      <line
+        *ngIf="showAxis"
+        [attr.x1]="padding.left"
+        [attr.x2]="chartW - padding.right"
+        [attr.y1]="chartH - padding.bottom"
+        [attr.y2]="chartH - padding.bottom"
+        stroke="#d1d5db"
+        stroke-width="1.5"
+        class="axis-line"
+      />
+
+      <!-- Y-axis line -->
+      <line
+        *ngIf="showAxis"
+        [attr.x1]="padding.left"
+        [attr.x2]="padding.left"
+        [attr.y1]="padding.top"
+        [attr.y2]="chartH - padding.bottom"
+        stroke="#d1d5db"
+        stroke-width="1.5"
+        class="axis-line"
+      />
+
+      <rect
+        *ngFor="let b of computeBars(); let i = index"
+        [attr.x]="b.x"
+        [attr.y]="b.y"
+        [attr.width]="b.w"
+        [attr.height]="barsAnimated ? b.h : 0"
+        [attr.fill]="'url(#' + gradientId() + ')'"
+        [attr.stroke]="color"
+        stroke-width="1"
+        stroke-opacity="0.3"
+        rx="6"
+        class="bar"
+        [style.animation-delay]="(i * 0.1) + 's'"
+        [style.transform-origin]="'bottom'"
+        [attr.data-value]="getBarValue(i)"
+      >
+        <title>{{ getBarValue(i) | number:'1.0-0' }}</title>
+      </rect>
+      
+      <!-- Value labels on bars -->
+      <ng-container *ngFor="let b of computeBars(); let i = index">
+        <text
+          *ngIf="barsAnimated && b.h > 20"
+          [attr.x]="b.x + b.w / 2"
+          [attr.y]="b.y - 4"
+          [attr.fill]="color"
+          font-size="10"
+          font-weight="600"
+          text-anchor="middle"
+          class="bar-label"
+        >{{ formatNumber(getBarValue(i)) }}</text>
+      </ng-container>
+
+      <!-- X-axis labels -->
+      <g class="x-axis-labels" *ngIf="showAxis">
+        <text
+          *ngFor="let label of getXAxisLabels(); let i = index"
+          [attr.x]="padding.left + (i / (bars.length - 1)) * (chartW - padding.left - padding.right)"
+          [attr.y]="chartH - padding.bottom + 18"
+          fill="#6b7280"
+          font-size="10"
+          font-weight="500"
+          text-anchor="middle"
+          class="axis-label"
+        >{{ label }}</text>
+      </g>
+      </svg>
+
+      <!-- Compact profile/notifications for bar cards -->
+      <div class="card-controls">
+        <app-profile-bar [compact]="true" [notifications]="0"></app-profile-bar>
+      </div>
+  </div>
+</div>

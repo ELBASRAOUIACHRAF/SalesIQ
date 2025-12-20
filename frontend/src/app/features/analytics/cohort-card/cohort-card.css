@@ -1,0 +1,35 @@
+.card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+.kpi-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.kpi {
+  text-align: center;
+  flex: 1;
+}
+
+.kpi .value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.kpi .label {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+.error {
+  color: red;
+  text-align: center;
+}

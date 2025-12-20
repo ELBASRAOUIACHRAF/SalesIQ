@@ -1,0 +1,184 @@
+<div class="chart-kpi" role="group" [attr.aria-label]="title" [style.--accent-color]="color">
+  <div class="card-glow" [style.background]="color"></div>
+  
+  <div class="meta">
+    <div class="meta-left">
+      <div class="icon" *ngIf="iconUrl || iconClass">
+        <img *ngIf="iconUrl" [src]="iconUrl" [alt]="title + ' icon'" />
+        <i *ngIf="!iconUrl && iconClass" [class]="iconClass" aria-hidden="true"></i>
+      </div>
+      <div class="text">
+        <div class="title">{{ title }}</div>
+        <div class="subtitle" *ngIf="subtitle">{{ subtitle }}</div>
+      </div>
+    </div>
+
+    <div class="meta-right">
+      <div class="value">{{ formatValue() }}</div>
+      <div
+        class="change"
+        [class.up]="change && change > 0"
+        [class.down]="change && change < 0"
+        [class.neutral]="change === 0"
+        *ngIf="change !== undefined"
+      >
+        <span class="arrow">{{ change && change > 0 ? '▲' : change && change < 0 ? '▼' : '•' }}</span>
+        <span>{{ change && change > 0 ? '+' : '' }}{{ change | number:'1.0-2' }}%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-wrap" *ngIf="data.length">
+    <div class="chart-stats" *ngIf="stats">
+      <div class="stat-item">
+        <span class="stat-label">Min</span>
+        <span class="stat-value">{{ formatNumber(stats.min) }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Avg</span>
+        <span class="stat-value">{{ formatNumber(stats.avg) }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Max</span>
+        <span class="stat-value">{{ formatNumber(stats.max) }}</span>
+      </div>
+      <div class="stat-item trend" [class.trend-up]="stats.trend === 'up'" [class.trend-down]="stats.trend === 'down'">
+        <span class="stat-label">Trend</span>
+        <span class="stat-value">{{ stats.trend === 'up' ? '↑' : stats.trend === 'down' ? '↓' : '→' }} {{ stats.trendPercent.toFixed(1) }}%</span>
+      </div>
+    </div>
+    
+    <svg [attr.viewBox]="'0 0 ' + chartW + ' ' + chartH" preserveAspectRatio="none" aria-hidden="true" [class.animated]="chartAnimated" class="chart-svg">
+      <defs>
+        <linearGradient [attr.id]="gradientId()" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" [attr.stop-color]="color" stop-opacity="0.3" />
+          <stop offset="50%" [attr.stop-color]="color" stop-opacity="0.15" />
+          <stop offset="100%" [attr.stop-color]="color" stop-opacity="0.05" />
+        </linearGradient>
+        <filter [attr.id]="'glow-' + gradientId()">
+          <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
+      <!-- Grid lines (Y-axis) -->
+      <g class="grid-lines" *ngIf="showAxes">
+        <line
+          *ngFor="let tick of getYAxisTicks()"
+          [attr.x1]="padding.left"
+          [attr.x2]="chartW - padding.right"
+          [attr.y1]="getYAxisPosition(tick)"
+          [attr.y2]="getYAxisPosition(tick)"
+          stroke="#e5e7eb"
+          stroke-width="1"
+          stroke-dasharray="2,2"
+        />
+      </g>
+
+      <!-- Y-axis labels -->
+      <g class="y-axis-labels" *ngIf="showAxes">
+        <text
+          *ngFor="let tick of getYAxisTicks()"
+          [attr.x]="padding.left - 8"
+          [attr.y]="getYAxisPosition(tick) + 4"
+          fill="#6b7280"
+          font-size="10"
+          font-weight="500"
+          text-anchor="end"
+          class="axis-label"
+        >{{ formatNumber(tick) }}</text>
+      </g>
+
+      <!-- X-axis line -->
+      <line
+        *ngIf="showAxes"
+        [attr.x1]="padding.left"
+        [attr.x2]="chartW - padding.right"
+        [attr.y1]="chartH - padding.bottom"
+        [attr.y2]="chartH - padding.bottom"
+        stroke="#d1d5db"
+        stroke-width="1.5"
+        class="axis-line"
+      />
+
+      <!-- Y-axis line -->
+      <line
+        *ngIf="showAxes"
+        [attr.x1]="padding.left"
+        [attr.x2]="padding.left"
+        [attr.y1]="padding.top"
+        [attr.y2]="chartH - padding.bottom"
+        stroke="#d1d5db"
+        stroke-width="1.5"
+        class="axis-line"
+      />
+
+      <polygon 
+        [attr.points]="areaPath()" 
+        [attr.fill]="'url(#' + gradientId() + ')'" 
+        class="chart-area"
+        [class.animated]="chartAnimated"
+      />
+      <polyline
+        [attr.points]="chartPoints()"
+        fill="none"
+        [attr.stroke]="color"
+        stroke-width="3.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="chart-line"
+        [attr.filter]="'url(#glow-' + gradientId() + ')'"
+        [class.animated]="chartAnimated"
+      />
+      
+      <!-- Data point indicators -->
+      <g class="data-points" *ngIf="data.length <= 7">
+        <circle
+          *ngFor="let point of data; let i = index"
+          [attr.cx]="getDataPointPosition(i).x"
+          [attr.cy]="getDataPointPosition(i).y"
+          r="4"
+          [attr.fill]="color"
+          class="data-point"
+          [attr.data-value]="point"
+        />
+      </g>
+      
+      <!-- Min/Max indicators -->
+      <g class="min-max-indicators" *ngIf="stats">
+        <ng-container *ngFor="let point of data; let i = index">
+          <circle
+            *ngIf="point === stats.min || point === stats.max"
+            [attr.cx]="getDataPointPosition(i).x"
+            [attr.cy]="getDataPointPosition(i).y"
+            r="5"
+            [attr.fill]="point === stats.min ? '#ef4444' : point === stats.max ? '#10b981' : 'transparent'"
+            class="min-max-point"
+          />
+        </ng-container>
+      </g>
+
+      <!-- X-axis labels -->
+      <g class="x-axis-labels" *ngIf="showAxes">
+        <text
+          *ngFor="let label of getXAxisLabels(); let i = index"
+          [attr.x]="padding.left + (i / (data.length - 1)) * (chartW - padding.left - padding.right)"
+          [attr.y]="chartH - padding.bottom + 18"
+          fill="#6b7280"
+          font-size="10"
+          font-weight="500"
+          text-anchor="middle"
+          class="axis-label"
+        >{{ label }}</text>
+      </g>
+    </svg>
+
+    <!-- Compact profile/notifications for cards -->
+    <div class="card-controls">
+      <app-profile-bar [compact]="true" [notifications]="0"></app-profile-bar>
+    </div>
+  </div>
+</div>

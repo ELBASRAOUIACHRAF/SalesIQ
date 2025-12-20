@@ -1,0 +1,98 @@
+<div class="dashboard-layout">
+  <div class="dashboard-content">
+    <div class="dashboard-header">
+      <app-top-bar
+        [title]="'Products Dashboard'"
+        [tabs]="['Today','This Week','This Month','This Year']"
+        [activeTab]="'Today'"
+        [dateText]="'05 Feb 2024, Monday'"
+        [buttonLabel]="'EXPORT DATA'"
+      ></app-top-bar>
+      <div class="dashboard-controls">
+        <button class="fetch-btn" (click)="fetchProducts()" [disabled]="loading">
+          {{ loading ? 'Loading…' : 'Refresh Products' }}
+        </button>
+        <div class="fetch-status" *ngIf="error" role="status">Error: {{ error }}</div>
+      </div>
+    </div>
+
+    <!-- Small KPI Cards -->
+    <div class="kpi-cards">
+      <app-kpi-card
+        *ngFor="let k of kpis"
+        [title]="k.title"
+        [value]="k.value"
+        [subtitle]="k.subtitle"
+        [change]="k.change"
+        [sparkline]="k.sparkline"
+        [accentColor]="k.accentColor"
+      ></app-kpi-card>
+    </div>
+
+    <!-- Bar KPI Cards -->
+    <div class="bar-kpi-cards">
+      <app-kpi-bar-chart
+        *ngFor="let b of barCards"
+        [title]="b.title"
+        [value]="b.value"
+        [subtitle]="b.subtitle"
+        [color]="b.color"
+        [bars]="b.bars"
+        [xAxisLabels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+        [showAxis]="true"
+      ></app-kpi-bar-chart>
+    </div>
+
+    <!-- Chart KPI Cards -->
+    <div class="chart-kpi-cards">
+      <app-chart-kpi-card
+        *ngFor="let c of chartCards"
+        [title]="c.title"
+        [value]="c.value"
+        [subtitle]="c.subtitle"
+        [color]="c.color"
+        [data]="c.data"
+        [xAxisLabels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+        [showAxes]="true"
+      ></app-chart-kpi-card>
+    </div>
+
+    <!-- Pie Charts -->
+    <div class="pies-row">
+      <app-kpi-pie-chart
+        title="Stock Status"
+        [value]="pieTotal"
+        subtitle="Distribution"
+        [segments]="pieData"
+      ></app-kpi-pie-chart>
+    </div>
+
+    <!-- Big KPI Cards -->
+    <div class="big-card-grid">
+      <app-big-card
+        title="Total Revenue"
+        subtitle="From Products"
+        [value]="1234567"
+        [change]="8.5"
+        [chartData]="[100000, 110000, 105000, 115000, 120000, 118000, 1234567]"
+        color="#6366f1"
+        footer="Compared to last month"
+        [xAxisLabels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+        [showAxes]="true"
+      ></app-big-card>
+
+      <app-big-card
+        title="Product Performance"
+        subtitle="Top Sellers"
+        [value]="234"
+        [change]="12.3"
+        [chartData]="[200, 210, 205, 220, 230, 225, 234]"
+        color="#10b981"
+        footer="Best performing products"
+        [xAxisLabels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+        [showAxes]="true"
+      ></app-big-card>
+    </div>
+  </div>
+</div>
+

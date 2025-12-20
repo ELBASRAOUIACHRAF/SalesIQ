@@ -1,0 +1,55 @@
+<div class="pie-kpi" role="group" [attr.aria-label]="title">
+  <div class="card-glow"></div>
+  
+  <div class="meta">
+    <div class="text">
+      <div class="title">{{ title }}</div>
+      <div class="subtitle" *ngIf="subtitle">{{ subtitle }}</div>
+    </div>
+    <div class="value">{{ formatValue() }}</div>
+  </div>
+
+  <div class="chart-wrap">
+    <svg [attr.viewBox]="'0 0 ' + diameter + ' ' + diameter" [attr.width]="diameter" [attr.height]="diameter" aria-hidden="true" [class.animated]="chartAnimated">
+      <g transform="translate(0,0)">
+        <g transform="translate(6,6)">
+          <circle 
+            [attr.cx]="radius" 
+            [attr.cy]="radius" 
+            [attr.r]="radius" 
+            fill="none" 
+            stroke="rgba(255,255,255,0.1)" 
+            stroke-width="12"
+            class="background-circle"
+          ></circle>
+          <ng-container *ngFor="let s of getSlices(); let i = index">
+            <circle
+              [attr.cx]="radius"
+              [attr.cy]="radius"
+              [attr.r]="radius"
+              fill="none"
+              [attr.stroke]="s.color"
+              stroke-width="12"
+              [attr.stroke-dasharray]="s.dash + ' ' + s.gap"
+              [attr.stroke-dashoffset]="chartAnimated ? -s.offset : -s.offset - s.dash"
+              stroke-linecap="round"
+              class="pie-segment"
+              [style.animation-delay]="(i * 0.15) + 's'"
+              [style.filter]="'drop-shadow(0 2px 4px ' + s.color + '40)'"
+            ></circle>
+          </ng-container>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <div class="legend">
+    <ng-container *ngFor="let seg of segments; let i = index">
+      <div class="legend-item" [class.animated]="chartAnimated" [style.animation-delay]="(i * 0.1 + 0.5) + 's'">
+        <span class="swatch" [style.backgroundColor]="seg.color"></span>
+        <span class="label">{{ seg.label }}</span>
+        <span class="val">{{ seg.value }}%</span>
+      </div>
+    </ng-container>
+  </div>
+</div>

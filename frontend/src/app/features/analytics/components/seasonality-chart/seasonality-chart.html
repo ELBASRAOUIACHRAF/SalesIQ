@@ -1,0 +1,51 @@
+<section class="seasonality">
+	<header class="seasonality-header">
+		<h3>Seasonality Analysis</h3>
+		<div class="summary">
+			<div><strong>Type:</strong> {{ seasonalityType }}</div>
+			<div><strong>Strength:</strong> {{ seasonalityStrength | number:'1.2-2' }}</div>
+		</div>
+	</header>
+
+	<div class="charts-grid">
+		<div class="chart-card">
+			<div class="card-title">Original</div>
+			<app-chart-kpi-card
+				[title]="'Original'"
+				[data]="originalValues"
+				[xAxisLabels]="originalLabels"
+				[showAxes]="true"
+			></app-chart-kpi-card>
+		</div>
+
+		<div class="chart-card">
+			<div class="card-title">Trend</div>
+			<app-chart-kpi-card
+				[title]="'Trend'"
+				[data]="trendValues"
+				[xAxisLabels]="trendLabels"
+				[showAxes]="true"
+			></app-chart-kpi-card>
+		</div>
+
+		<div class="chart-card">
+			<div class="card-title">Seasonality</div>
+			<app-chart-kpi-card
+				[title]="'Seasonality'"
+				[data]="seasonalValues"
+				[xAxisLabels]="seasonalLabels"
+				[showAxes]="true"
+			></app-chart-kpi-card>
+		</div>
+
+		<div class="chart-card">
+			<div class="card-title">Residual</div>
+			<app-chart-kpi-card
+				[title]="'Residual'"
+				[data]="residualValues"
+				[xAxisLabels]="residualLabels"
+				[showAxes]="true"
+			></app-chart-kpi-card>
+		</div>
+	</div>
+</section>

@@ -1,0 +1,104 @@
+<div class="dashboard-layout">
+  <div class="dashboard-content">
+    <div class="dashboard-header">
+      <app-top-bar
+        [title]="'Sales Dashboard'"
+        [tabs]="['Today','This Week','This Month','This Year']"
+        [activeTab]="'Today'"
+        [dateText]="'05 Feb 2024, Monday'"
+        [buttonLabel]="'GENERATE REPORT'"
+      ></app-top-bar>
+    </div>
+
+    <div class="forecast-row">
+      <app-sales-forecast-kpi
+        title="Sales Forecast"
+        [defaultHorizonDays]="7"
+        currencySymbol="€"
+        [total]="128450"
+        [percentChange]="12"
+        trend="up"
+        model="ARIMA"
+        lastUpdated="Jan 10"
+        insight="Growth expected"
+        [historical]="forecastHistory"
+        [forecast]="forecastProjection"
+        (requestForecast)="onForecastRequest($event)"
+      ></app-sales-forecast-kpi>
+    </div>
+
+    <div class="kpi-cards">
+      <app-kpi-card
+        *ngFor="let k of kpis"
+        [title]="k.title"
+        [value]="k.value"
+        [subtitle]="k.subtitle"
+        [change]="k.change"
+        [sparkline]="k.sparkline"
+        [accentColor]="k.accentColor"
+      ></app-kpi-card>
+    </div>
+
+    <div class="bar-kpi-cards">
+      <app-kpi-bar-chart
+        *ngFor="let b of barCards"
+        [title]="b.title"
+        [value]="b.value"
+        [subtitle]="b.subtitle"
+        [color]="b.color"
+        [bars]="b.bars"
+        [xAxisLabels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+        [showAxis]="true"
+      ></app-kpi-bar-chart>
+    </div>
+
+    <div class="chart-kpi-cards">
+      <app-chart-kpi-card
+        *ngFor="let c of chartCards"
+        [title]="c.title"
+        [value]="c.value"
+        [subtitle]="c.subtitle"
+        [color]="c.color"
+        [data]="c.data"
+        [xAxisLabels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+        [showAxes]="true"
+      ></app-chart-kpi-card>
+    </div>
+
+    <div class="pies-row">
+      <app-kpi-pie-chart
+        title="Sales Channels"
+        [value]="pieTotal"
+        subtitle="Distribution"
+        [segments]="pieData"
+      ></app-kpi-pie-chart>
+    </div>
+
+    <div class="big-card-grid">
+      <app-big-card
+        title="Total Revenue"
+        subtitle="This month"
+        [value]="1234567"
+        [change]="15.8"
+        [chartData]="[1000000, 1050000, 1100000, 1150000, 1200000, 1220000, 1234567]"
+        color="#6366f1"
+        footer="Compared to last month"
+        [xAxisLabels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+        [showAxes]="true"
+      ></app-big-card>
+
+      <app-big-card
+        title="Order Growth"
+        subtitle="This quarter"
+        [value]="8923"
+        [change]="12.4"
+        [chartData]="[7500, 7800, 8000, 8300, 8600, 8800, 8923]"
+        color="#10b981"
+        footer="Total completed orders"
+        [xAxisLabels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+        [showAxes]="true"
+      ></app-big-card>
+    </div>
+  </div>
+</div>
+

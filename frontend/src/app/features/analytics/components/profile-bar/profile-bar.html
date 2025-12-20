@@ -1,0 +1,13 @@
+<div class="profile-bar" [class.compact]="compact" role="group" aria-label="profile and notifications">
+  <button class="notif" aria-label="notifications">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M15 17H9v-5a6 6 0 10-2 0v5a2 2 0 002 2h6a2 2 0 002-2v-0z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="badge" *ngIf="notifications > 0">{{ notifications }}</span>
+  </button>
+
+  <div class="profile" tabindex="0" aria-label="profile">
+    <div class="avatar" aria-hidden="true">{{ (userName || '').slice(0,1).toUpperCase() }}</div>
+    <div class="name" *ngIf="!compact">{{ userName }}</div>
+  </div>
+</div>

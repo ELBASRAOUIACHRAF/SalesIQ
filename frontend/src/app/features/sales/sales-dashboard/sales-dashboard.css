@@ -1,0 +1,109 @@
+.dashboard-layout {
+	display: block;
+	padding: 1.5rem;
+	background: #f9fafb;
+	min-height: 100vh;
+	width: 100%;
+	max-width: 100%;
+	overflow-x: hidden;
+	box-sizing: border-box;
+}
+
+.dashboard-content {
+	max-width: 1600px;
+	margin: 0 auto;
+	padding: 1.5rem;
+	box-sizing: border-box;
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 1.5rem;
+	width: 100%;
+	max-width: 100%;
+	overflow-x: hidden;
+}
+
+.forecast-row {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+	gap: 1.25rem;
+}
+
+.kpi-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 1.25rem;
+	margin-bottom: 1.5rem;
+	width: 100%;
+	max-width: 100%;
+	overflow-x: hidden;
+}
+
+.bar-kpi-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 1.25rem;
+	margin-bottom: 1.5rem;
+	width: 100%;
+	max-width: 100%;
+	overflow-x: hidden;
+}
+
+.chart-kpi-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 1.25rem;
+	margin-bottom: 1.5rem;
+	width: 100%;
+	max-width: 100%;
+	overflow-x: hidden;
+}
+
+.pies-row {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 1.25rem;
+	margin-bottom: 1.5rem;
+	width: 100%;
+	max-width: 100%;
+	overflow-x: hidden;
+}
+
+.big-card-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+	gap: 1.5rem;
+	margin-top: 1rem;
+	width: 100%;
+	max-width: 100%;
+	overflow-x: hidden;
+}
+
+.dashboard-header {
+	display: block;
+	margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+	.dashboard-layout {
+		padding: 0.75rem;
+	}
+	
+	.dashboard-content { 
+		padding: 0.75rem;
+		gap: 1rem;
+	}
+	
+	.kpi-cards { 
+		grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+		gap: 0.875rem;
+	}
+	
+	.bar-kpi-cards, .chart-kpi-cards {
+		grid-template-columns: 1fr;
+	}
+	
+	.big-card-grid {
+		grid-template-columns: 1fr;
+	}
+}
+

@@ -1,0 +1,22 @@
+<div class="users-dashboard">
+  <div class="dashboard-header">
+    <app-top-bar
+      [title]="'Users'"
+      [tabs]="['Today','This Week','This Month']"
+      [activeTab]="'Today'"
+      [dateText]="'05 Feb 2024, Monday'"
+      [buttonLabel]="'EXPORT USERS'"
+      [showSettings]="false"
+    ></app-top-bar>
+  </div>
+
+  <div class="cards">
+    <div class="card" *ngFor="let c of cards">
+      <div class="card-title">{{ c.title }}</div>
+      <div class="card-value">{{ c.value | number:'1.0-0' }}</div>
+      <div class="card-change" [class.up]="c.change > 0" [class.down]="c.change < 0">
+        {{ c.change > 0 ? '+' : '' }}{{ c.change }}%
+      </div>
+    </div>
+  </div>
+</div>

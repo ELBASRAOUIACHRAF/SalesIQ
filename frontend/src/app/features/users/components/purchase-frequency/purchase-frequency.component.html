@@ -1,0 +1,69 @@
+<section class="pf-card" role="group" aria-label="Customer purchase frequency">
+  <header class="pf-header">
+    <div>
+      <div class="eyebrow">Customer Insights</div>
+      <h3 class="title">Purchase Frequency</h3>
+      <p class="muted">Total sales and average monthly purchases per customer.</p>
+    </div>
+    <div class="filters">
+      <input type="search" placeholder="Filter by username" (input)="setFilter($any($event.target).value)" />
+      <select (change)="setSort($any($event.target).value)">
+        <option value="avg">Sort by Avg / Month</option>
+        <option value="total">Sort by Total Sales</option>
+        <option value="name">Sort by Name</option>
+      </select>
+    </div>
+  </header>
+
+  <div class="summary">
+    <div class="chip">
+      <div class="chip-label">Customers</div>
+      <div class="chip-value">{{ summary().total }}</div>
+    </div>
+    <div class="chip">
+      <div class="chip-label">High frequency</div>
+      <div class="chip-value">{{ summary().high }}</div>
+    </div>
+    <div class="chip">
+      <div class="chip-label">Low frequency</div>
+      <div class="chip-value">{{ summary().low }}</div>
+    </div>
+    <div class="chip" *ngIf="summary().top">
+      <div class="chip-label">Top performer</div>
+      <div class="chip-value">{{ summary().top?.username }}</div>
+      <div class="chip-sub">{{ summary().top?.totalSales | number:'1.0-0' }} total</div>
+    </div>
+  </div>
+
+  <div class="list" *ngIf="filteredSorted().length; else empty">
+    <div class="row head">
+      <span>User</span>
+      <span class="right">Total Sales</span>
+      <span class="right">Avg / Month</span>
+      <span class="right">Level</span>
+    </div>
+    <div class="row" *ngFor="let item of filteredSorted()">
+      <div class="user">
+        <div class="avatar">{{ item.username.charAt(0).toUpperCase() }}</div>
+        <div>
+          <div class="name">{{ item.username }}</div>
+          <div class="sub">ID: {{ item.userId }}</div>
+        </div>
+      </div>
+      <div class="right">{{ item.totalSales | number:'1.0-0' }}</div>
+      <div class="right bar-wrap">
+        <div class="bar" [style.width]="barWidth(item.averageSalesPerMonth)"></div>
+        <span class="bar-label">{{ item.averageSalesPerMonth | number:'1.1-1' }}</span>
+      </div>
+      <div class="right">
+        <span [class]="badgeClass(item.averageSalesPerMonth)">
+          {{ item.averageSalesPerMonth > highFreqThreshold ? 'High' : item.averageSalesPerMonth <= lowFreqThreshold ? 'Low' : 'Medium' }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #empty>
+    <div class="empty">No data yet. Connect the backend and pass the DTO list.</div>
+  </ng-template>
+</section>

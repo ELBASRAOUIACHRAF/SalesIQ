@@ -1,0 +1,52 @@
+<button class="menu-toggle" (click)="toggle()" [attr.aria-expanded]="!closed()" aria-label="Toggle navigation">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+</button>
+
+<nav class="side-menu" [class.closed]="closed()" role="navigation" aria-label="Primary"
+     [style.--width]="width" [style.--collapsed-width]="collapsedWidth">
+  <div class="brand">
+    <div class="logo" aria-hidden>SIQ</div>
+  </div>
+
+  <ul class="menu-list">
+    <li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <a routerLink="/analytics" (click)="handleNavClick()">
+        <span class="icon">📊</span>
+        <span class="label">Analytics</span>
+      </a>
+    </li>
+    <li class="menu-divider"></li>
+    <li routerLinkActive="active">
+      <a routerLink="/products" (click)="handleNavClick()">
+        <span class="icon">📦</span>
+        <span class="label">Products</span>
+      </a>
+    </li>
+    <li routerLinkActive="active">
+      <a routerLink="/categories" (click)="handleNavClick()">
+        <span class="icon">🏷️</span>
+        <span class="label">Categories</span>
+      </a>
+    </li>
+    <li routerLinkActive="active">
+      <a routerLink="/reviews" (click)="handleNavClick()">
+        <span class="icon">⭐</span>
+        <span class="label">Reviews</span>
+      </a>
+    </li>
+    <li routerLinkActive="active">
+      <a routerLink="/sales" (click)="handleNavClick()">
+        <span class="icon">💰</span>
+        <span class="label">Sales</span>
+      </a>
+    </li>
+    <li routerLinkActive="active">
+      <a routerLink="/users" (click)="handleNavClick()">
+        <span class="icon">👥</span>
+        <span class="label">Users</span>
+      </a>
+    </li>
+  </ul>
+</nav>

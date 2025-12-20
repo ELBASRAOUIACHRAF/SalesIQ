@@ -1,0 +1,57 @@
+<section class="forecast-card" role="group" aria-label="Sales forecast summary">
+  <header class="card-header">
+    <div class="title-block">
+      <p class="eyebrow">{{ title }}</p>
+      <div class="horizon">{{ horizonLabel }}</div>
+    </div>
+    <div class="controls">
+      <label class="horizon-input">
+        <span>Days</span>
+        <input type="number" min="1" [ngModel]="horizonDays" (ngModelChange)="updateHorizon($event)" />
+      </label>
+      <button type="button" class="action" (click)="triggerRequest()">Generate</button>
+    </div>
+  </header>
+
+  <div class="kpi-row">
+    <div class="value">
+      <span class="currency">{{ currencySymbol }}</span>
+      <span class="number">{{ total | number:'1.0-0' }}</span>
+    </div>
+    <div class="trend" [class.up]="trend === 'up'" [class.down]="trend === 'down'" [class.flat]="trend === 'flat'">
+      <span class="trend-icon" aria-hidden="true">{{ trendIcon }}</span>
+      <span class="trend-label">{{ changeLabel }}</span>
+    </div>
+  </div>
+
+  <div class="sparkline" aria-hidden="true">
+    <svg [attr.viewBox]="'0 0 ' + viewBoxWidth + ' ' + viewBoxHeight" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="forecastGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#6366f1" stop-opacity="0.22" />
+          <stop offset="100%" stop-color="#6366f1" stop-opacity="0.05" />
+        </linearGradient>
+      </defs>
+
+      <path *ngIf="historicalPath" class="line historical" [attr.d]="historicalPath"></path>
+      <path *ngIf="forecastPath" class="line forecast" [attr.d]="forecastPath"></path>
+
+      <line *ngIf="forecast.length" class="forecast-divider" [attr.x1]="forecastStartX" [attr.x2]="forecastStartX" y1="0" [attr.y2]="viewBoxHeight"></line>
+
+      <circle *ngIf="histPoint" class="dot" [attr.cx]="histPoint.x" [attr.cy]="histPoint.y" r="2.5"></circle>
+      <circle *ngIf="lastPoint" class="dot forecast" [attr.cx]="lastPoint.x" [attr.cy]="lastPoint.y" r="2.8"></circle>
+    </svg>
+  </div>
+
+  <div class="meta-row">
+    <div class="meta">{{ model }} · updated {{ lastUpdated }} · {{ forecastHorizonLabel }}</div>
+    <div class="insight">Insight: {{ insight }}</div>
+  </div>
+
+  <div class="forecast-list" *ngIf="forecastEntries.length">
+    <div class="forecast-row" *ngFor="let f of forecastEntries">
+      <span class="day">Day {{ f.day }}</span>
+      <span class="value">{{ currencySymbol }}{{ f.value | number:'1.0-0' }}</span>
+    </div>
+  </div>
+</section>
