@@ -19,6 +19,12 @@ public class UsersRestController {
 
     UsersService usersService;
 
+    @PutMapping("/profileUpdate")
+    public ProfileDto updateUserData(@RequestBody ProfileDto profileDto){
+        return usersService.updateUsersInfo(profileDto);
+    }
+
+
     @GetMapping("/profile/{usersId}")
     public ProfileDto getProfile(@PathVariable Long usersId) {
         return usersService.getUsersProfile(usersId);

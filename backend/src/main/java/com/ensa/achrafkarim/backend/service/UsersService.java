@@ -32,4 +32,6 @@ public interface UsersService {
     boolean existsByEmail(String email);
 
     ProfileDto getUsersProfile(Long usersId);
+
+    ProfileDto updateUsersInfo(ProfileDto profileDto);
 }
