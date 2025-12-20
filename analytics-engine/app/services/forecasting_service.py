@@ -71,6 +71,7 @@ def forecast_sales(request: SalesForecastRequest) -> SalesForecastResponse :
         ))
     return SalesForecastResponse(
         model=request.model,
+        daysAhead=request.daysAhead,
         forecast=forecast_points
     )
 

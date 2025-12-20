@@ -13,6 +13,7 @@ class SalesForecastRequest(BaseModel):
 
 class SalesForecastResponse(BaseModel):
     model: str
+    daysAhead : int
     forecast: List[ForecastPoint]
 
 class CustomerData(BaseModel):
