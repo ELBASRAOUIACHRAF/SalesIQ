@@ -218,4 +218,20 @@ public class UsersServiceImpl implements UsersService{
                 })
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'ID : " + usersId));
     }
+
+    @Override
+    public ProfileDto updateUsersInfo(ProfileDto profileDto) {
+        Users user = usersRepository.findById(profileDto.getId()).orElse(null);
+        user.setFirstName(profileDto.getFirstName());
+        user.setLastName(profileDto.getLastName());
+        user.setUsername(profileDto.getUsername());
+        user.setEmail(profileDto.getEmail());
+        user.setUpdatedAt(LocalDateTime.now());
+        user.setBio(profileDto.getBio());
+        user.setPhoneNumber(profileDto.getPhoneNumber());
+        user.setCity(profileDto.getCity());
+        user.setCountry(profileDto.getCountry());
+        usersRepository.save(user);
+        return profileDto;
+    }
 }
