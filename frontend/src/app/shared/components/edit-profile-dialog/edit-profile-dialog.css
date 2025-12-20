@@ -1,0 +1,73 @@
+.dialog-container { padding: 10px; }
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+h2 { margin: 0; font-weight: 700; color: #1a202c; }
+
+.close-btn {
+  background-color: #f3f4f6; /* Gris clair comme sur l'image */
+  color: #6b7280;
+  
+  /* Centrage parfait */
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  
+  /* Taille et forme */
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50%;
+  padding: 0 !important; /* Important pour éviter le décalage */
+  transition: background-color 0.2s;
+}
+
+.close-btn:hover {
+  background-color: #e5e7eb;
+}
+
+.close-btn mat-icon {
+  font-size: 20px; /* Taille de l'icône ajustée */
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+}
+
+.subtitle { color: #718096; font-size: 14px; margin: 4px 0 0 0; }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Deux colonnes */
+  gap: 16px 24px;
+}
+
+.form-field-wrapper { display: flex; flex-direction: column; }
+
+.form-field-wrapper label {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: #2d3748;
+}
+
+.full-width { grid-column: span 2; }
+
+/* Styles des boutons */
+.btn-primary {
+  background-color: #4f46e5 !important; /* Bleu de l'image */
+  border-radius: 8px;
+  padding: 8px 24px;
+}
+
+.btn-secondary {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-right: 12px;
+}
+
+/* Suppression du padding par défaut d'Angular Material pour coller au design */
+::ng-deep .mat-mdc-dialog-container { border-radius: 20px !important; }

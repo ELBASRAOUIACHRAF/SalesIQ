@@ -1,0 +1,51 @@
+.products-container {
+    display: flex;
+    gap: 20px;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+  }
+  
+  .sidebar {
+    flex: 0 0 260px; /* Largeur fixe pour les filtres */
+    border-right: 1px solid #e0e0e0;
+    padding-right: 15px;
+  }
+  
+  .content {
+    flex: 1;
+  }
+  
+  .results-header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+  
+  .results-header p {
+    color: #565959;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  
+  /* Grille réactive : s'adapte à la largeur de l'écran */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .products-container {
+      flex-direction: column;
+    }
+    .sidebar {
+      flex: none;
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid #e0e0e0;
+      margin-bottom: 20px;
+    }
+  }

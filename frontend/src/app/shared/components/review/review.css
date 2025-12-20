@@ -1,0 +1,99 @@
+.review-card {
+    font-family: 'Inter', 'Arial', sans-serif;
+    max-width: 800px;
+    margin-bottom: 24px;
+    padding: 16px;
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  
+  .avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+  }
+  
+  .username {
+    font-weight: 500;
+    font-size: 14px;
+    color: #111;
+  }
+  
+  .rating-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  
+  .stars mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #e0e0e0; /* Étoile vide */
+  }
+  
+  .stars mat-icon.active {
+    color: #ffa41c; /* Orange Amazon */
+  }
+  
+  .review-title {
+    font-weight: 700;
+    font-size: 14px;
+    color: #111;
+  }
+  
+  .meta-info, .purchase-status {
+    font-size: 13px;
+    color: #565959;
+    margin-bottom: 4px;
+  }
+  
+  .verified {
+    color: #c45500;
+    font-weight: 700;
+  }
+  
+  .comment-text {
+    font-size: 14px;
+    line-height: 20px;
+    color: #111;
+    margin: 8px 0;
+  }
+  
+  .actions {
+    margin-top: 12px;
+  }
+  
+  .helpful-text {
+    display: block;
+    font-size: 13px;
+    color: #565959;
+    margin-bottom: 8px;
+  }
+  
+  .button-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .btn-helpful {
+    border-radius: 20px !important;
+    font-size: 13px !important;
+    height: 32px !important;
+    line-height: 32px !important;
+    padding: 0 16px !important;
+    border-color: #d5d9d9 !important;
+  }
+  
+  .btn-report {
+    font-size: 13px !important;
+    color: #565959 !important;
+  }

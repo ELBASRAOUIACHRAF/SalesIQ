@@ -1,0 +1,31 @@
+<div class="product-gallery-container">
+    <div class="thumbnails-column">
+      <div 
+        *ngFor="let media of mediaList; let i = index" 
+        class="thumb-item"
+        [class.active]="selectedIndex === i"
+        (mouseenter)="selectMedia(i)">
+        
+        <img [src]="media.thumbnailUrl || media.url" [alt]="'Product thumb ' + i">
+        
+        <div class="thumb-overlay" *ngIf="media.type === 'video' || (i === 5 && mediaList.length > 6)">
+          <mat-icon *ngIf="media.type === 'video'">play_circle_outline</mat-icon>
+          <span *ngIf="i === 5 && mediaList.length > 6">+{{ mediaList.length - 6 }}</span>
+        </div>
+      </div>
+    </div>
+  
+    <div class="main-display">
+      <div class="share-action">
+        <button mat-icon-button><mat-icon>ios_share</mat-icon></button>
+      </div>
+      
+      <div class="image-wrapper">
+        <img [src]="mediaList[selectedIndex].url" class="main-image" alt="Selected Product Image">
+      </div>
+  
+      <div class="zoom-hint">
+        <a href="javascript:void(0)">Click to see full view</a>
+      </div>
+    </div>
+  </div>

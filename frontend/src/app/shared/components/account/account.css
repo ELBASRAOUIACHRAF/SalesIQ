@@ -1,0 +1,155 @@
+/* ===== CONTAINER ===== */
+.profile-container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 20px;
+  font-family: 'Inter', Arial, sans-serif;
+}
+
+.profile-container h2 {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #0f172a;
+}
+
+/* ===== CARDS ===== */
+.info-card {
+  margin-bottom: 24px;
+  padding: 24px;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+/* ===== HEADER CARD ===== */
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* ===== USER MAIN INFO ===== */
+.user-main-info {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #38bdf8;
+}
+
+.name-role h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #020617;
+}
+
+.name-role p {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* ===== ACTIONS ===== */
+.actions-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ===== SOCIAL LINKS ===== */
+.social-links {
+  display: flex;
+  gap: 10px;
+}
+
+.social-item {
+  width: 36px;
+  height: 36px;
+  background-color: #f1f5f9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #334155;
+  transition: all 0.25s ease;
+}
+
+.social-item mat-icon,
+.social-item svg {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  display: block;
+  line-height: 1;
+  fill: currentColor;
+}
+
+
+/* ===== CARD HEADER ===== */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.card-header h4 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  color: #0f172a;
+}
+
+/* ===== GRID LAYOUT ===== */
+.grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.info-group label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.05em;
+}
+
+.info-group p {
+  margin-top: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #020617;
+}
+
+.info-group.full-width {
+  grid-column: 1 / -1;
+}
+
+/* ===== BUTTONS ===== */
+button[mat-stroked-button] {
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .header-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .actions-group {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

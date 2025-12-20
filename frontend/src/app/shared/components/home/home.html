@@ -1,0 +1,90 @@
+<div class="home-wrapper">
+
+    <section class="hero-section">
+      <div class="hero-overlay"></div>
+      <div class="hero-content container">
+        <span class="hero-tag">Nouvelle Collection</span>
+        <h1>{{ heroTitle }}</h1>
+        <p>{{ heroSubtitle }}</p>
+        <button class="btn-primary-custom" [routerLink]="heroLink">
+          {{ heroButtonText }} 
+          <span class="arrow">→</span>
+        </button>
+      </div>
+    </section>
+  
+    <section class="features-bar">
+      <div class="container features-grid">
+        <div *ngFor="let feature of features" class="feature-item">
+          <i class="material-icons feature-icon">{{ feature.icon }}</i> 
+          <div class="feature-text">
+            <h4>{{ feature.title }}</h4>
+            <p>{{ feature.text }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  
+    <section class="section-spacing container">
+      <div class="section-header">
+        <h2>Nos Catégories</h2>
+        <a routerLink="/products" class="see-all">Voir tout</a>
+      </div>
+      
+      <div class="categories-grid">
+        <div *ngFor="let category of featuredCategories" class="category-card" [routerLink]="category.link">
+          <div class="img-wrapper">
+            <img [src]="category.imageUrl" [alt]="category.name">
+          </div>
+          <h3>{{ category.name }}</h3>
+        </div>
+      </div>
+    </section>
+  
+    <section class="section-spacing bg-light">
+      <div class="container">
+        <div class="section-header">
+          <h2>Produits Tendance</h2>
+          <p>Les favoris de la semaine</p>
+        </div>
+  
+        <div class="products-grid">
+          <div *ngFor="let product of featuredProducts" class="product-card">
+            
+            <span *ngIf="product.discount" class="badge-discount">-{{ product.discount }}%</span>
+            
+            <div class="product-img-container" [routerLink]="['/product', product.id]">
+              <img [src]="product.imageUrl" [alt]="product.name">
+            </div>
+  
+            <div class="product-details">
+              <span class="product-category">{{ product.category }}</span>
+              <h3 [routerLink]="['/product', product.id]">{{ product.name }}</h3>
+              
+              <p class="product-options">Options: Standard</p>
+  
+              <div class="product-rating">
+                <span *ngFor="let i of [].constructor(Math.floor(product.rating))" class="star">★</span>
+                <span class="review-count">({{ product.reviewsCount }})</span>
+              </div>
+  
+              <div class="price-box">
+                <span class="current-price">${{ product.price | number:'1.2-2' }}</span>
+                <span *ngIf="product.originalPrice" class="original-price">${{ product.originalPrice | number:'1.2-2' }}</span>
+              </div>
+  
+              <div class="stock-status" [ngClass]="{'text-green': product.stock > 0, 'text-red': product.stock === 0}">
+                {{ product.stock > 0 ? 'En stock' : 'Rupture' }}
+              </div>
+  
+              <button class="btn-add-cart" [disabled]="product.stock === 0">
+                Add to cart
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  
+  </div>

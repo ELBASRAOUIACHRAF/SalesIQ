@@ -1,1 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
+
+@import "tailwindcss";
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+.cdk-overlay-dark-backdrop {
+    background: rgba(0, 0, 0, 0.5); /* Assombrit le fond */
+  }
+  
+  mat-dialog-container {
+    border-radius: 8px !important;
+    padding: 0 !important;
+  }

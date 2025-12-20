@@ -1,0 +1,123 @@
+.recommendations-sidebar-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    width: 280px; /* Largeur fixe pour la barre latérale */
+    position: sticky; /* Reste visible en scrollant */
+    top: 20px;
+  }
+  
+  h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0F1111;
+    margin-top: 0;
+    margin-bottom: 15px;
+  }
+  
+  .product-card {
+    display: flex;
+    flex-direction: column; /* Image en haut, détails en bas */
+    padding: 15px 0;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .product-card:hover {
+    background-color: #fcfcfc;
+  }
+  
+  .product-image-container {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .product-image-container img {
+    max-width: 150px;
+    max-height: 150px;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+  }
+  
+  .product-details {
+    flex: 1;
+    text-align: center;
+  }
+  
+  .product-name {
+    font-size: 14px;
+    color: #007185;
+    margin: 0 0 5px 0;
+    line-height: 1.3;
+  }
+  
+  .product-name:hover {
+    text-decoration: underline;
+  }
+  
+  .rating {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    margin-bottom: 5px;
+  }
+  
+  .rating mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #D5D9D9; /* Étoiles inactives */
+  }
+  
+  .rating mat-icon.active {
+    color: #FFA41C; /* Étoiles actives (jaune Amazon) */
+  }
+  
+  .rating-value {
+    font-size: 13px;
+    color: #007185;
+    margin-left: 5px;
+  }
+  
+  .price-section {
+    margin-top: 8px;
+  }
+  
+  .current-price, .discounted-price {
+    font-size: 17px;
+    font-weight: 700;
+    color: #0F1111;
+    display: block; /* Pour s'assurer que l'original price soit sur une nouvelle ligne */
+  }
+  
+  .original-price {
+    font-size: 13px;
+    color: #565959;
+    text-decoration: line-through;
+    margin-left: 5px;
+  }
+  
+  .btn-view-product {
+    width: 100%;
+    margin-top: 15px;
+    background-color: #F7FAFA;
+    border: 1px solid #D5D9D9;
+    color: #0F1111;
+    font-size: 13px;
+    height: 32px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(213,217,217,.5);
+  }
+  
+  .btn-view-product:hover {
+    background-color: #F0F2F2;
+  }
+  
+  .no-recommendations {
+    color: #565959;
+    font-style: italic;
+    text-align: center;
+    padding: 20px 0;
+  }

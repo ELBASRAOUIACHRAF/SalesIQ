@@ -1,0 +1,31 @@
+.add-review-container {
+    max-width: 700px;
+    margin: 20px 0;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+  }
+  
+  h2 { font-size: 24px; font-weight: 700; margin-bottom: 20px; }
+  
+  .rating-selection { margin-bottom: 20px; }
+  .rating-selection p { font-weight: 700; margin-bottom: 8px; }
+  
+  .stars { display: flex; gap: 4px; cursor: pointer; }
+  .stars mat-icon { color: #D5D9D9; font-size: 32px; width: 32px; height: 32px; }
+  .stars mat-icon.active { color: #FFA41C; }
+  
+  .input-section { margin: 20px 0; }
+  .input-section p { font-weight: 700; margin-bottom: 8px; }
+  
+  .full-width { width: 100%; }
+  
+  .actions { display: flex; justify-content: flex-end; margin-top: 20px; }
+  
+  button[color="primary"] {
+    background-color: #ffd814 !important;
+    color: #0f1111 !important;
+    border-radius: 8px !important;
+    font-weight: 500;
+    padding: 0 24px;
+  }

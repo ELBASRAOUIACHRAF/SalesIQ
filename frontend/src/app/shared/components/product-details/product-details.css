@@ -1,0 +1,92 @@
+.product-info-container {
+    font-family: 'Inter', sans-serif;
+    padding: 0 20px;
+    color: #0f1111;
+  }
+  
+  /* Header */
+  .brand-link {
+    color: #007185;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  
+  .product-title {
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 32px;
+    margin: 8px 0;
+  }
+  
+  .rating-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+  
+  .stars mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #ffa41c;
+  }
+  
+  .review-link {
+    color: #007185;
+    font-size: 14px;
+    text-decoration: none;
+  }
+  
+  /* Prix */
+  .price-section {
+    padding: 15px 0;
+  }
+  
+  .price-row {
+    display: flex;
+    align-items: flex-start;
+    color: #0f1111;
+  }
+  
+  .currency { font-size: 13px; margin-top: 4px; }
+  .price-main { font-size: 28px; font-weight: 500; }
+  .price-fraction { font-size: 13px; margin-top: 4px; }
+  
+  .old-price {
+    font-size: 13px;
+    color: #565959;
+  }
+  
+  .old-price span { text-decoration: line-through; }
+  
+  /* Grille de spécifications */
+  .specs-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 20px 0;
+  }
+  
+  .spec-row {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    font-size: 14px;
+  }
+  
+  .spec-key { font-weight: 700; }
+  
+  /* Description */
+  .about-section h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 20px 0 10px 0;
+  }
+  
+  .description-list {
+    padding-left: 20px;
+    font-size: 14px;
+    line-height: 20px;
+  }
+  
+  .description-list li { margin-bottom: 8px; }

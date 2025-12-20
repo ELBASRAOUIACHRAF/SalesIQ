@@ -1,0 +1,283 @@
+/* --- VARIABLES & BASE --- */
+:host {
+    --primary-dark: #1a2332; /* Le bleu foncé de votre header */
+    --accent-yellow: #ffc107; /* Le jaune des boutons */
+    --accent-yellow-hover: #ffca2c;
+    --text-dark: #333;
+    --text-gray: #666;
+    --danger: #dc3545; /* Rouge promo */
+    --light-bg: #f8f9fa;
+    --white: #ffffff;
+    --border-color: #e5e7eb;
+  }
+  
+  .container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  
+  .section-spacing {
+    padding: 4rem 0;
+  }
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 2rem;
+  }
+  
+  .section-header h2 {
+    font-size: 1.8rem;
+    color: var(--primary-dark);
+    font-weight: 700;
+    margin: 0;
+  }
+  
+  .see-all {
+    color: var(--primary-dark);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  
+  /* --- HERO SECTION --- */
+  .hero-section {
+    position: relative;
+    height: 500px;
+    background: linear-gradient(rgba(26, 35, 50, 0.7), rgba(26, 35, 50, 0.7)), url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80') center/cover;
+    display: flex;
+    align-items: center;
+    color: var(--white);
+  }
+  
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 600px;
+  }
+  
+  .hero-tag {
+    background-color: var(--accent-yellow);
+    color: var(--primary-dark);
+    padding: 5px 10px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+  
+  .hero-content h1 {
+    font-size: 3rem;
+    margin: 1rem 0;
+    line-height: 1.1;
+  }
+  
+  .btn-primary-custom {
+    background-color: var(--accent-yellow);
+    color: var(--primary-dark);
+    padding: 12px 30px;
+    border: none;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: transform 0.2s;
+    margin-top: 1rem;
+  }
+  
+  .btn-primary-custom:hover {
+    background-color: var(--accent-yellow-hover);
+    transform: translateY(-2px);
+  }
+  
+  /* --- FEATURES BAR --- */
+  .features-bar {
+    background: var(--white);
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .feature-icon {
+    font-size: 2.5rem; /* Ajuster si vous utilisez material icons */
+    color: var(--accent-yellow); 
+  }
+  
+  .feature-text h4 {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--primary-dark);
+  }
+  
+  .feature-text p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-gray);
+  }
+  
+  /* --- CATEGORIES --- */
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
+  
+  .category-card {
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+  
+  .category-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .category-card .img-wrapper {
+    width: 100%;
+    height: 220px; /* Rond ou carré selon préférence, ici carré arrondi */
+    overflow: hidden;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    background-color: #eee;
+  }
+  
+  .category-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+  }
+  
+  .category-card:hover img {
+    transform: scale(1.1);
+  }
+  
+  /* --- PRODUCT CARD (Style SalesIQ) --- */
+  .bg-light { background-color: #f9f9f9; }
+  
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .product-card {
+    background: var(--white);
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 15px;
+    position: relative;
+    transition: box-shadow 0.3s;
+  }
+  
+  .product-card:hover {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    border-color: #ddd;
+  }
+  
+  .badge-discount {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #e91e63;
+    color: white;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border-radius: 4px;
+    z-index: 2;
+  }
+  
+  .product-img-container {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    cursor: pointer;
+  }
+  
+  .product-img-container img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+  }
+  
+  .product-category {
+    font-size: 0.8rem;
+    color: #999;
+    text-transform: uppercase;
+  }
+  
+  .product-details h3 {
+    font-size: 1rem;
+    margin: 5px 0;
+    color: var(--primary-dark); /* Bleu texte comme screenshot */
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .product-details h3:hover { color: #0056b3; }
+  
+  .product-options {
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 5px;
+  }
+  
+  .product-rating {
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+  }
+  .star { color: var(--accent-yellow); }
+  .review-count { color: #aaa; font-size: 0.8rem; margin-left: 5px; }
+  
+  .price-box {
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  .current-price { color: #d32f2f; font-size: 1.1rem; margin-right: 8px; }
+  .original-price { color: #aaa; text-decoration: line-through; font-size: 0.9rem; }
+  
+  .stock-status {
+    font-size: 0.8rem;
+    margin-bottom: 15px;
+  }
+  .text-green { color: #2e7d32; }
+  .text-red { color: #d32f2f; }
+  
+  .btn-add-cart {
+    width: 100%;
+    background-color: var(--accent-yellow); /* LE JAUNE */
+    border: none;
+    padding: 10px;
+    font-weight: 600;
+    border-radius: 20px; /* Arrondi comme sur le screen */
+    cursor: pointer;
+    transition: background 0.2s;
+    color: var(--primary-dark);
+  }
+  
+  .btn-add-cart:hover {
+    background-color: #fdd835;
+  }
+  .btn-add-cart:disabled {
+    background-color: #eee;
+    color: #aaa;
+    cursor: not-allowed;
+  }
+  

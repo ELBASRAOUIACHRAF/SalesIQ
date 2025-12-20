@@ -1,0 +1,258 @@
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+.no-products-message {
+  padding: 40px 20px;
+  text-align: center;
+  color: #555;
+  font-size: 16px;
+}
+
+.pagination-container {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-button {
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 1px solid #ddd;
+  background-color: #f3f3f3;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.page-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.page-info {
+  font-size: 14px;
+  color: #555;
+}
+
+.product-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+  }
+  
+  .product-image-container {
+    overflow: hidden;
+    background-color: #f7f7f7;
+    position: relative;
+    overflow: hidden;
+  }
+  /* Badge de réduction */
+.discount-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #e91e63; /* Rose/Rouge vif */
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* État du stock */
+.stock-status {
+  font-size: 0.85rem;
+  margin: 8px 0;
+  font-weight: 500;
+}
+
+.in-stock { color: #2e7d32; }      /* Vert */
+.low-stock { color: #ef6c00; }     /* Orange */
+.out-of-stock { color: #c62828; }  /* Rouge */
+
+/* Optionnel : Griser le bouton si hors stock */
+.add-to-cart-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+  
+  .product-image {
+    width: 100%;
+    height: 270px;
+    display: block;
+  }
+  
+  .product-details {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 15px;
+  }
+  
+  .product-name {
+    font-size: 16px;
+    line-height: 1.3;
+    color: #007185; /* Couleur de lien */
+    margin: 0 0 10px 0;
+  }
+  
+  .product-options, .product-purchase-count {
+    font-size: 12px;
+    color: #555;
+    margin: 5px 0;
+  }
+  
+  .product-rating {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin: 5px 0;
+  }
+  
+  .star {
+    color: #ffb400; /* Jaune d'or */
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+  
+  .star.empty {
+    color: #ccc; /* Gris pour les étoiles vides */
+  }
+  
+  .review-count {
+    margin-left: 8px;
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: 500;
+  }
+  
+  .product-price-section {
+    margin: 10px 0;
+  }
+  
+  .list-price {
+    text-decoration: line-through;
+    color: #888;
+    margin-right: 8px;
+    font-size: 14px;
+  }
+  
+  .current-price {
+    font-size: 18px;
+    font-weight: 600;
+    color: #000;
+  }
+  
+  .current-price.discounted {
+    color: #B12704; /* style Amazon */
+  }
+  
+  .sale-text {
+      font-size: 12px;
+      color: #cc0c39; /* Couleur de la réduction */
+      margin: 3px 0;
+  }
+  
+  .delivery-info {
+    font-size: 14px;
+    color: #0f1111;
+    margin: 5px 0;
+  }
+  
+  .shipping-info {
+    font-size: 12px;
+    color: #565959;
+    margin: 5px 0 15px 0;
+  }
+  
+  .safer-chemicals {
+    font-size: 12px;
+    color: #008f1c; /* Vert pour l'écologie */
+    margin-bottom: 15px;
+  }
+  
+  .leaf-icon {
+      font-size: 14px;
+      margin-right: 3px;
+  }
+  
+  .add-to-cart-button {
+    margin-top: auto; /* pousse le bouton en bas de la carte */
+    width: 100%;
+    padding: 8px 15px;
+    background-color: #ffc200; /* Jaune Amazon */
+    border: 1px solid #ffc200;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    color: #111;
+    transition: background-color 0.2s;
+  }
+  
+  .add-to-cart-button:hover {
+    background-color: #f7b800;
+  }
+/* Style du bouton Wishlist */
+.wishlist-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  
+  /* Reset des styles par défaut */
+  background: rgba(255, 255, 255, 0.9); /* Effet verre léger */
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  
+  /* Flexbox pour centrer l'icône Material */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Ombre douce et transition */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #5f6368; /* Gris neutre pro */
+}
+
+/* Effet au survol */
+.wishlist-button:hover {
+  background: #ffffff;
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  color: #e91e63; /* Change en rose/rouge au survol */
+}
+
+/* Style de l'icône Material à l'intérieur */
+.wishlist-button mat-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+}
+
+/* Animation "Pop" lors du clic */
+.wishlist-button:active {
+  transform: scale(0.9);
+}
+  
+  /* Style quand le produit est déjà en liste de souhaits */
+  .wishlist-button.active .heart-icon {
+    color: #e74c3c; /* Rouge */
+  }

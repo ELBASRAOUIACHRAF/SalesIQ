@@ -1,0 +1,104 @@
+.rating-details-container {
+    width: 320px;
+    font-family: 'Inter', sans-serif;
+    padding: 20px;
+  }
+  
+  .section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  
+  .overall-rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .stars mat-icon {
+    color: #e0e0e0;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+  
+  .stars mat-icon.active {
+    color: #ffa41c; /* Orange spécifique aux ratings */
+  }
+  
+  .rating-text {
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+  
+  .global-count {
+    color: #565959;
+    font-size: 0.9rem;
+    margin: 4px 0 20px 0;
+  }
+  
+  /* Grille des statistiques */
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+  
+  .star-label, .percentage-label {
+    font-size: 0.85rem;
+    color: #007185; /* Bleu lien */
+    min-width: 45px;
+  }
+  
+  .star-label:hover { text-decoration: underline; }
+  
+  .progress-bar-container {
+    flex-grow: 1;
+    height: 20px;
+    background-color: #f0f2f2;
+    border: 1px solid #d5d9d9;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    background-color: #ffa41c;
+    transition: width 0.5s ease-in-out;
+  }
+  
+  .how-it-works {
+    margin: 15px 0;
+  }
+  
+  .how-it-works button {
+    font-size: 0.85rem;
+    padding: 0;
+  }
+  
+  /* Section "Write Review" */
+  .write-review-section {
+    margin-top: 25px;
+  }
+  
+  .write-review-section h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+  
+  .write-review-section p {
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+  }
+  
+  .btn-write {
+    width: 100%;
+    border-radius: 20px !important;
+    border-color: #d5d9d9 !important;
+    font-size: 0.9rem !important;
+    text-transform: none;
+  }

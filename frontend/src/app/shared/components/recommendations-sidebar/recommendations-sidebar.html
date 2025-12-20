@@ -1,0 +1,39 @@
+<div class="recommendations-sidebar-container">
+    <h2>Recommended for you</h2>
+    <mat-divider style="margin-bottom: 15px;"></mat-divider>
+  
+    @if (recommendedProducts.length > 0) {
+      @for (product of recommendedProducts; track product.id) {
+        <div class="product-card" [routerLink]="['/product', product.id]">
+          <div class="product-image-container">
+            <img [src]="product.imageUrl" [alt]="product.name">
+          </div>
+          <div class="product-details">
+            <p class="product-name">{{ product.name }}</p>
+            
+            @if (product.rating) {
+              <div class="rating">
+                @for (star of [1,2,3,4,5]; track star) {
+                  <mat-icon [ngClass]="{'active': star <= product.rating}">star</mat-icon>
+                }
+                <span class="rating-value">{{ product.rating | number:'1.1-1' }}</span>
+              </div>
+            }
+  
+            <div class="price-section">
+              @if (product.discount) {
+                <span class="discounted-price">${{ calculatePrice(product) | number:'1.2-2' }}</span>
+                <span class="original-price">${{ product.price | number:'1.2-2' }}</span>
+              } @else {
+                <span class="current-price">${{ product.price | number:'1.2-2' }}</span>
+              }
+            </div>
+            <button mat-flat-button color="primary" class="btn-view-product" [routerLink]="['/product', product.id]">View Product</button>
+          </div>
+        </div>
+        <mat-divider *ngIf="!$last"></mat-divider>
+      }
+    } @else {
+      <p class="no-recommendations">No recommendations available at the moment.</p>
+    }
+  </div>

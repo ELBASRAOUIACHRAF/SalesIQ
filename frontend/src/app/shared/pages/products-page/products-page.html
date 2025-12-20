@@ -1,0 +1,15 @@
+<app-navbar></app-navbar>
+
+<div style="padding: 20px; display: flex; gap: 20px; align-items: flex-start; background-color: #f7f7f7; min-height: 80vh;">
+  
+  <app-product-filter-sidebar 
+    (filtersChanged)="onFiltersChanged($event)">
+  </app-product-filter-sidebar>
+
+  <div style="flex: 1;">
+    <app-productcard [filters]="currentFilters"></app-productcard>
+  </div>
+
+</div>
+
+<app-footer></app-footer>

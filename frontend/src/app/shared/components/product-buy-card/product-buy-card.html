@@ -1,0 +1,74 @@
+@if (productDetails) {
+<div class="buy-card-container">
+    <div class="price-header">
+      <div class="main-price">
+        <span class="currency">$</span>
+        <span class="amount">{{ newPrice | number:'1.2-2' }}</span>
+      </div>
+      <p class="delivery-info">
+        FREE delivery <b>{{ deliveryDate | date:'EEEE, MMM d' }}</b>.
+      </p>
+      <p class="delivery-location">
+        <mat-icon>location_on</mat-icon>
+        Deliver to {{ userLocation }}
+      </p>
+    </div>
+  
+    <div class="stock-section">
+      <h3 [class.in-stock]="productDetails.stock > 5" 
+          [class.low-stock]="productDetails.stock > 0 && productDetails.stock <= 5"
+          [class.out-of-stock]="productDetails.stock === 0">
+        
+          {{ getStockStatus() }}
+      </h3>
+    </div>
+  
+    <div class="quantity-selector" *ngIf="productDetails.stock > 0">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Quantity</mat-label>
+        <mat-select [(value)]="selectedQuantity">
+          <mat-option *ngFor="let q of [1,2,3,4,5,6,7,8,9,10]" [value]="q">
+            {{ q }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  
+    <div class="action-buttons">
+      <button mat-flat-button class="btn-add" [disabled]="productDetails.stock === 0" (click)="addToCart()">
+        Add to Cart
+      </button>
+      <button mat-flat-button class="btn-buy" [disabled]="productDetails.stock === 0" (click)="buyNow()">
+        Buy Now
+      </button>
+    </div>
+  
+    <div class="shipping-info">
+      <div class="info-row">
+        <span>Ships from</span>
+        <span>SalesIQ.com</span>
+      </div>
+      <div class="info-row">
+        <span>Sold by</span>
+        <span class="link">SalesIQ Retail</span>
+      </div>
+      <div class="info-row">
+        <span>Returns</span>
+        <span class="link">Eligible for Return</span>
+      </div>
+      <div class="info-row">
+        <span>Payment</span>
+        <span class="link">Secure transaction</span>
+      </div>
+    </div>
+  
+    <button mat-stroked-button class="btn-wishlist">
+      Add to List
+    </button>
+  </div>
+
+} @else {
+  <div class="loading-card">
+    <p>Loading price and availability...</p>
+  </div>
+}

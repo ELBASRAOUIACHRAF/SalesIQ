@@ -1,0 +1,80 @@
+<div class="basket-container">
+  <div class="items-column">
+    <div class="header">
+      <h1>Shopping Basket</h1>
+      <span class="price-label">Price</span>
+    </div>
+    <mat-divider style="margin-top: 8px;"></mat-divider>
+
+    @if (basketItems.length > 0) {
+      @for (item of basketItems; track item.id) {
+        <div class="basket-item">
+          <div class="item-image">
+            <img [src]="item.imageUrl" [alt]="item.name">
+          </div>
+          
+          <div class="item-details">
+            <h2 class="item-name" [routerLink]="['/product', item.id]">{{ item.name }}</h2>
+            <p class="stock-status" [class.in-stock]="item.stock > 0">
+              {{ item.stock > 0 ? 'In Stock' : 'Out of Stock' }}
+            </p>
+            
+            <div class="item-actions">
+              <mat-form-field appearance="outline" class="qty-select" subscriptSizing="dynamic">
+                <mat-select [value]="item.quantity" (selectionChange)="updateQuantity(item.id, $event.value)">
+                  @for (q of [1,2,3,4,5,6,7,8,9,10]; track q) {
+                    <mat-option [value]="q">Qty: {{ q }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <button mat-button class="btn-action" (click)="removeItem(item.id)">Delete</button>
+              <span class="divider">|</span>
+              <button mat-button class="btn-action">Save for later</button>
+              <span class="divider">|</span>
+              <button mat-button class="btn-action">Compare with similar items</button>
+            </div>
+          </div>
+
+          <div class="item-price">
+            ${{ calculateDiscountedPrice(item) | number:'1.2-2' }}
+          </div>
+        </div>
+        <mat-divider></mat-divider>
+      }
+      
+      <div class="subtotal-row">
+        Subtotal ({{ totalItems }} items): <b>${{ totalPrice | number:'1.2-2' }}</b>
+      </div>
+    } @else {
+      <div class="empty-basket-container" style="text-align: center; padding: 50px 0;">
+        <img src="https://www.svgrepo.com/show/17356/empty-cart.svg" style="width: 200px; margin-bottom: 20px;">
+        <h2>Your Shopping Basket is empty.</h2>
+        <button mat-stroked-button color="primary" routerLink="/">Continue Shopping</button>
+      </div>
+    }
+  </div>
+
+  @if (basketItems.length > 0) {
+    <div class="summary-column">
+      <div class="summary-card">
+        <div class="free-delivery-hint">
+          <mat-icon style="font-size: 20px; width: 20px; height: 20px;">check_circle</mat-icon>
+          <div>
+            <span style="color: #067D62; font-weight: 600;">Your order qualifies for FREE Shipping.</span>
+            <p style="margin: 4px 0 0 0; color: var(--text-secondary); font-size: 12px;">Choose this option at checkout.</p>
+          </div>
+        </div>
+        
+        <div class="subtotal">
+          Subtotal ({{ totalItems }} items): <b>${{ totalPrice | number:'1.2-2' }}</b>
+        </div>
+        
+        <button mat-flat-button class="btn-checkout">
+          Proceed to Checkout
+        </button>
+      </div>
+
+    </div>
+  }
+</div>
