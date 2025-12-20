@@ -1,6 +1,6 @@
 import pandas as pd
 from datetime import timedelta
-from statsmodels.tsa.arima.model import ARIMA
+# REMOVE statsmodels import from here
 from app.api.models.salesforecast_model import (
     SalesForecastRequest,
     SalesForecastResponse,
@@ -14,9 +14,20 @@ def forecast_sales(request: SalesForecastRequest) -> SalesForecastResponse :
     and also the forecast, which a list of forecast dtos containing the date
     and the value.
     """
+    from statsmodels.tsa.arima.model import ARIMA
+
     historical_data = request.forecast
     days_ahead = request.daysAhead
-
+    if not historical_data:
+        return SalesForecastResponse(
+            model=request.model,
+            forecast=[]
+        )
+    if days_ahead <= 0:
+        return SalesForecastResponse(
+            model=request.model,
+            forecast=[]
+        )
     df_list = [
         {
             'date' : point.date,

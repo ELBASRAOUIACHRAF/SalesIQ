@@ -14,3 +14,4 @@ class SalesForecastRequest(BaseModel):
 class SalesForecastResponse(BaseModel):
     model: str
     forecast: List[ForecastPoint]
+

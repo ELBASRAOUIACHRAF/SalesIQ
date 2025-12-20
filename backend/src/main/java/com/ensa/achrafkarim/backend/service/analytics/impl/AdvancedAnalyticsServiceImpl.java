@@ -306,6 +306,9 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
     public SalesForecastDto forecastSales(int daysAhead) {
 
         List<Object[]> rawData = saleRepository.findAllSalesWithTotals();
+        if (rawData.isEmpty()) {
+            return new SalesForecastDto();
+        }
 
         Map<LocalDate, Double> dailySales = rawData.stream()
                 .collect(Collectors.groupingBy(

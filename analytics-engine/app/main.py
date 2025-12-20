@@ -1,52 +1,34 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.core.config import settings
+from app.api.routes import sales_forecast
 
-# Import all routers
-from app.api.routes import (
-    sales_forecast,
-)
+# Do NOT define class ForecastPoint here.
+# Do NOT import from main in other files.
 
 app = FastAPI(
-    title=settings.APP_NAME,
+    title="Analytics API",
     description="Microservice for analytics and machine learning",
-    version=settings.APP_VERSION,
+    version="1.0",
 )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Include all routers
-app.include_router(sales_forecast.router, prefix="/api/v1")
+app.include_router(
+    sales_forecast.router,
+    prefix="/api/v1",
+    tags=["Sales Forecasting"]
+)
 
 @app.get("/")
 async def root():
-    """Root endpoint - API information"""
-    return {
-        "name": settings.APP_NAME,
-        "creators": ["AMEUR Abdelkarim", "EL BASRAOUI Achraf"],
-        "version": settings.APP_VERSION,
-        "status": "running",
-        "endpoints": {
-            "sales_forecasting": "/api/v1/sales",
-        }
-    }
+    return {"status": "running"}
 
-# just for testing ajemi
 @app.get("/health")
 async def health_check():
-    """Health check endpoint"""
-    return {
-        "status": "healthy",
-        "services": {
-            "sales_forecasting": "operational",
-            "customer_segmentation": "pending",
-            "churn_prediction": "pending",
-            "recommendations": "pending"
-        }
-    }
+    return {"status": "healthy"}
