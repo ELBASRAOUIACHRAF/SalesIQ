@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 @router.post("/forecastSales", response_model=SalesForecastResponse)
-async def forecast_sales_endpoint(request: SalesForecastRequest):
+def forecast_sales_endpoint(request: SalesForecastRequest):
     """
     ARIMA-based sales forecasting
     
@@ -28,7 +28,7 @@ async def forecast_sales_endpoint(request: SalesForecastRequest):
 
 # just for testing
 @router.get("/forecast/health")
-async def forecast_health():
+def forecast_health():
     """Health check for forecasting service"""
     return {
         "service": "sales_forecasting",

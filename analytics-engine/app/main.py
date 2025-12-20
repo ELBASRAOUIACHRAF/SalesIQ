@@ -2,9 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import sales_forecast
 
-# Do NOT define class ForecastPoint here.
-# Do NOT import from main in other files.
-
 app = FastAPI(
     title="Analytics API",
     description="Microservice for analytics and machine learning",
