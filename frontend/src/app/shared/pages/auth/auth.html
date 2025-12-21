@@ -1,45 +1,49 @@
 <div class="auth-wrapper">
     <div class="container" [class.right-panel-active]="isSignUpActive" id="container">
       
-        <div class="form-container sign-up-container">
-            <form action="#">
-              <h1>Create Account</h1>
-              
-              <div class="social-container">
-                <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="social"><i class="fab fa-google"></i></a>
-                <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
-              </div>
+      <div class="form-container sign-up-container">
+        <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+          <h1>Create Account</h1>
           
-              <span>or use your email for registration</span>
+          <div class="social-container">
+            <a href="#" class="social"><mat-icon>facebook</mat-icon></a>
+            <a href="#" class="social"><mat-icon>google</mat-icon></a>
+            <a href="#" class="social"><mat-icon>linkedin</mat-icon></a>
+          </div>
           
-              <div class="row-input">
-                  <input type="text" placeholder="First Name" />
-                  <input type="text" placeholder="Last Name" />
-              </div>
+          <span>or use your email for registration</span>
           
-              <input type="tel" placeholder="Phone Number" />
-          
-              <input type="email" placeholder="Email" />
-              <input type="password" placeholder="Password" />
-              
-              <button class="btn-primary">Sign Up</button>
-            </form>
+          <div class="row-input">
+              <input type="text" formControlName="firstName" placeholder="First Name" />
+              <input type="text" formControlName="lastName" placeholder="Last Name" />
           </div>
   
+          <input type="tel" formControlName="phoneNumber" placeholder="Phone Number" />
+          
+          <input type="email" formControlName="email" placeholder="Email" />
+          <input type="password" formControlName="password" placeholder="Password" />
+          
+          <button class="btn-primary" type="submit">Sign Up</button>
+        </form>
+      </div>
+  
       <div class="form-container sign-in-container">
-        <form action="#">
+        <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
           <h1>Sign in</h1>
+          
           <div class="social-container">
             <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
             <a href="#" class="social"><i class="fab fa-google"></i></a>
             <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
           </div>
+          
           <span>or use your existing account</span>
-          <input type="email" placeholder="Email" />
-          <input type="password" placeholder="Password" />
+          
+          <input type="email" formControlName="email" placeholder="Email" />
+          <input type="password" formControlName="password" placeholder="Password" />
+          
           <a href="#" class="forgot-pass">Forgot your password?</a>
-          <button class="btn-primary">Sign In</button>
+          <button class="btn-primary" type="submit">Sign In</button>
         </form>
       </div>
   
@@ -58,5 +62,6 @@
           </div>
         </div>
       </div>
+  
     </div>
   </div>

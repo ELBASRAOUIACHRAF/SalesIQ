@@ -11,7 +11,8 @@ import { BasketPage } from './shared/pages/basket-page/basket-page';
 import { ProductsPage } from './shared/pages/products-page/products-page';
 import { Auth } from './shared/pages/auth/auth';
 import { DetailsProductPage } from './shared/pages/details-product-page/details-product-page';
-
+import { MatIconModule } from '@angular/material/icon';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ProductImages } from './shared/components/product-images/product-images';
 import { ProductDetails } from './shared/components/product-details/product-details';
 import { ProductBuyCard } from './shared/components/product-buy-card/product-buy-card';
@@ -32,7 +33,9 @@ import { RecommendationsSidebar } from './shared/components/recommendations-side
     Auth,
     Basket,
     RecommendationsSidebar,
-
+    MatIconModule,
+    ReactiveFormsModule,
+    FormsModule,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'

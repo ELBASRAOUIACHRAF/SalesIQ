@@ -53,9 +53,7 @@ export class SalesForecastKpiComponent implements OnInit, OnChanges, OnDestroy {
     this.destroy$.complete();
   }
 
-  @Output() requestForecast = new EventEmitter<number>();
 
-  horizonDays = this.defaultHorizonDays;
 
   readonly viewBoxWidth = 180;
   readonly viewBoxHeight = 64;
