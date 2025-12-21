@@ -1,6 +1,9 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
+import { AnalyticsService } from '../../../../core/services/analytics.service';
+import { SalesForecastDto, ForecastPointDto } from '../../../../core/models/salesForecast.model';
 
 type Trend = 'up' | 'down' | 'flat';
 
@@ -13,7 +16,7 @@ type Point = { x: number; y: number };
   templateUrl: './sales-forecast-kpi.html',
   styleUrls: ['./sales-forecast-kpi.css']
 })
-export class SalesForecastKpiComponent implements OnChanges {
+export class SalesForecastKpiComponent implements OnInit, OnChanges, OnDestroy {
   @Input() title = 'Sales Forecast';
   @Input() defaultHorizonDays = 7;
   @Input() currencySymbol = '$';
@@ -25,6 +28,30 @@ export class SalesForecastKpiComponent implements OnChanges {
   @Input() insight = 'Growth expected';
   @Input() historical: number[] = [];
   @Input() forecast: number[] = [];
+
+  @Output() requestForecast = new EventEmitter<number>();
+
+  horizonDays = this.defaultHorizonDays;
+
+  // ==========================================
+  // NEW: State for API calls
+  // ==========================================
+  isLoading = false;
+  errorMessage = '';
+  forecastData: SalesForecastDto | null = null;
+
+  private destroy$ = new Subject<void>();
+
+  constructor(private analyticsService: AnalyticsService) {}
+
+  ngOnInit(): void {
+    this.horizonDays = this.defaultHorizonDays;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   @Output() requestForecast = new EventEmitter<number>();
 
@@ -88,7 +115,15 @@ export class SalesForecastKpiComponent implements OnChanges {
   }
 
   get forecastEntries() {
-    return this.forecast.map((value, idx) => ({ day: idx + 1, value }));
+    // Use API data if available, otherwise fall back to @Input
+    if (this.forecastData?.forecast?.length) {
+      return this.forecastData.forecast.map((point, idx) => ({
+        day: idx + 1,
+        date: point.date,
+        value: point.predictedSales
+      }));
+    }
+    return this.forecast.map((value, idx) => ({ day: idx + 1, date: '', value }));
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -104,8 +139,72 @@ export class SalesForecastKpiComponent implements OnChanges {
     }
   }
 
+  /**
+   * BUTTON CLICK HANDLER
+   * Calls the backend API to get sales forecast
+   */
   triggerRequest() {
+    // Emit event for parent components that want to handle it
     this.requestForecast.emit(this.horizonDays);
+
+    // Also call the backend directly
+    this.fetchForecast();
+  }
+
+  /**
+   * Fetch forecast from backend API
+   */
+  fetchForecast(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    console.log('🚀 Fetching sales forecast for', this.horizonDays, 'days');
+
+    this.analyticsService.forecastSales(this.horizonDays)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data: SalesForecastDto) => {
+          console.log('✅ Forecast received:', data);
+          this.forecastData = data;
+          
+          // Update component properties from API response
+          this.model = data.model || 'N/A';
+          this.lastUpdated = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          
+          // Convert forecast points to array for chart
+          if (data.forecast?.length) {
+            this.forecast = data.forecast.map(p => p.predictedSales);
+            
+            // Calculate total and trend
+            const totalPredicted = data.forecast.reduce((sum, p) => sum + p.predictedSales, 0);
+            this.total = Math.round(totalPredicted);
+            
+            // Calculate trend based on first vs last prediction
+            const first = data.forecast[0]?.predictedSales || 0;
+            const last = data.forecast[data.forecast.length - 1]?.predictedSales || 0;
+            if (last > first) {
+              this.trend = 'up';
+              this.percentChange = first > 0 ? Math.round(((last - first) / first) * 100) : 0;
+              this.insight = 'Growth expected';
+            } else if (last < first) {
+              this.trend = 'down';
+              this.percentChange = first > 0 ? Math.round(((last - first) / first) * 100) : 0;
+              this.insight = 'Decline expected';
+            } else {
+              this.trend = 'flat';
+              this.percentChange = 0;
+              this.insight = 'Stable forecast';
+            }
+          }
+          
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('❌ Forecast error:', err);
+          this.errorMessage = 'Failed to fetch forecast. Is the backend running?';
+          this.isLoading = false;
+        }
+      });
   }
 
   private buildPoints(): Point[] {

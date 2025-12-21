@@ -1,0 +1,151 @@
+<!--
+  GROWTH RATE CARD TEMPLATE
+  =========================
+  Compares sales revenue between two periods
+-->
+
+<div class="growth-rate-container">
+  
+  <!-- Header -->
+  <div class="card-header">
+    <h3>📊 Sales Growth Rate Calculator</h3>
+    <p class="subtitle">Compare revenue between two time periods</p>
+  </div>
+
+  <!-- Form Section -->
+  <div class="form-section">
+    
+    <!-- Period 1 (Baseline) -->
+    <div class="period-group">
+      <h4>📅 Period 1 (Baseline)</h4>
+      <p class="period-description">The reference period to compare against</p>
+      <div class="date-row">
+        <div class="input-group">
+          <label for="p1Start">Start Date</label>
+          <input 
+            type="date" 
+            id="p1Start"
+            [(ngModel)]="period1Start"
+            [max]="period1End"
+          />
+        </div>
+        <div class="input-group">
+          <label for="p1End">End Date</label>
+          <input 
+            type="date" 
+            id="p1End"
+            [(ngModel)]="period1End"
+            [min]="period1Start"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Period 2 (Comparison) -->
+    <div class="period-group">
+      <h4>📅 Period 2 (Comparison)</h4>
+      <p class="period-description">The period to measure growth</p>
+      <div class="date-row">
+        <div class="input-group">
+          <label for="p2Start">Start Date</label>
+          <input 
+            type="date" 
+            id="p2Start"
+            [(ngModel)]="period2Start"
+            [max]="period2End"
+          />
+        </div>
+        <div class="input-group">
+          <label for="p2End">End Date</label>
+          <input 
+            type="date" 
+            id="p2End"
+            [(ngModel)]="period2End"
+            [min]="period2Start"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Calculate Button -->
+    <div class="button-row">
+      <button 
+        class="calculate-button"
+        (click)="onCalculateClick()"
+        [disabled]="isLoading"
+      >
+        <span *ngIf="!isLoading">🔢 Calculate Growth Rate</span>
+        <span *ngIf="isLoading">⏳ Calculating...</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-state">
+    <p>⚠️ {{ errorMessage }}</p>
+    <button class="retry-button" (click)="onCalculateClick()">🔄 Retry</button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Calculating growth rate...</p>
+    <code>GET /api/v1/analytics/growth-rate</code>
+  </div>
+
+  <!-- Initial State -->
+  <div *ngIf="!hasCalculated && !isLoading" class="initial-state">
+    <div class="empty-icon">📈</div>
+    <p>Select two periods and click <strong>Calculate</strong> to see the growth rate.</p>
+  </div>
+
+  <!-- Result Display -->
+  <div *ngIf="!isLoading && !errorMessage && growthRate !== null && hasCalculated" class="result-section">
+    
+    <div class="result-card" [ngClass]="growthStatus">
+      <div class="result-icon">{{ growthIcon }}</div>
+      <div class="result-value">
+        <span class="percentage">{{ growthRate | number:'1.2-2' }}%</span>
+        <span class="label">Growth Rate</span>
+      </div>
+    </div>
+
+    <div class="result-explanation">
+      <p *ngIf="growthStatus === 'positive'">
+        🎉 <strong>Great news!</strong> Sales increased by {{ growthRate | number:'1.2-2' }}% compared to the baseline period.
+      </p>
+      <p *ngIf="growthStatus === 'negative'">
+        ⚠️ <strong>Attention:</strong> Sales decreased by {{ growthRate * -1 | number:'1.2-2' }}% compared to the baseline period.
+      </p>
+      <p *ngIf="growthStatus === 'neutral'">
+        ➡️ <strong>No change:</strong> Sales remained the same between the two periods.
+      </p>
+    </div>
+
+    <div class="formula-info">
+      <details>
+        <summary>📐 Formula Used</summary>
+        <div class="formula-content">
+          <code>Growth Rate = ((Period2 Revenue - Period1 Revenue) / Period1 Revenue) × 100</code>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- API Info -->
+  <div class="api-info">
+    <details>
+      <summary>🔧 API Details</summary>
+      <div class="api-details">
+        <p><strong>Endpoint:</strong> <code>GET /api/v1/analytics/growth-rate</code></p>
+        <p><strong>Parameters:</strong></p>
+        <ul>
+          <li><code>period1Start</code>: {{ period1Start }}</li>
+          <li><code>period1End</code>: {{ period1End }}</li>
+          <li><code>period2Start</code>: {{ period2Start }}</li>
+          <li><code>period2End</code>: {{ period2End }}</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+</div>

@@ -7,11 +7,25 @@
     <div class="controls">
       <label class="horizon-input">
         <span>Days</span>
-        <input type="number" min="1" [ngModel]="horizonDays" (ngModelChange)="updateHorizon($event)" />
+        <input type="number" min="1" max="365" [ngModel]="horizonDays" (ngModelChange)="updateHorizon($event)" />
       </label>
-      <button type="button" class="action" (click)="triggerRequest()">Generate</button>
+      <button type="button" class="action" (click)="triggerRequest()" [disabled]="isLoading">
+        <span *ngIf="!isLoading">🔮 Generate</span>
+        <span *ngIf="isLoading">⏳ Loading...</span>
+      </button>
     </div>
   </header>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-banner">
+    ⚠️ {{ errorMessage }}
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <div class="spinner-small"></div>
+    <span>Generating forecast...</span>
+  </div>
 
   <div class="kpi-row">
     <div class="value">
@@ -45,13 +59,24 @@
 
   <div class="meta-row">
     <div class="meta">{{ model }} · updated {{ lastUpdated }} · {{ forecastHorizonLabel }}</div>
-    <div class="insight">Insight: {{ insight }}</div>
+    <div class="insight">💡 {{ insight }}</div>
   </div>
 
   <div class="forecast-list" *ngIf="forecastEntries.length">
     <div class="forecast-row" *ngFor="let f of forecastEntries">
-      <span class="day">Day {{ f.day }}</span>
+      <span class="day">
+        <ng-container *ngIf="f.date">{{ f.date }}</ng-container>
+        <ng-container *ngIf="!f.date">Day {{ f.day }}</ng-container>
+      </span>
       <span class="value">{{ currencySymbol }}{{ f.value | number:'1.0-0' }}</span>
     </div>
   </div>
+
+  <!-- API Info -->
+  <details class="api-info">
+    <summary>🔧 API Details</summary>
+    <div class="api-content">
+      <code>GET /api/v1/analytics/forecastSales?daysAhead={{ horizonDays }}</code>
+    </div>
+  </details>
 </section>

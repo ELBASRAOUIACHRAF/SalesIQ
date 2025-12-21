@@ -1,19 +1,24 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { SeasonalityAnalysisDto, TimeSeriesPointDto } from '../../../../core/models/seasonality.model';
-import { Subscription } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ChartKpiCardComponent } from '../chart-kpi-card/chart-kpi-card';
 
 @Component({
   selector: 'app-seasonality-chart',
   standalone: true,
-  imports: [CommonModule, ChartKpiCardComponent],
+  imports: [CommonModule, FormsModule, ChartKpiCardComponent],
   templateUrl: './seasonality-chart.html',
   styleUrls: ['./seasonality-chart.css']
 })
 export class SeasonalityAnalysisComponent implements OnInit, OnDestroy {
 
+  // ==========================================
+  // RESULT DATA
+  // ==========================================
+  
   seasonalityType: string = 'NONE';
   seasonalityStrength = 0;
 
@@ -26,29 +31,105 @@ export class SeasonalityAnalysisComponent implements OnInit, OnDestroy {
   trendLabels: string[] = [];
   seasonalLabels: string[] = [];
   residualLabels: string[] = [];
-  private charts: Record<string, any> = {};
-  private sub?: Subscription;
+
+  // ==========================================
+  // UI STATE
+  // ==========================================
+  
+  isLoading = false;
+  errorMessage = '';
+  hasAnalyzed = false;
+
+  // ==========================================
+  // FORM INPUTS
+  // ==========================================
+  
+  startDate: string = '';
+  endDate: string = '';
+
+  // ==========================================
+  // LIFECYCLE
+  // ==========================================
+  
+  private destroy$ = new Subject<void>();
 
   constructor(private analyticsService: AnalyticsService) {}
 
   ngOnInit(): void {
-    this.sub = this.analyticsService
-      .analyzeSeasonality('2024-01-01', '2024-06-30')
-      .subscribe((data: SeasonalityAnalysisDto) => {
-        this.seasonalityType = data.seasonalityType;
-        this.seasonalityStrength = data.seasonalityStrength;
-
-        this.setSeries('original', data.originalSeries || []);
-        this.setSeries('trend', data.trendSeries || []);
-        this.setSeries('seasonal', data.seasonalSeries || []);
-        this.setSeries('residual', data.residualSeries || []);
-      });
+    // Set default dates (last 6 months)
+    const end = new Date();
+    const start = new Date();
+    start.setMonth(start.getMonth() - 6);
+    
+    this.startDate = this.formatDateForInput(start);
+    this.endDate = this.formatDateForInput(end);
   }
 
   ngOnDestroy(): void {
-    if (this.sub) this.sub.unsubscribe();
-    // Destroy charts
-    Object.values(this.charts).forEach(c => c.destroy());
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  // ==========================================
+  // BUTTON CLICK HANDLER
+  // ==========================================
+
+  /**
+   * Called when user clicks "Analyze Seasonality" button
+   */
+  onAnalyzeClick(): void {
+    // Validate
+    if (!this.startDate || !this.endDate) {
+      this.errorMessage = 'Please select both start and end dates.';
+      return;
+    }
+
+    if (new Date(this.startDate) > new Date(this.endDate)) {
+      this.errorMessage = 'Start date must be before end date.';
+      return;
+    }
+
+    // Set loading state
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.hasAnalyzed = true;
+
+    // Convert to ISO format
+    const startISO = new Date(this.startDate).toISOString();
+    const endISO = new Date(this.endDate).toISOString();
+
+    console.log('🚀 Analyzing seasonality:', { startISO, endISO });
+
+    // Call service
+    this.analyticsService.analyzeSeasonality(startISO, endISO)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data: SeasonalityAnalysisDto) => {
+          console.log('✅ Seasonality data received:', data);
+          this.seasonalityType = data.seasonalityType;
+          this.seasonalityStrength = data.seasonalityStrength;
+
+          this.setSeries('original', data.originalSeries || []);
+          this.setSeries('trend', data.trendSeries || []);
+          this.setSeries('seasonal', data.seasonalSeries || []);
+          this.setSeries('residual', data.residualSeries || []);
+          
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('❌ Seasonality analysis error:', err);
+          this.errorMessage = 'Failed to analyze seasonality. Is the backend running?';
+          this.isLoading = false;
+        }
+      });
+  }
+
+  // ==========================================
+  // HELPER METHODS
+  // ==========================================
+
+  private formatDateForInput(date: Date): string {
+    return date.toISOString().split('T')[0];
   }
 
   private setSeries(name: 'original' | 'trend' | 'seasonal' | 'residual', series: TimeSeriesPointDto[]) {
@@ -68,5 +149,10 @@ export class SeasonalityAnalysisComponent implements OnInit, OnDestroy {
       case 'residual':
         this.residualLabels = labels; this.residualValues = values; break;
     }
+  }
+
+  /** Check if we have data to display */
+  get hasData(): boolean {
+    return this.originalValues.length > 0 || this.trendValues.length > 0;
   }
 }
