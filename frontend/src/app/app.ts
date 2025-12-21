@@ -9,16 +9,21 @@ import { Account } from './shared/components/account/account';
 import { Profile } from './shared/pages/profile/profile';
 import { BasketPage } from './shared/pages/basket-page/basket-page';
 import { ProductsPage } from './shared/pages/products-page/products-page';
+import { Auth } from './shared/pages/auth/auth';
 import { DetailsProductPage } from './shared/pages/details-product-page/details-product-page';
-
+import { MatIconModule } from '@angular/material/icon';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ProductImages } from './shared/components/product-images/product-images';
 import { ProductDetails } from './shared/components/product-details/product-details';
 import { ProductBuyCard } from './shared/components/product-buy-card/product-buy-card';
 import { RatingDetails } from './shared/components/rating-details/rating-details';
 import { Review } from './shared/components/review/review';
+import { AboutPage } from './shared/pages/about-page/about-page';
 
 import { Basket } from './shared/components/basket/basket';
 import { RecommendationsSidebar } from './shared/components/recommendations-sidebar/recommendations-sidebar';
+import { ContactPage } from './shared/pages/contact-page/contact-page';
+import { CategoriesPage } from './shared/pages/categories-page/categories-page';
 
 @Component({
   selector: 'app-root',
@@ -28,10 +33,15 @@ import { RecommendationsSidebar } from './shared/components/recommendations-side
     ProductBuyCard,
     RatingDetails,
     Review,
-
+    Auth,
     Basket,
     RecommendationsSidebar,
-
+    MatIconModule,
+    ReactiveFormsModule,
+    FormsModule,
+    AboutPage,
+    ContactPage,
+    CategoriesPage
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'

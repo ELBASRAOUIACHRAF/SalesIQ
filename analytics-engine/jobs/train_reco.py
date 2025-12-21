@@ -27,6 +27,7 @@ def fetch_data():
     SELECT 
         p.id, 
         p.name, 
+        p.description,
         p.mark, 
         p.price, 
         c.name as category_name
@@ -47,7 +48,7 @@ def fetch_data():
 def build_pipeline():
     
 
-    # text_features = 'name'
+    text_features = 'combined_text'
     text_transformer = TfidfVectorizer(stop_words='english', max_features=5000)
     
     # OneHotEncoder transforme "Nike" en [0, 1, 0...]
@@ -61,7 +62,7 @@ def build_pipeline():
     # D. Assemblage du préprocesseur
     preprocessor = ColumnTransformer(
         transformers=[
-            ('txt', text_transformer, 'name'),
+            ('txt', text_transformer, text_features),
             ('cat', categorical_transformer, categorical_features),
             ('num', numeric_transformer, numeric_features)
         ]
@@ -78,7 +79,7 @@ def train():
     
     # Création d'une colonne combinée pour le TF-IDF
     # On donne plus de poids au nom (x2) qu'à la description
-    # df['combined_text'] = (df['name'] + " ") * 2 # + df['description']
+    df['combined_text'] = (df['name'] + " ") * 2 + df['description']
 
     logging.info("Début de l'entraînement du modèle...")
     pipeline = build_pipeline()

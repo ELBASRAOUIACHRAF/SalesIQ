@@ -1,0 +1,101 @@
+<div class="contact-container">
+  
+    <header class="hero-section">
+      <div class="hero-content">
+        <h1>Get in <span class="gold-text">Touch</span></h1>
+        <p>Have a question or just want to say hi? We'd love to hear from you.</p>
+      </div>
+    </header>
+  
+    <div class="content-wrapper">
+      
+      <div class="contact-grid">
+        
+        <div class="form-card">
+          <h2>Send us a Message</h2>
+          <p class="form-subtitle">Fill out the form and our team will get back to you within 24 hours.</p>
+  
+          <div class="success-alert" *ngIf="successMessage">
+            <mat-icon>check_circle</mat-icon>
+            <span>Message sent successfully! We'll be in touch soon.</span>
+          </div>
+  
+          <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+            
+            <div class="input-group">
+              <label>Full Name</label>
+              <input type="text" formControlName="name" placeholder="John Doe" 
+                     [class.invalid]="name?.invalid && (name?.dirty || name?.touched)">
+              <span class="error" *ngIf="name?.invalid && (name?.dirty || name?.touched)">Name is required</span>
+            </div>
+  
+            <div class="input-group">
+              <label>Email Address</label>
+              <input type="email" formControlName="email" placeholder="john@example.com"
+                     [class.invalid]="email?.invalid && (email?.dirty || email?.touched)">
+              <span class="error" *ngIf="email?.hasError('email') && email?.touched">Invalid email address</span>
+            </div>
+  
+            <div class="input-group">
+              <label>Subject</label>
+              <select formControlName="subject" [class.invalid]="subject?.invalid && (subject?.dirty || subject?.touched)">
+                <option value="" disabled selected>Select a topic</option>
+                <option value="support">Technical Support</option>
+                <option value="sales">Sales Inquiry</option>
+                <option value="partnership">Partnership</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+  
+            <div class="input-group">
+              <label>Message</label>
+              <textarea rows="5" formControlName="message" placeholder="How can we help you?"
+                        [class.invalid]="message?.invalid && (message?.dirty || message?.touched)"></textarea>
+              <span class="error" *ngIf="message?.hasError('minlength') && message?.touched">Message must be at least 10 characters</span>
+            </div>
+  
+            <button type="submit" class="btn-submit" [disabled]="contactForm.invalid || isSubmitting">
+              <span *ngIf="!isSubmitting">Send Message</span>
+              <span *ngIf="isSubmitting">Sending...</span>
+            </button>
+          </form>
+        </div>
+  
+        <div class="info-sidebar">
+          
+          <div class="info-item" *ngFor="let info of contactInfo">
+            <div class="icon-box">
+              <mat-icon>{{ info.icon }}</mat-icon>
+            </div>
+            <div class="info-text">
+              <h3>{{ info.title }}</h3>
+              <p>{{ info.content }}</p>
+            </div>
+          </div>
+  
+          <div class="map-container">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d53610.50504649441!2d-6.958493174502171!3d32.88080499652649!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xda427fa6cc01abd%3A0x81e42d2370814027!2sKhouribga!5e0!3m2!1sfr!2sma!4v1766349606078!5m2!1sfr!2sma"   
+                    width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy">
+            </iframe>
+            <!-- <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3168.628236556408!2d-122.08625158469247!3d37.422065979825!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fba02425dad8f%3A0x6c296c66619367e0!2sGoogleplex!5e0!3m2!1sen!2sus!4v1614362747656!5m2!1sen!2sus" 
+              width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy">
+            </iframe> -->
+          </div>
+  
+        </div>
+  
+      </div>
+  
+      <section class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-grid">
+          <div class="faq-card" *ngFor="let item of faqs">
+            <h3>{{ item.question }}</h3>
+            <p>{{ item.answer }}</p>
+          </div>
+        </div>
+      </section>
+  
+    </div>
+  </div>

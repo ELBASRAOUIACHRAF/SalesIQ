@@ -1,0 +1,377 @@
+/* --- VARIABLES GLOBALES (Thème SalesIQ Pro) --- */
+:host {
+    /* Couleurs primaires raffinées */
+    --primary-gold: #F59E0B; /* Plus ambre, moins jaune fluo */
+    --primary-gold-hover: #D97706;
+    
+    /* Palette sombre "Slate" (Bleu ardoise) */
+    --dark-slate: #0F172A;
+    --medium-slate: #1E293B;
+    --light-slate: #334155;
+    
+    /* Fonds et Textes */
+    --white: #ffffff;
+    --bg-page: #F1F5F9; /* Gris bleuté très clair */
+    --input-bg: #F8FAFC;
+    --input-border: #E2E8F0;
+    --text-main: #334155;
+    --text-muted: #64748B;
+    
+    /* Ombres douces (Soft Shadows) */
+    --shadow-card: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-btn: 0 4px 6px -1px rgba(245, 158, 11, 0.3);
+
+    --error-color: #ef4444;
+  }
+  
+  /* --- STRUCTURE PRINCIPALE --- */
+  .auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--bg-page);
+    /* Optionnel : Ajout d'un motif de fond subtil */
+    background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+    background-size: 20px 20px;
+    padding: 20px;
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .container {
+    background-color: var(--white);
+    border-radius: 20px;
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+    width: 1100px;
+    max-width: 100%;
+    min-height: 650px; /* Plus d'espace vertical pour aérer */
+  }
+  
+  /* --- TYPOGRAPHIE --- */
+  h1 {
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    color: var(--dark-slate);
+    font-size: 28px;
+  }
+  
+  p {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--white); /* Pour le texte dans l'overlay */
+    margin: 20px 0 30px;
+  }
+  
+  span {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 15px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+  
+  a {
+    color: var(--text-main);
+    font-size: 13px;
+    text-decoration: none;
+    margin: 10px 0;
+    transition: color 0.3s;
+    font-weight: 500;
+  }
+  
+  a:hover {
+    color: var(--primary-gold);
+  }
+  
+  a.forgot-pass {
+    color: var(--text-muted);
+    border-bottom: 1px solid transparent;
+  }
+  a.forgot-pass:hover {
+    color: var(--primary-gold);
+    border-color: var(--primary-gold);
+  }
+  
+  /* --- FORMULAIRES & INPUTS --- */
+  .form-container {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    transition: all 0.6s ease-in-out;
+  }
+  
+  form {
+    background-color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 50px;
+    height: 100%;
+    text-align: center;
+  }
+  
+  input {
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    padding: 14px 18px;
+    margin: 8px 0;
+    width: 100%;
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
+    color: var(--medium-slate);
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+  }
+  
+  input::placeholder {
+    color: #94a3b8;
+  }
+  
+  input:focus {
+    background-color: var(--white);
+    border-color: var(--primary-gold);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15); /* Glow subtil */
+  }
+  
+  /* --- BOUTONS --- */
+  button {
+    border-radius: 10px; /* Moins rond, plus "app" */
+    border: none;
+    background: linear-gradient(135deg, var(--primary-gold) 0%, var(--primary-gold-hover) 100%);
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 14px 45px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    transition: transform 80ms ease-in, box-shadow 0.3s;
+    cursor: pointer;
+    margin-top: 15px;
+    box-shadow: var(--shadow-btn);
+  }
+  
+  button:hover {
+    box-shadow: 0 6px 12px rgba(245, 158, 11, 0.4);
+    transform: translateY(-1px);
+  }
+  
+  button:active {
+    transform: scale(0.98);
+  }
+  
+  /* Bouton Ghost (sur l'overlay bleu) */
+  button.ghost {
+    background: transparent;
+    border: 2px solid var(--white);
+    color: var(--white);
+    box-shadow: none;
+  }
+  
+  button.ghost:hover {
+    background-color: var(--white);
+    color: var(--dark-slate);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* --- RÉSEAUX SOCIAUX --- */
+  .social-container {
+    margin: 15px 0;
+  }
+  
+  .social-container a {
+    border: 1px solid var(--input-border);
+    border-radius: 50%; /* Cercle parfait */
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 8px;
+    height: 44px;
+    width: 44px;
+    color: var(--medium-slate);
+    font-size: 16px;
+    background-color: var(--white);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  
+  .social-container a:hover {
+    background-color: var(--primary-gold);
+    border-color: var(--primary-gold);
+    color: var(--white);
+    transform: translateY(-4px);
+    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+  }
+  
+  /* --- LOGIQUE DE GLISSEMENT (INCHANGÉE MAIS NETTOYÉE) --- */
+  .sign-in-container {
+    left: 0;
+    width: 50%;
+    z-index: 2;
+  }
+  
+  .sign-up-container {
+    left: 0;
+    width: 50%;
+    opacity: 0;
+    z-index: 1;
+  }
+  
+  .container.right-panel-active .sign-in-container {
+    transform: translateX(100%);
+  }
+  
+  .container.right-panel-active .sign-up-container {
+    transform: translateX(100%);
+    opacity: 1;
+    z-index: 5;
+    animation: show 0.6s;
+  }
+
+  /* Style du texte d'erreur */
+.error-message {
+    color: var(--error-color);
+    font-size: 11px;
+    text-align: left;
+    width: 100%;
+    margin-top: -4px;
+    margin-bottom: 8px;
+    padding-left: 4px;
+    font-weight: 500;
+    animation: fadeIn 0.3s ease-in;
+  }
+  
+  /* Animation douce pour l'apparition de l'erreur */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Changement de la bordure de l'input en cas d'erreur */
+  input.ng-invalid.ng-touched {
+    border-color: var(--error-color);
+    background-color: #fef2f2; /* Fond très légèrement rouge */
+  }
+  
+  /* Pour les inputs dans la row (Prénom/Nom), on s'assure que l'erreur ne casse pas la flexbox */
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  @keyframes show {
+    0%, 49.99% { opacity: 0; z-index: 1; }
+    50%, 100% { opacity: 1; z-index: 5; }
+  }
+  
+  .container.right-panel-active .overlay-container {
+    transform: translateX(-100%);
+  }
+  
+  .container.right-panel-active .overlay {
+    transform: translateX(50%);
+  }
+  
+  .container.right-panel-active .overlay-left {
+    transform: translateX(0);
+  }
+  
+  .container.right-panel-active .overlay-right {
+    transform: translateX(20%);
+  }
+  
+  /* --- OVERLAY (Partie colorée) --- */
+  .overlay-container {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    transition: transform 0.6s ease-in-out;
+    z-index: 100;
+    border-radius: 0 20px 20px 0; /* Arrondi conditionnel */
+  }
+  
+  /* Quand le panel bouge, on ajuste l'arrondi pour que ça reste beau */
+  .container.right-panel-active .overlay-container {
+    border-radius: 20px 0 0 20px;
+  }
+  
+  .overlay {
+    background: var(--dark-slate);
+    /* Dégradé pro et profond */
+    background: linear-gradient(to right, #0f172a, #334155);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 0 0;
+    color: var(--white);
+    position: relative;
+    left: -100%;
+    height: 100%;
+    width: 200%;
+    transform: translateX(0);
+    transition: transform 0.6s ease-in-out;
+  }
+  
+  .overlay-panel {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 40px;
+    text-align: center;
+    top: 0;
+    height: 100%;
+    width: 50%;
+    transform: translateX(0);
+    transition: transform 0.6s ease-in-out;
+  }
+  
+  .overlay h1 {
+      color: var(--white);
+      margin-bottom: 0;
+  }
+  
+  .overlay-left {
+    transform: translateX(-20%);
+  }
+  
+  .overlay-right {
+    right: 0;
+    transform: translateX(0);
+  }
+
+  /* Ajoute ceci à ton fichier CSS existant */
+
+.row-input {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px; /* Espace entre Prénom et Nom */
+  }
+  
+  /* S'assure que les inputs partagent l'espace équitablement */
+  .row-input input {
+    width: 100%; /* Prend toute la place disponible dans le flex */
+    margin: 8px 0; /* Garde la même marge que les autres inputs */
+  }
+  
+  
+  /* --- MOBILE RESPONSIVE --- */
+  @media (max-width: 768px) {
+    .container {
+      width: 100%;
+      min-height: 600px;
+      border-radius: 10px;
+    }
+    form {
+      padding: 0 20px;
+    }
+  }

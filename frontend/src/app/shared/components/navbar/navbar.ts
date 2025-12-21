@@ -26,14 +26,14 @@ export class Navbar implements OnInit {
   isMegamenuOpen: boolean = false;
   
   topNavLinks: NavLink[] = [
-    { label: 'Home', route: '/home' },
+    { label: 'Home', route: '/' },
     { label: 'About', route: '/about' },
     { label: 'Contact', route: '/contact' }
   ];
 
   mainNavLinks: NavLink[] = [
-    { label: 'Product', route: '/products' },
-    { label: 'Collections', route: '/collections', hasDropdown: true },
+    { label: 'Products', route: '/products' },
+    { label: 'Categories', route: '/categories' },
     { label: 'Trending', route: '/trending' },
     { label: 'Megamenu', route: '#', hasDropdown: true },
   ];

@@ -1,0 +1,35 @@
+<div class="categories-wrapper">
+  
+    <div class="header-section">
+      <h2>Our Categories</h2>
+      <div class="divider"></div>
+      <p>Explore our wide range of tech products curated just for you.</p>
+    </div>
+  
+    <div class="categories-grid">
+      <div 
+        class="category-card" 
+        *ngFor="let cat of activeCategories" 
+        (click)="navigateToCategory(cat.name)">
+        
+        <div class="card-image" [style.backgroundImage]="'url(' + cat.imageUrl + ')'">
+          <div class="overlay"></div>
+        </div>
+  
+        <div class="card-content">
+          <div class="content-top">
+            <h3>{{ cat.name }}</h3>
+            <span class="product-count">{{ cat.productCount }} products</span>
+          </div>
+          
+          <p class="description">{{ cat.description }}</p>
+          
+          <button class="btn-explore">
+            Explore
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  
+  </div>

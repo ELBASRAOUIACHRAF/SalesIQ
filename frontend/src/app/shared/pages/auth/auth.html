@@ -1,0 +1,97 @@
+<div class="auth-wrapper">
+    <div class="container" [class.right-panel-active]="isSignUpActive" id="container">
+      
+      <div class="form-container sign-up-container">
+        <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+          <h1>Create Account</h1>
+          
+          <div class="social-container">
+            <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social"><i class="fab fa-google"></i></a>
+            <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+          
+          <span>or use your email for registration</span>
+          
+          <div class="row-input">
+            <div class="input-group">
+              <input type="text" formControlName="firstName" placeholder="First Name" />
+              <div *ngIf="fName?.invalid && (fName?.dirty || fName?.touched)" class="error-message">
+                Required
+              </div>
+            </div>
+  
+            <div class="input-group">
+              <input type="text" formControlName="lastName" placeholder="Last Name" />
+              <div *ngIf="lName?.invalid && (lName?.dirty || lName?.touched)" class="error-message">
+                Required
+              </div>
+            </div>
+          </div>
+  
+          <input type="tel" formControlName="phoneNumber" placeholder="Phone Number" />
+          <div *ngIf="rPhone?.invalid && (rPhone?.dirty || rPhone?.touched)" class="error-message">
+            <span *ngIf="rPhone?.errors?.['required']">Phone is required</span>
+            <span *ngIf="rPhone?.errors?.['pattern']">Invalid format (digits only)</span>
+          </div>
+          
+          <input type="email" formControlName="email" placeholder="Email" />
+          <div *ngIf="rEmail?.invalid && (rEmail?.dirty || rEmail?.touched)" class="error-message">
+            <span *ngIf="rEmail?.errors?.['required']">Email is required</span>
+            <span *ngIf="rEmail?.errors?.['email']">Invalid email address</span>
+          </div>
+  
+          <input type="password" formControlName="password" placeholder="Password" />
+          <div *ngIf="rPassword?.invalid && (rPassword?.dirty || rPassword?.touched)" class="error-message">
+            <span *ngIf="rPassword?.errors?.['required']">Password is required</span>
+            <span *ngIf="rPassword?.errors?.['minlength']">Min 6 characters</span>
+          </div>
+          
+          <button class="btn-primary" type="submit">Sign Up</button>
+        </form>
+      </div>
+  
+      <div class="form-container sign-in-container">
+        <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+          <h1>Sign in</h1>
+          
+          <div class="social-container">
+            <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social"><i class="fab fa-google"></i></a>
+            <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+          
+          <span>or use your existing account</span>
+          
+          <input type="email" formControlName="email" placeholder="Email" />
+          <div *ngIf="lEmail?.invalid && (lEmail?.dirty || lEmail?.touched)" class="error-message">
+            Valid email required
+          </div>
+  
+          <input type="password" formControlName="password" placeholder="Password" />
+          <div *ngIf="lPassword?.invalid && (lPassword?.dirty || lPassword?.touched)" class="error-message">
+            Password required
+          </div>
+          
+          <a href="#" class="forgot-pass">Forgot your password?</a>
+          <button class="btn-primary" type="submit">Sign In</button>
+        </form>
+      </div>
+  
+      <div class="overlay-container">
+        <div class="overlay">
+          <div class="overlay-panel overlay-left">
+            <h1>Welcome Back!</h1>
+            <p>To keep connected with us please login with your personal info</p>
+            <button class="ghost" (click)="toggleForm()">Sign In</button>
+          </div>
+          <div class="overlay-panel overlay-right">
+            <h1>New Here?</h1>
+            <p>Enter your personal details and start your tech journey with SalesIQ</p>
+            <button class="ghost" (click)="toggleForm()">Sign Up</button>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  </div>

@@ -4,6 +4,10 @@ import { DetailsProductPage  } from '../app/shared/pages/details-product-page/de
 import { ProductsPage } from '../app/shared/pages/products-page/products-page';
 import { Profile } from '../app/shared/pages/profile/profile';
 import { HomePage } from './shared/pages/home-page/home-page';
+import { Auth } from './shared/pages/auth/auth';
+import { AboutPage } from './shared/pages/about-page/about-page';
+import { ContactPage } from './shared/pages/contact-page/contact-page';
+import { CategoriesPage } from './shared/pages/categories-page/categories-page';
 
 
 
@@ -24,6 +28,14 @@ export const routes: Routes = [
     { path: 'account', component: Profile },
 
     { path: '', component: HomePage },
+
+    { path: 'about', component: AboutPage },
+
+    { path: 'contact', component: ContactPage },
+
+    { path: 'categories', component: CategoriesPage },
+
+    { path: 'auth', component: Auth },
     
     // Optionnel : Page 404 si l'URL n'existe pas
     // { path: '**', redirectTo: 'products' }

@@ -1,0 +1,66 @@
+<div class="about-container">
+  
+  <header class="hero-section">
+    <div class="hero-content">
+      <h1>Reinventing your <span class="gold-text">Tech</span> Experience</h1>
+      <p>At SalesIQ, we believe technology should simplify your life, not complicate it.</p>
+    </div>
+  </header>
+
+  <div class="content-wrapper">
+    
+    <section class="story-section">
+      <div class="story-text">
+        <h2>Our Story</h2>
+        <div class="divider"></div>
+        <p>
+          Founded in 2024, SalesIQ was born from a simple observation: finding quality high-tech gear with genuine expert advice is hard.
+        </p>
+        <p>
+          We started as a small startup passionate about innovation. Today, we are proud to be a benchmark in electronics distribution, always prioritizing customer satisfaction and technical excellence.
+        </p>
+      </div>
+      <div class="story-image">
+        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Our Team at Work">
+      </div>
+    </section>
+
+    <section class="stats-section">
+      <div class="stat-card" *ngFor="let stat of stats">
+        <span class="stat-value">{{ stat.value }}</span>
+        <span class="stat-label">{{ stat.label }}</span>
+      </div>
+    </section>
+
+    <section class="values-section">
+      <h2>Why Choose Us?</h2>
+      <div class="values-grid">
+        <div class="value-card" *ngFor="let val of values">
+          <div class="icon-box">
+            <mat-icon>{{ val.icon }}</mat-icon>
+          </div>
+          <h3>{{ val.title }}</h3>
+          <p>{{ val.desc }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="team-section">
+      <h2>Meet the Minds</h2>
+      <p class="section-subtitle">The talented people behind SalesIQ</p>
+      
+      <div class="team-grid">
+        <div class="team-card" *ngFor="let member of team">
+          <div class="member-image">
+            <img [src]="member.image" [alt]="member.name">
+          </div>
+          <div class="member-info">
+            <h3>{{ member.name }}</h3>
+            <span class="member-role">{{ member.role }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
