@@ -9,6 +9,7 @@ import { Account } from './shared/components/account/account';
 import { Profile } from './shared/pages/profile/profile';
 import { BasketPage } from './shared/pages/basket-page/basket-page';
 import { ProductsPage } from './shared/pages/products-page/products-page';
+import { Auth } from './shared/pages/auth/auth';
 import { DetailsProductPage } from './shared/pages/details-product-page/details-product-page';
 
 import { ProductImages } from './shared/components/product-images/product-images';
@@ -28,7 +29,7 @@ import { RecommendationsSidebar } from './shared/components/recommendations-side
     ProductBuyCard,
     RatingDetails,
     Review,
-
+    Auth,
     Basket,
     RecommendationsSidebar,
 

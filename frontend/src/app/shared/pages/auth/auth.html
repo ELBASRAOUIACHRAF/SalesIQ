@@ -1,0 +1,62 @@
+<div class="auth-wrapper">
+    <div class="container" [class.right-panel-active]="isSignUpActive" id="container">
+      
+        <div class="form-container sign-up-container">
+            <form action="#">
+              <h1>Create Account</h1>
+              
+              <div class="social-container">
+                <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="social"><i class="fab fa-google"></i></a>
+                <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+              </div>
+          
+              <span>or use your email for registration</span>
+          
+              <div class="row-input">
+                  <input type="text" placeholder="First Name" />
+                  <input type="text" placeholder="Last Name" />
+              </div>
+          
+              <input type="tel" placeholder="Phone Number" />
+          
+              <input type="email" placeholder="Email" />
+              <input type="password" placeholder="Password" />
+              
+              <button class="btn-primary">Sign Up</button>
+            </form>
+          </div>
+  
+      <div class="form-container sign-in-container">
+        <form action="#">
+          <h1>Sign in</h1>
+          <div class="social-container">
+            <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social"><i class="fab fa-google"></i></a>
+            <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+          <span>or use your existing account</span>
+          <input type="email" placeholder="Email" />
+          <input type="password" placeholder="Password" />
+          <a href="#" class="forgot-pass">Forgot your password?</a>
+          <button class="btn-primary">Sign In</button>
+        </form>
+      </div>
+  
+      <div class="overlay-container">
+        <div class="overlay">
+          <div class="overlay-panel overlay-left">
+            <h1>Welcome Back!</h1>
+            <p>To keep connected with us please login with your personal info</p>
+            <button class="ghost" (click)="toggleForm()">Sign In</button>
+          </div>
+          
+          <div class="overlay-panel overlay-right">
+            <h1>New Here?</h1>
+            <p>Enter your personal details and start your tech journey with SalesIQ</p>
+            <button class="ghost" (click)="toggleForm()">Sign Up</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
