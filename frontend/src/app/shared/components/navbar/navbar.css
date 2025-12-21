@@ -276,61 +276,171 @@
   }
   
   /* --- 4. NAVIGATION SECONDAIRE --- */
-  .secondary-nav-bar {
-    background-color: var(--color-primary-soft);
-    padding: 8px 0;
-  }
+  /* --- 4. NAVIGATION SECONDAIRE PROFESSIONNELLE --- */
+
+.secondary-nav-bar {
+  background-color: var(--color-primary-soft); /* #1f2937 */
+  border-bottom: 1px solid #374151; /* Séparation subtile */
+  height: 48px; /* Hauteur fixe pour l'alignement */
+  display: flex;
+  align-items: center;
+}
+
+.secondary-nav-bar .content-wrapper {
+  height: 100%; /* Prend toute la hauteur pour centrer */
+}
+
+/* --- LIENS PRINCIPAUX --- */
+
+.main-nav-links {
+  list-style: none;
+  display: flex;
+  gap: 5px; /* Espace entre les boutons */
+  padding: 0;
+  margin: 0;
+  height: 100%;
+}
+
+.main-nav-links > li {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  position: relative; /* Référence pour le dropdown */
+}
+
+.main-nav-links a {
+  text-decoration: none;
+  color: #e5e7eb; /* Gris clair */
+  font-size: 13px;
+  font-weight: 600; /* Plus gras pour la lisibilité */
+  text-transform: uppercase; /* Look "Pro" */
+  letter-spacing: 0.5px;
+  padding: 0 16px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+/* Animation de la barre au survol */
+.main-nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px; /* Épaisseur de la barre */
+  background-color: var(--color-accent); /* #2563eb */
+  transform: scaleX(0); /* Caché par défaut */
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+}
+
+.main-nav-links a:hover, 
+.megamenu-active > a {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.05); /* Fond très léger */
+}
+
+.main-nav-links a:hover::after,
+.megamenu-active > a::after {
+  transform: scaleX(1); /* La barre apparaît */
+  transform-origin: bottom left;
+}
+
+.dropdown-arrow {
+  font-size: 10px;
+  margin-left: 6px;
+  transition: transform 0.3s ease;
+  color: var(--color-accent);
+}
+
+/* Rotation de la flèche quand le menu est ouvert */
+.megamenu-active .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+/* --- MEGAMENU DROPDOWN --- */
+
+.megamenu-dropdown {
+  position: absolute;
+  top: 100%; /* Colle au bas de la barre */
+  left: 0;
+  min-width: 240px; /* Plus large */
+  background-color: #ffffff;
   
-  .main-nav-links {
-    list-style: none;
-    display: flex;
-    padding: 0;
-    margin: 0;
-  }
+  /* Style de la boîte */
+  border-top: 3px solid var(--color-accent); /* Ligne colorée en haut */
+  border-radius: 0 0 6px 6px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15), 0 5px 10px rgba(0,0,0,0.05);
   
-  .main-nav-links > li {
-    position: relative;
-  }
+  padding: 20px;
+  z-index: 1000;
   
-  .main-nav-links a {
-    text-decoration: none;
-    color: var(--color-text-light);
-    font-size: 13px;
-    padding: 8px 14px;
-    display: block;
-    border-radius: 999px;
-    transition: background-color 0.15s, color 0.15s;
+  /* Animation d'entrée */
+  animation: slideDown 0.2s ease-out forwards;
+  transform-origin: top center;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
-  
-  .main-nav-links a:hover, .megamenu-active a {
-    background-color: rgba(255, 255, 255, 0.12);
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .dropdown-arrow {
-    font-size: 10px;
-    margin-left: 5px;
-  }
-  
-  /* MegaMenu Dropdown */
-  .megamenu-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 400px; /* Largeur du MegaMenu */
-    background-color: white;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    z-index: 100;
-    padding: 20px;
-    border-radius: 4px;
-  }
-  
-  .megamenu-dropdown p, .megamenu-dropdown li {
-    color: var(--color-text-dark);
-    font-size: 14px;
-  }
-  
-  .shipping-info {
-    color: var(--color-text-light);
-    font-size: 13px;
-    font-weight: 400;
-  }
+}
+
+.megamenu-dropdown h5 {
+  color: var(--color-primary); /* Titre sombre */
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #f3f4f6;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.megamenu-dropdown ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.megamenu-dropdown ul li a {
+  display: block;
+  padding: 8px 10px;
+  color: var(--color-text-muted); /* Gris moyen */
+  font-size: 14px;
+  text-transform: none; /* Reset l'uppercase du parent */
+  font-weight: 400;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  height: auto; /* Reset la hauteur 100% du parent */
+}
+
+/* Effet hover sur les liens du menu */
+.megamenu-dropdown ul li a:hover {
+  color: var(--color-accent);
+  background-color: var(--color-accent-soft); /* Fond bleu très clair */
+  transform: translateX(5px); /* Petit décalage vers la droite */
+}
+
+/* --- INFO LIVRAISON (Shipping) --- */
+
+.shipping-info {
+  font-size: 13px;
+  font-weight: 500;
+  color: #9ca3af; /* Gris clair */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+.shipping-info span {
+  color: #fbbf24; /* Couleur dorée pour le prix/nombre */
+}
