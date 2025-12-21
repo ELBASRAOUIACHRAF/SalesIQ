@@ -4,6 +4,7 @@ package com.ensa.achrafkarim.backend.service.analytics;
 // Méthodes de Statistiques et d'Analyse Avancées
 // ============================================
 
+import com.ensa.achrafkarim.backend.dto.ProductDto;
 import com.ensa.achrafkarim.backend.dto.analyticsDto.*;
 import com.ensa.achrafkarim.backend.enums.analyticsEnum.TimeGranularity;
 
@@ -292,6 +293,8 @@ AdvancedAnalyticsService {
      * Utilise NLP pour classifier : Positif, Neutre, Négatif
      */
     List<ReviewsSentimentAnalysisDto> analyzeSentiment();
+
+    List<ProductDto> getSimilarProductsByProduct(Long productId);
 
     /**
      * Extraction de topics des avis (Topic Modeling)

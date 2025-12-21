@@ -1,0 +1,119 @@
+/* Conteneur principal */
+.recommendation-container {
+    margin-top: 60px;
+    padding: 20px 0;
+    border-top: 1px solid #e0e0e0; /* Ligne grise de séparation */
+  }
+  
+  /* Titre de la section */
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  /* La petite ligne jaune sous le titre */
+  .divider {
+    width: 60px;
+    height: 4px;
+    background-color: #fdd835; /* Jaune SalesIQ */
+    margin-bottom: 30px;
+  }
+  
+  /* Grille responsive des produits */
+  .products-grid {
+    display: grid;
+    /* S'adapte automatiquement : minimum 220px par carte, sinon remplit l'espace */
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
+  }
+  
+  /* Carte Produit */
+  .product-card {
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 15px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    position: relative;
+  }
+  
+  /* Effet de survol sur la carte */
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Zone de l'image */
+  .image-wrapper {
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    overflow: hidden;
+  }
+  
+  .image-wrapper img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+  }
+  
+  /* Zone des détails (Nom, prix, bouton) */
+  .details {
+    text-align: left;
+  }
+  
+  .product-name {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+    margin: 0 0 8px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Ajoute "..." si le nom est trop long */
+  }
+  
+  /* Étoiles de notation */
+  .rating {
+    color: #fdd835;
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+  }
+  
+  .rating-count {
+    color: #888;
+    margin-left: 5px;
+  }
+  
+  /* Prix */
+  .price-row {
+    margin-bottom: 15px;
+  }
+  
+  .price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #000;
+  }
+  
+  /* Bouton "Add to Cart" */
+  .btn-add {
+    width: 100%;
+    padding: 10px;
+    background-color: #fdd835; /* Jaune SalesIQ */
+    border: none;
+    border-radius: 20px; /* Arrondi */
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  /* Effet au survol du bouton */
+  .product-card:hover .btn-add {
+    background-color: #fbc02d; /* Jaune un peu plus foncé */
+  }

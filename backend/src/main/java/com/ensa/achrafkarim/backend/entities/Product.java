@@ -15,8 +15,6 @@ public class Product {
     private Long id;
     private String name;
     private double price;
-    //private double rating;
-    //private Long reviewsCount;
     private String asin;
     private String description;
     private String mark;

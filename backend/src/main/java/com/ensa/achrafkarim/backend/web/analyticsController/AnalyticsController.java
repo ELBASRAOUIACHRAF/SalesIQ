@@ -1,5 +1,6 @@
 package com.ensa.achrafkarim.backend.web.analyticsController;
 
+import com.ensa.achrafkarim.backend.dto.ProductDto;
 import com.ensa.achrafkarim.backend.dto.analyticsDto.SalesForecastDto;
 import com.ensa.achrafkarim.backend.dto.analyticsDto.SalesTrendAnalysisDto;
 import com.ensa.achrafkarim.backend.dto.analyticsDto.SeasonalityAnalysisDto;
@@ -10,15 +11,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/v1/analytics")
 public class AnalyticsController {
 
@@ -46,6 +46,7 @@ public class AnalyticsController {
     public void segmentationOfCustomers(@RequestParam int nbSegments){
         advancedAnalyticsService.segmentCustomers(nbSegments);
     }
+
 
     /**
      * Step 1: Backend Controller Endpoint for Sales Trend Analysis
@@ -122,5 +123,10 @@ public class AnalyticsController {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
         }
+
+    @GetMapping("/similarProducts/{productId}")
+    public List<ProductDto> getSimilarProducts(@PathVariable Long productId){
+        return advancedAnalyticsService.getSimilarProductsByProduct(productId);
+
     }
 }

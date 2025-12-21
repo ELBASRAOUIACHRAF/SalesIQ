@@ -4,6 +4,7 @@ import com.ensa.achrafkarim.backend.dto.ProductDto;
 import com.ensa.achrafkarim.backend.dto.SaleDto;
 import com.ensa.achrafkarim.backend.dto.UsersDto;
 import com.ensa.achrafkarim.backend.dto.analyticsDto.*;
+import com.ensa.achrafkarim.backend.entities.Product;
 import com.ensa.achrafkarim.backend.entities.Sale;
 import com.ensa.achrafkarim.backend.entities.SoldProduct;
 import com.ensa.achrafkarim.backend.entities.Users;
@@ -591,5 +592,33 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
         );
 
         return response.getBody();
+    }
+
+    @Override
+    public List<ProductDto> getSimilarProductsByProduct(Long productId) {
+        String RECO_URL = "http://localhost:8000/api/v1/recommendation/predict";
+        Map<String, Long> requestBody = Map.of("product_id", productId);
+
+        // 2. Appeler l'API Python (POST)
+        ProductRecommendationsDto response = restTemplate.postForObject(
+                RECO_URL,
+                requestBody,
+                ProductRecommendationsDto.class
+        );
+
+        // 3. Vérifier si on a une réponse valide
+        if (response == null || response.getRecommendations() == null || response.getRecommendations().isEmpty()) {
+            return List.of(); // Pas de recommandation trouvée
+        }
+
+        // 4. Récupérer les IDs envoyés par Python (ex: [102, 504])
+        List<Long> recommendedIds = response.getRecommendations();
+
+        // 5. Chercher les vrais produits en base de données SQL
+        List<ProductDto> products = new ArrayList<>();
+        for (Long simiProducts: recommendedIds){
+            products.add(productService.getProduct(simiProducts));
+        }
+        return products;
     }
 }
