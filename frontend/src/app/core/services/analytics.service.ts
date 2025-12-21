@@ -5,6 +5,8 @@ import { SeasonalityAnalysisDto } from '../models/seasonality.model';
 import { CohortAnalysisDto, defaultCohortAnalysis } from '../models/cohort.model';
 import { SalesTrendAnalysisDto, TimeGranularity, defaultSalesTrendAnalysis } from '../models/salesTrend.model';
 import { SalesForecastDto, defaultSalesForecast } from '../models/salesForecast.model';
+import { ABCAnalysisDto, defaultABCAnalysis } from '../models/abcAnalysis.model';
+import { PurchaseFrequencyAnalysisDto, defaultPurchaseFrequency } from '../models/purchaseFrequency.model';
 
 @Injectable({ providedIn: 'root' })
 export class AnalyticsService {
@@ -114,6 +116,36 @@ export class AnalyticsService {
       }
     ).pipe(
       map(res => res ?? defaultSalesForecast)
+    );
+  }
+
+  /**
+   * ABC Analysis - Classify products by revenue contribution
+   * 
+   * Class A: Top 80% revenue (most valuable products)
+   * Class B: Next 15% revenue
+   * Class C: Remaining 5% revenue
+   * 
+   * @returns Observable<ABCAnalysisDto> - Products classified into A, B, C categories
+   */
+  getABCAnalysis(): Observable<ABCAnalysisDto> {
+    return this.http.get<ABCAnalysisDto | null>(
+      `${this.API_URL}/abc-analysis`
+    ).pipe(
+      map(res => res ?? defaultABCAnalysis)
+    );
+  }
+
+  /**
+   * Purchase Frequency Analysis - Analyze customer buying patterns
+   * 
+   * @returns Observable<PurchaseFrequencyAnalysisDto[]> - List of customers with purchase metrics
+   */
+  getPurchaseFrequency(): Observable<PurchaseFrequencyAnalysisDto[]> {
+    return this.http.get<PurchaseFrequencyAnalysisDto[] | null>(
+      `${this.API_URL}/purchase-frequency`
+    ).pipe(
+      map(res => res ?? defaultPurchaseFrequency)
     );
   }
 }

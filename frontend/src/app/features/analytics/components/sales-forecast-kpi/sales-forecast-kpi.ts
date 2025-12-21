@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
@@ -42,20 +42,18 @@ export class SalesForecastKpiComponent implements OnInit, OnChanges, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(private analyticsService: AnalyticsService) {}
+  constructor(private analyticsService: AnalyticsService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.horizonDays = this.defaultHorizonDays;
+    // Auto-load forecast on component initialization
+    this.fetchForecast();
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
-  @Output() requestForecast = new EventEmitter<number>();
-
-  horizonDays = this.defaultHorizonDays;
 
   readonly viewBoxWidth = 180;
   readonly viewBoxHeight = 64;
@@ -198,11 +196,13 @@ export class SalesForecastKpiComponent implements OnInit, OnChanges, OnDestroy {
           }
           
           this.isLoading = false;
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error('❌ Forecast error:', err);
           this.errorMessage = 'Failed to fetch forecast. Is the backend running?';
           this.isLoading = false;
+          this.cdr.detectChanges();
         }
       });
   }

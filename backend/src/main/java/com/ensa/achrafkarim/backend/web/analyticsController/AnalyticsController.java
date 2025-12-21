@@ -1,6 +1,9 @@
 package com.ensa.achrafkarim.backend.web.analyticsController;
 
 import com.ensa.achrafkarim.backend.dto.ProductDto;
+import com.ensa.achrafkarim.backend.dto.analyticsDto.ABCAnalysisDto;
+import com.ensa.achrafkarim.backend.dto.analyticsDto.CohortAnalysisDto;
+import com.ensa.achrafkarim.backend.dto.analyticsDto.PurchaseFrequencyAnalysisDto;
 import com.ensa.achrafkarim.backend.dto.analyticsDto.SalesForecastDto;
 import com.ensa.achrafkarim.backend.dto.analyticsDto.SalesTrendAnalysisDto;
 import com.ensa.achrafkarim.backend.dto.analyticsDto.SeasonalityAnalysisDto;
@@ -18,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201"})
 @RequestMapping("/api/v1/analytics")
 public class AnalyticsController {
 
@@ -123,10 +126,78 @@ public class AnalyticsController {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
         }
+    }
 
     @GetMapping("/similarProducts/{productId}")
     public List<ProductDto> getSimilarProducts(@PathVariable Long productId){
         return advancedAnalyticsService.getSimilarProductsByProduct(productId);
+    }
 
+    /**
+     * Cohort Analysis Endpoint
+     * Analyzes user cohorts based on registration date
+     * 
+     * @param startDate - Start of analysis period
+     * @param endDate - End of analysis period
+     * @return CohortAnalysisDto with cohort metrics
+     */
+    @GetMapping("/cohorts")
+    public ResponseEntity<CohortAnalysisDto> getCohortAnalysis(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+    ) {
+        try {
+            CohortAnalysisDto result = advancedAnalyticsService.analyzeCohorts(startDate, endDate);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Cohort analysis error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
+    /**
+     * ABC Analysis Endpoint
+     * Classifies products into A, B, C categories based on revenue contribution
+     * - Class A: Top 80% of revenue (typically ~20% of products)
+     * - Class B: Next 15% of revenue
+     * - Class C: Remaining 5% of revenue
+     * 
+     * @return ABCAnalysisDto with classified products
+     */
+    @GetMapping("/abc-analysis")
+    public ResponseEntity<ABCAnalysisDto> getABCAnalysis() {
+        try {
+            ABCAnalysisDto result = advancedAnalyticsService.performABCAnalysis();
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("ABC analysis error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
+    /**
+     * Purchase Frequency Analysis Endpoint
+     * Analyzes customer purchase patterns and frequency
+     * 
+     * @return List of PurchaseFrequencyAnalysisDto for all customers
+     */
+    @GetMapping("/purchase-frequency")
+    public ResponseEntity<List<PurchaseFrequencyAnalysisDto>> getPurchaseFrequency() {
+        try {
+            List<PurchaseFrequencyAnalysisDto> result = advancedAnalyticsService.analyzePurchaseFrequency();
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Purchase frequency analysis error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
     }
 }

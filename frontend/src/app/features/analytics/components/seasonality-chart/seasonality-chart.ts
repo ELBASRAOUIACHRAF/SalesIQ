@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { SeasonalityAnalysisDto, TimeSeriesPointDto } from '../../../../core/models/seasonality.model';
 import { Subject, takeUntil } from 'rxjs';
@@ -53,7 +53,7 @@ export class SeasonalityAnalysisComponent implements OnInit, OnDestroy {
   
   private destroy$ = new Subject<void>();
 
-  constructor(private analyticsService: AnalyticsService) {}
+  constructor(private analyticsService: AnalyticsService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     // Set default dates (last 6 months)
@@ -63,6 +63,9 @@ export class SeasonalityAnalysisComponent implements OnInit, OnDestroy {
     
     this.startDate = this.formatDateForInput(start);
     this.endDate = this.formatDateForInput(end);
+
+    // Auto-load seasonality analysis on component initialization
+    this.onAnalyzeClick();
   }
 
   ngOnDestroy(): void {
@@ -115,11 +118,13 @@ export class SeasonalityAnalysisComponent implements OnInit, OnDestroy {
           this.setSeries('residual', data.residualSeries || []);
           
           this.isLoading = false;
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error('❌ Seasonality analysis error:', err);
           this.errorMessage = 'Failed to analyze seasonality. Is the backend running?';
           this.isLoading = false;
+          this.cdr.detectChanges();
         }
       });
   }

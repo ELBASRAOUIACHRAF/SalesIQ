@@ -13,7 +13,7 @@
  * 7. Angular receives JSON, maps to TypeScript interface
  * 8. Component updates UI with the data
  */
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
@@ -71,7 +71,7 @@ export class SalesTrendChartComponent implements OnInit, OnDestroy {
    * Inject the AnalyticsService via constructor
    * Angular's DI system provides the singleton instance
    */
-  constructor(private analyticsService: AnalyticsService) {}
+  constructor(private analyticsService: AnalyticsService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     // Set default date range (last 30 days) when component loads
@@ -152,6 +152,7 @@ export class SalesTrendChartComponent implements OnInit, OnDestroy {
           console.log('✅ API Response received:', data);
           this.salesTrendData = data;  // Store data for template to display
           this.isLoading = false;       // Hide spinner
+          this.cdr.detectChanges();
         },
         // ERROR: Something went wrong
         error: (err) => {
@@ -159,6 +160,7 @@ export class SalesTrendChartComponent implements OnInit, OnDestroy {
           this.errorMessage = 'Failed to load sales trend data. Make sure the backend is running.';
           this.isLoading = false;
           this.salesTrendData = null;
+          this.cdr.detectChanges();
         }
       });
   }

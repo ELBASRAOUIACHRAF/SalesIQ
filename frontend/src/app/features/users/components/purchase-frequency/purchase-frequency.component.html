@@ -5,6 +5,27 @@
       <h3 class="title">Purchase Frequency</h3>
       <p class="muted">Total sales and average monthly purchases per customer.</p>
     </div>
+    <div class="header-actions">
+      <button class="refresh-btn" (click)="loadPurchaseFrequency()" [disabled]="isLoading">
+        <span *ngIf="!isLoading">🔄 Refresh</span>
+        <span *ngIf="isLoading">⏳ Loading...</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-banner">
+    ⚠️ {{ errorMessage }}
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <span>Loading customer data...</span>
+  </div>
+
+  <!-- Content (only show when not loading) -->
+  <ng-container *ngIf="!isLoading">
     <div class="filters">
       <input type="search" placeholder="Filter by username" (input)="setFilter($any($event.target).value)" />
       <select (change)="setSort($any($event.target).value)">
@@ -13,57 +34,66 @@
         <option value="name">Sort by Name</option>
       </select>
     </div>
-  </header>
 
-  <div class="summary">
-    <div class="chip">
-      <div class="chip-label">Customers</div>
-      <div class="chip-value">{{ summary().total }}</div>
+    <div class="summary">
+      <div class="chip">
+        <div class="chip-label">Customers</div>
+        <div class="chip-value">{{ summary().total }}</div>
+      </div>
+      <div class="chip">
+        <div class="chip-label">High frequency</div>
+        <div class="chip-value">{{ summary().high }}</div>
+      </div>
+      <div class="chip">
+        <div class="chip-label">Low frequency</div>
+        <div class="chip-value">{{ summary().low }}</div>
+      </div>
+      <div class="chip" *ngIf="summary().top">
+        <div class="chip-label">Top performer</div>
+        <div class="chip-value">{{ summary().top?.username }}</div>
+        <div class="chip-sub">{{ summary().top?.totalSales | number:'1.0-0' }} total</div>
+      </div>
     </div>
-    <div class="chip">
-      <div class="chip-label">High frequency</div>
-      <div class="chip-value">{{ summary().high }}</div>
-    </div>
-    <div class="chip">
-      <div class="chip-label">Low frequency</div>
-      <div class="chip-value">{{ summary().low }}</div>
-    </div>
-    <div class="chip" *ngIf="summary().top">
-      <div class="chip-label">Top performer</div>
-      <div class="chip-value">{{ summary().top?.username }}</div>
-      <div class="chip-sub">{{ summary().top?.totalSales | number:'1.0-0' }} total</div>
-    </div>
-  </div>
 
-  <div class="list" *ngIf="filteredSorted().length; else empty">
-    <div class="row head">
-      <span>User</span>
-      <span class="right">Total Sales</span>
-      <span class="right">Avg / Month</span>
-      <span class="right">Level</span>
-    </div>
-    <div class="row" *ngFor="let item of filteredSorted()">
-      <div class="user">
-        <div class="avatar">{{ item.username.charAt(0).toUpperCase() }}</div>
-        <div>
-          <div class="name">{{ item.username }}</div>
-          <div class="sub">ID: {{ item.userId }}</div>
+    <div class="list" *ngIf="filteredSorted().length; else empty">
+      <div class="row head">
+        <span>User</span>
+        <span class="right">Total Sales</span>
+        <span class="right">Avg / Month</span>
+        <span class="right">Level</span>
+      </div>
+      <div class="row" *ngFor="let item of filteredSorted()">
+        <div class="user">
+          <div class="avatar">{{ item.username.charAt(0).toUpperCase() }}</div>
+          <div>
+            <div class="name">{{ item.username }}</div>
+            <div class="sub">ID: {{ item.userId }}</div>
+          </div>
+        </div>
+        <div class="right">{{ item.totalSales | number:'1.0-0' }}</div>
+        <div class="right bar-wrap">
+          <div class="bar" [style.width]="barWidth(item.averageSalesPerMonth)"></div>
+          <span class="bar-label">{{ item.averageSalesPerMonth | number:'1.1-1' }}</span>
+        </div>
+        <div class="right">
+          <span [class]="badgeClass(item.averageSalesPerMonth)">
+            {{ item.averageSalesPerMonth > highFreqThreshold ? 'High' : item.averageSalesPerMonth <= lowFreqThreshold ? 'Low' : 'Medium' }}
+          </span>
         </div>
       </div>
-      <div class="right">{{ item.totalSales | number:'1.0-0' }}</div>
-      <div class="right bar-wrap">
-        <div class="bar" [style.width]="barWidth(item.averageSalesPerMonth)"></div>
-        <span class="bar-label">{{ item.averageSalesPerMonth | number:'1.1-1' }}</span>
-      </div>
-      <div class="right">
-        <span [class]="badgeClass(item.averageSalesPerMonth)">
-          {{ item.averageSalesPerMonth > highFreqThreshold ? 'High' : item.averageSalesPerMonth <= lowFreqThreshold ? 'Low' : 'Medium' }}
-        </span>
-      </div>
     </div>
-  </div>
 
-  <ng-template #empty>
-    <div class="empty">No data yet. Connect the backend and pass the DTO list.</div>
-  </ng-template>
+    <ng-template #empty>
+      <div class="empty">No customer data found. Make sure there are sales in the database.</div>
+    </ng-template>
+  </ng-container>
+
+  <!-- API Info -->
+  <details class="api-info">
+    <summary>🔧 API Details</summary>
+    <div class="api-content">
+      <code>GET /api/v1/analytics/purchase-frequency</code>
+      <p>Returns purchase frequency analysis for all customers.</p>
+    </div>
+  </details>
 </section>

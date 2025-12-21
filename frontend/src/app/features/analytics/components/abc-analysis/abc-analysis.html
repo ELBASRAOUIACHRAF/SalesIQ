@@ -1,0 +1,128 @@
+<section class="abc-card" role="group" aria-label="ABC Analysis">
+  <header class="card-header">
+    <div class="title-block">
+      <p class="eyebrow">Product Classification</p>
+      <h3 class="title">ABC Analysis</h3>
+      <p class="subtitle">Pareto principle: 80/20 revenue distribution</p>
+    </div>
+    <button class="refresh-btn" (click)="loadABCAnalysis()" [disabled]="isLoading">
+      <span *ngIf="!isLoading">🔄 Refresh</span>
+      <span *ngIf="isLoading">⏳ Loading...</span>
+    </button>
+  </header>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-banner">
+    ⚠️ {{ errorMessage }}
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <div class="spinner"></div>
+    <span>Analyzing products...</span>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-row" *ngIf="!isLoading">
+    <div class="summary-card class-a">
+      <div class="summary-icon">🏆</div>
+      <div class="summary-content">
+        <div class="summary-value">{{ summary.classACount }}</div>
+        <div class="summary-label">Class A Products</div>
+        <div class="summary-revenue">${{ summary.classARevenue | number:'1.0-0' }}</div>
+      </div>
+    </div>
+    <div class="summary-card class-b">
+      <div class="summary-icon">📊</div>
+      <div class="summary-content">
+        <div class="summary-value">{{ summary.classBCount }}</div>
+        <div class="summary-label">Class B Products</div>
+        <div class="summary-revenue">${{ summary.classBRevenue | number:'1.0-0' }}</div>
+      </div>
+    </div>
+    <div class="summary-card class-c">
+      <div class="summary-icon">📦</div>
+      <div class="summary-content">
+        <div class="summary-value">{{ summary.classCCount }}</div>
+        <div class="summary-label">Class C Products</div>
+        <div class="summary-revenue">${{ summary.classCRevenue | number:'1.0-0' }}</div>
+      </div>
+    </div>
+    <div class="summary-card total">
+      <div class="summary-icon">💰</div>
+      <div class="summary-content">
+        <div class="summary-value">${{ summary.totalRevenue | number:'1.0-0' }}</div>
+        <div class="summary-label">Total Revenue</div>
+        <div class="summary-revenue">{{ summary.totalProducts }} products</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs" *ngIf="!isLoading">
+    <button 
+      class="tab" 
+      [class.active]="activeTab === 'all'" 
+      (click)="setTab('all')">
+      All ({{ summary.totalProducts }})
+    </button>
+    <button 
+      class="tab tab-a" 
+      [class.active]="activeTab === 'A'" 
+      (click)="setTab('A')">
+      Class A ({{ summary.classACount }})
+    </button>
+    <button 
+      class="tab tab-b" 
+      [class.active]="activeTab === 'B'" 
+      (click)="setTab('B')">
+      Class B ({{ summary.classBCount }})
+    </button>
+    <button 
+      class="tab tab-c" 
+      [class.active]="activeTab === 'C'" 
+      (click)="setTab('C')">
+      Class C ({{ summary.classCCount }})
+    </button>
+  </div>
+
+  <!-- Product List -->
+  <div class="product-list" *ngIf="!isLoading && displayedProducts.length">
+    <div class="list-header">
+      <span>Product</span>
+      <span class="right">Revenue</span>
+      <span class="right">% of Total</span>
+      <span class="right">Cumulative %</span>
+      <span class="right">Class</span>
+    </div>
+    <div class="product-row" *ngFor="let product of displayedProducts">
+      <div class="product-info">
+        <span class="product-name">{{ product.productName }}</span>
+        <span class="product-id">ID: {{ product.productId }}</span>
+      </div>
+      <div class="right revenue-cell">
+        <div class="revenue-bar" [style.width]="getBarWidth(product.revenue)"></div>
+        <span class="revenue-value">${{ product.revenue | number:'1.0-0' }}</span>
+      </div>
+      <div class="right">{{ product.revenuePercentage | number:'1.2-2' }}%</div>
+      <div class="right">{{ product.cumulativePercentage | number:'1.2-2' }}%</div>
+      <div class="right">
+        <span [class]="getBadgeClass(product.abcClass)">{{ product.abcClass }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!isLoading && !displayedProducts.length">
+    <p>No products found. Make sure there are sales in the database.</p>
+  </div>
+
+  <!-- API Info -->
+  <details class="api-info">
+    <summary>🔧 API Details</summary>
+    <div class="api-content">
+      <code>GET /api/v1/analytics/abc-analysis</code>
+      <p>Returns products classified into A, B, C categories based on revenue.</p>
+    </div>
+  </details>
+</section>

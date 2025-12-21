@@ -1,12 +1,7 @@
-import { Component, Input, signal, computed } from '@angular/core';
+import { Component, Input, signal, computed, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-export interface PurchaseFrequencyAnalysisDto {
-  userId: number;
-  username: string;
-  totalSales: number;
-  averageSalesPerMonth: number;
-}
+import { AnalyticsService } from '../../../../core/services/analytics.service';
+import { PurchaseFrequencyAnalysisDto } from '../../../../core/models/purchaseFrequency.model';
 
 @Component({
   selector: 'app-purchase-frequency',
@@ -15,13 +10,48 @@ export interface PurchaseFrequencyAnalysisDto {
   templateUrl: './purchase-frequency.component.html',
   styleUrls: ['./purchase-frequency.component.css']
 })
-export class PurchaseFrequencyComponent {
-  @Input() data: PurchaseFrequencyAnalysisDto[] = [];
+export class PurchaseFrequencyComponent implements OnInit {
   @Input() highFreqThreshold = 5; // avg sales/month
   @Input() lowFreqThreshold = 1;  // avg sales/month
 
+  // Data from backend
+  data: PurchaseFrequencyAnalysisDto[] = [];
+  
+  // Loading states
+  isLoading = true;
+  errorMessage = '';
+
   filterText = signal('');
   sortBy = signal<'avg' | 'total' | 'name'>('avg');
+
+  constructor(private analyticsService: AnalyticsService, private cdr: ChangeDetectorRef) {}
+
+  ngOnInit(): void {
+    this.loadPurchaseFrequency();
+  }
+
+  /**
+   * Fetch Purchase Frequency data from backend
+   * GET /api/v1/analytics/purchase-frequency
+   */
+  loadPurchaseFrequency(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.analyticsService.getPurchaseFrequency().subscribe({
+      next: (result) => {
+        this.data = result;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Purchase frequency error:', err);
+        this.errorMessage = 'Failed to load data. Is the backend running?';
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
 
   readonly filteredSorted = computed(() => {
     const term = this.filterText().trim().toLowerCase();

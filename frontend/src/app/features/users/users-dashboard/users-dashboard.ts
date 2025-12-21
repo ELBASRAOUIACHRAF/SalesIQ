@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TopBarComponent } from '../../analytics/components/top-bar/top-bar';
-import { PurchaseFrequencyComponent, PurchaseFrequencyAnalysisDto } from '../components/purchase-frequency/purchase-frequency.component';
+import { PurchaseFrequencyComponent } from '../components/purchase-frequency/purchase-frequency.component';
 
 @Component({
   selector: 'app-users-dashboard',
@@ -22,8 +22,8 @@ import { PurchaseFrequencyComponent, PurchaseFrequencyAnalysisDto } from '../com
           ></app-top-bar>
         </div>
 
+        <!-- Component now self-loads data from backend -->
         <app-purchase-frequency
-          [data]="purchaseFrequency"
           [highFreqThreshold]="5"
           [lowFreqThreshold]="1"
         ></app-purchase-frequency>
@@ -33,11 +33,5 @@ import { PurchaseFrequencyComponent, PurchaseFrequencyAnalysisDto } from '../com
   styleUrls: ['./users-dashboard.css']
 })
 export class UsersDashboard {
-  purchaseFrequency: PurchaseFrequencyAnalysisDto[] = [
-    { userId: 1, username: 'Alice', totalSales: 240, averageSalesPerMonth: 20 },
-    { userId: 2, username: 'Brian', totalSales: 72, averageSalesPerMonth: 6 },
-    { userId: 3, username: 'Carla', totalSales: 30, averageSalesPerMonth: 2.5 },
-    { userId: 4, username: 'Daniel', totalSales: 12, averageSalesPerMonth: 1 },
-    { userId: 5, username: 'Ella', totalSales: 6, averageSalesPerMonth: 0.5 }
-  ];
+  // Component now fetches data directly from backend
 }

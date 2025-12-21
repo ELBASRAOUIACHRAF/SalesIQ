@@ -12,7 +12,7 @@
  * 6. Backend calculates: ((period2Revenue - period1Revenue) / period1Revenue) * 100
  * 7. Returns percentage value
  */
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
@@ -62,7 +62,7 @@ export class GrowthRateCardComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(private analyticsService: AnalyticsService) {}
+  constructor(private analyticsService: AnalyticsService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     // Set default dates for easy testing
@@ -137,12 +137,14 @@ export class GrowthRateCardComponent implements OnInit, OnDestroy {
           console.log('✅ Growth rate received:', rate);
           this.growthRate = rate;
           this.isLoading = false;
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error('❌ Error calculating growth rate:', err);
           this.errorMessage = 'Failed to calculate growth rate. Is the backend running?';
           this.isLoading = false;
           this.growthRate = null;
+          this.cdr.detectChanges();
         }
       });
   }
