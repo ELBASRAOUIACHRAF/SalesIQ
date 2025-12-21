@@ -26,7 +26,7 @@ export class Navbar implements OnInit {
   isMegamenuOpen: boolean = false;
   
   topNavLinks: NavLink[] = [
-    { label: 'Home', route: '/home' },
+    { label: 'Home', route: '/' },
     { label: 'About', route: '/about' },
     { label: 'Contact', route: '/contact' }
   ];

@@ -20,6 +20,8 @@
     /* Ombres douces (Soft Shadows) */
     --shadow-card: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     --shadow-btn: 0 4px 6px -1px rgba(245, 158, 11, 0.3);
+
+    --error-color: #ef4444;
   }
   
   /* --- STRUCTURE PRINCIPALE --- */
@@ -228,6 +230,38 @@
     opacity: 1;
     z-index: 5;
     animation: show 0.6s;
+  }
+
+  /* Style du texte d'erreur */
+.error-message {
+    color: var(--error-color);
+    font-size: 11px;
+    text-align: left;
+    width: 100%;
+    margin-top: -4px;
+    margin-bottom: 8px;
+    padding-left: 4px;
+    font-weight: 500;
+    animation: fadeIn 0.3s ease-in;
+  }
+  
+  /* Animation douce pour l'apparition de l'erreur */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Changement de la bordure de l'input en cas d'erreur */
+  input.ng-invalid.ng-touched {
+    border-color: var(--error-color);
+    background-color: #fef2f2; /* Fond très légèrement rouge */
+  }
+  
+  /* Pour les inputs dans la row (Prénom/Nom), on s'assure que l'erreur ne casse pas la flexbox */
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
   }
   
   @keyframes show {

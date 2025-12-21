@@ -1,33 +1,40 @@
 <div class="recommendation-container" *ngIf="recommendedProducts.length > 0">
-  
-    <h3 class="section-title">Vous aimerez aussi</h3>
-    <div class="divider"></div>
-  
-    <div class="products-grid">
-      <div class="product-card" *ngFor="let product of recommendedProducts" (click)="goToProduct(product.id)">
-        
+  <h3 class="section-title">You may also like</h3>
+  <div class="divider"></div>
+
+  <div class="products-grid">
+    <div class="product-card" *ngFor="let product of recommendedProducts">
+      
+      <div class="product-link" (click)="goToProduct(product.id)">
         <div class="image-wrapper">
-          <img [src]="product.imageUrl" [alt]="product.name" >
+          <img [src]="product.imageUrl" [alt]="product.name">
         </div>
-  
+
         <div class="details">
           <h4 class="product-name">{{ product.name }}</h4>
-            
-          <div class="rating">
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <i class="fas fa-star"></i>
-            <span class="rating-count">(45)</span>
+          
+          <div class="product-rating" [title]="(product.rating | number:'1.1-1') + ' / 5'">
+            <mat-icon *ngFor="let i of [].constructor(fullStars(product.rating))" class="star">star</mat-icon>
+            <mat-icon *ngIf="hasHalfStar(product.rating)" class="star">star_half</mat-icon>
+            <mat-icon *ngFor="let i of [].constructor(5 - fullStars(product.rating) - (hasHalfStar(product.rating) ? 1 : 0))" class="star empty">
+              star_outline
+            </mat-icon>
+            <span class="review-count">({{ product.reviewsCount }})</span>
           </div>
-  
+
           <div class="price-row">
             <span class="price">{{ product.price | currency:'USD' }}</span>
           </div>
-  
-          <button class="btn-add">Add to Cart</button>
         </div>
-        
       </div>
+
+      <div class="action-area">
+        <button class="btn-add" (click)="addProductToBasket(product.id)">
+          <mat-icon>shopping_cart</mat-icon>
+          Add to Cart
+        </button>
+      </div>
+      
     </div>
   </div>
+</div>

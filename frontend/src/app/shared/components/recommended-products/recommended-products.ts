@@ -3,9 +3,10 @@ import { Product } from '../../../core/models/product.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProductService } from '../../../core/services/product.service';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-recommended-products',
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './recommended-products.html',
   styleUrl: './recommended-products.css',
 })
@@ -21,10 +22,9 @@ export class RecommendedProducts implements OnInit {
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
   ) {}
-
+ 
   ngOnInit(): void {
     this.currentProductId = Number(this.route.snapshot.paramMap.get('id'));
-    // this.currentProductId = 23;
     this.loadRecommendations();
     this.cdr.detectChanges();
   }
@@ -42,6 +42,21 @@ export class RecommendedProducts implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  fullStars(rating: number): number {
+    return Math.floor(rating);
+  }
+  
+  addProductToBasket(productId: number) {
+    // this.basketService.addProductToBasket(productId);
+    console.log('addProductToBasket', productId);
+  }
+
+  hasHalfStar(rating: number): boolean {
+    // Affiche une demi-étoile si la décimale est >= 0.25 et < 0.75
+    const decimal = rating - Math.floor(rating);
+    return decimal >= 0.25 && decimal < 0.75;
   }
 
   goToProduct(id: number) {

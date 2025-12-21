@@ -5,6 +5,8 @@ import { ProductsPage } from '../app/shared/pages/products-page/products-page';
 import { Profile } from '../app/shared/pages/profile/profile';
 import { HomePage } from './shared/pages/home-page/home-page';
 import { Auth } from './shared/pages/auth/auth';
+import { AboutPage } from './shared/pages/about-page/about-page';
+import { ContactPage } from './shared/pages/contact-page/contact-page';
 
 
 
@@ -25,6 +27,11 @@ export const routes: Routes = [
     { path: 'account', component: Profile },
 
     { path: '', component: HomePage },
+
+    { path: 'about', component: AboutPage },
+
+    { path: 'contact', component: ContactPage },
+
 
     { path: 'auth', component: Auth },
     

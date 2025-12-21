@@ -1,0 +1,217 @@
+:host {
+    --primary-gold: #F59E0B;
+    --dark-slate: #0F172A;
+    --medium-slate: #1E293B;
+    --text-grey: #64748B;
+    --input-bg: #F8FAFC;
+    --border-color: #E2E8F0;
+  }
+  
+  .contact-container {
+    font-family: 'Poppins', sans-serif;
+    background-color: white;
+  }
+  
+  /* --- HERO SECTION --- */
+  .hero-section {
+    background: linear-gradient(135deg, var(--dark-slate) 0%, var(--medium-slate) 100%);
+    color: white;
+    padding: 60px 20px;
+    text-align: center;
+    border-bottom-left-radius: 50px;
+    border-bottom-right-radius: 50px;
+  }
+  
+  .hero-content h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  
+  .gold-text { color: var(--primary-gold); }
+  
+  .hero-content p {
+    font-size: 1.1rem;
+    color: #cbd5e1;
+  }
+  
+  .content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+  }
+  
+  /* --- LAYOUT GRID --- */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 3fr 2fr; /* Formulaire plus large que la sidebar */
+    gap: 50px;
+    margin-bottom: 80px;
+  }
+  
+  /* --- FORMULAIRE --- */
+  .form-card {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color);
+  }
+  
+  .form-card h2 { color: var(--dark-slate); margin-bottom: 10px; }
+  .form-subtitle { color: var(--text-grey); margin-bottom: 30px; font-size: 14px; }
+  
+  .input-group { margin-bottom: 20px; }
+  
+  .input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--dark-slate);
+    font-size: 14px;
+  }
+  
+  input, select, textarea {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    transition: all 0.3s;
+  }
+  
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary-gold);
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+  }
+  
+  input.invalid, textarea.invalid, select.invalid {
+    border-color: #ef4444;
+    background-color: #fef2f2;
+  }
+  
+  .error {
+    color: #ef4444;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+  }
+  
+  .btn-submit {
+    width: 100%;
+    padding: 15px;
+    background-color: var(--dark-slate);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .btn-submit:hover:not(:disabled) {
+    background-color: var(--primary-gold);
+  }
+  
+  .btn-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  
+  /* --- SUCCESS ALERT --- */
+  .success-alert {
+    background-color: #ecfdf5;
+    color: #059669;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #a7f3d0;
+  }
+  
+  /* --- SIDEBAR INFO --- */
+  .info-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  .info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .icon-box {
+    width: 50px;
+    height: 50px;
+    background-color: rgba(15, 23, 42, 0.05);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  
+  .icon-box mat-icon { color: var(--primary-gold); }
+  
+  .info-text h3 {
+    font-size: 16px;
+    margin: 0 0 5px 0;
+    color: var(--dark-slate);
+  }
+  
+  .info-text p {
+    margin: 0;
+    color: var(--text-grey);
+    font-size: 14px;
+  }
+  
+  .map-container {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    margin-top: 20px;
+  }
+  
+  /* --- FAQ SECTION --- */
+  .faq-section { margin-top: 50px; }
+  .faq-section h2 { text-align: center; color: var(--dark-slate); margin-bottom: 30px; }
+  
+  .faq-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  
+  .faq-card {
+    background: var(--input-bg);
+    padding: 25px;
+    border-radius: 12px;
+  }
+  
+  .faq-card h3 { font-size: 16px; color: var(--dark-slate); margin-bottom: 10px; }
+  .faq-card p { font-size: 14px; color: var(--text-grey); line-height: 1.6; }
+  
+  /* --- RESPONSIVE --- */
+  @media (max-width: 900px) {
+    .contact-grid {
+      grid-template-columns: 1fr; /* Stack sur mobile */
+    }
+    
+    .info-sidebar {
+      order: -1; /* Mettre les infos AVANT le formulaire sur mobile ? ou laisser après (défaut) */
+      margin-bottom: 30px;
+    }
+    
+    .faq-grid {
+      grid-template-columns: 1fr;
+    }
+  }
