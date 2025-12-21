@@ -32,8 +32,8 @@ export class Navbar implements OnInit {
   ];
 
   mainNavLinks: NavLink[] = [
-    { label: 'Product', route: '/products' },
-    { label: 'Collections', route: '/collections', hasDropdown: true },
+    { label: 'Products', route: '/products' },
+    { label: 'Categories', route: '/categories' },
     { label: 'Trending', route: '/trending' },
     { label: 'Megamenu', route: '#', hasDropdown: true },
   ];

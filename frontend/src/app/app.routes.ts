@@ -7,6 +7,7 @@ import { HomePage } from './shared/pages/home-page/home-page';
 import { Auth } from './shared/pages/auth/auth';
 import { AboutPage } from './shared/pages/about-page/about-page';
 import { ContactPage } from './shared/pages/contact-page/contact-page';
+import { CategoriesPage } from './shared/pages/categories-page/categories-page';
 
 
 
@@ -32,6 +33,7 @@ export const routes: Routes = [
 
     { path: 'contact', component: ContactPage },
 
+    { path: 'categories', component: CategoriesPage },
 
     { path: 'auth', component: Auth },
     

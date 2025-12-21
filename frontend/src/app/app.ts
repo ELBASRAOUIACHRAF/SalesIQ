@@ -23,6 +23,7 @@ import { AboutPage } from './shared/pages/about-page/about-page';
 import { Basket } from './shared/components/basket/basket';
 import { RecommendationsSidebar } from './shared/components/recommendations-sidebar/recommendations-sidebar';
 import { ContactPage } from './shared/pages/contact-page/contact-page';
+import { CategoriesPage } from './shared/pages/categories-page/categories-page';
 
 @Component({
   selector: 'app-root',
@@ -39,7 +40,8 @@ import { ContactPage } from './shared/pages/contact-page/contact-page';
     ReactiveFormsModule,
     FormsModule,
     AboutPage,
-    ContactPage
+    ContactPage,
+    CategoriesPage
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'
