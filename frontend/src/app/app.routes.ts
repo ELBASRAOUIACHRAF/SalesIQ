@@ -4,11 +4,6 @@ import { DetailsProductPage  } from '../app/shared/pages/details-product-page/de
 import { ProductsPage } from '../app/shared/pages/products-page/products-page';
 import { Profile } from '../app/shared/pages/profile/profile';
 import { HomePage } from './shared/pages/home-page/home-page';
-import { ProductsDashboard } from './features/products/products-dashboard/products-dashboard';
-import { CategoriesDashboard } from './features/categories/categories-dashboard/categories-dashboard';
-import { ReviewsDashboard } from './features/reviews/reviews-dashboard/reviews-dashboard';
-import { SalesDashboard } from './features/sales/sales-dashboard/sales-dashboard';
-import { UsersDashboard } from './features/users/users-dashboard/users-dashboard';
 
 
 
@@ -32,29 +27,11 @@ export const routes: Routes = [
     
     // Optionnel : Page 404 si l'URL n'existe pas
     // { path: '**', redirectTo: 'products' }
+    
+    // Analytics module with all analytics-related routes
     {
         path: 'analytics',
         loadChildren: () => import('./features/analytics/analytics-module')
             .then(m => m.AnalyticsModule)
-    },
-    {
-        path: 'products',
-        component: ProductsDashboard
-    },
-    {
-        path: 'categories',
-        component: CategoriesDashboard
-    },
-    {
-        path: 'reviews',
-        component: ReviewsDashboard
-    },
-    {
-        path: 'sales',
-        component: SalesDashboard
-    },
-    {
-        path: 'users',
-        component: UsersDashboard
     }
   ];

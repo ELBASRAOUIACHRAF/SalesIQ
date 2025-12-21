@@ -1,49 +1,22 @@
-
-.dashboard-shell {
-	display: grid;
-	grid-template-columns: auto 1fr;
-	min-height: 100vh;
-	background: #f3f4f6;
-}
-
-.dashboard-nav {
-	position: sticky;
-	top: 0;
-	align-self: start;
-	height: 100vh;
-	z-index: 50;
-}
-
-.dashboard-layout {
-	display: block;
-	padding: 1.5rem;
-	background: #f9fafb;
-	min-height: 100vh;
-	width: 100%;
-	max-width: 100%;
-	overflow-x: hidden;
-	box-sizing: border-box;
-}
+/* ===== ANALYTICS DASHBOARD CONTENT ===== */
 
 .dashboard-content {
-	max-width: 1600px;
-	margin: 0 auto;
-	padding: 1.5rem;
-	box-sizing: border-box;
-	display: grid;
-	grid-template-columns: 1fr;
-	grid-template-rows: auto 1fr;
-	gap: 1.5rem;
-	animation: fadeIn 0.6s ease-out;
 	width: 100%;
-	max-width: 100%;
-	overflow-x: hidden;
+	max-width: 1440px;
+	margin: 0 auto;
+	padding: 1.5rem 2rem;
+	padding-top: 1rem;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	animation: fadeIn 0.5s ease-out;
 }
 
 @keyframes fadeIn {
 	from {
 		opacity: 0;
-		transform: translateY(20px);
+		transform: translateY(12px);
 	}
 	to {
 		opacity: 1;
@@ -51,90 +24,95 @@
 	}
 }
 
+/* ===== DASHBOARD HEADER ===== */
+.dashboard-header {
+	position: sticky;
+	top: 0;
+	z-index: 40;
+	background: linear-gradient(180deg, #f8fafc 0%, rgba(248, 250, 252, 0.95) 100%);
+	margin: 0 -2rem;
+	padding: 1rem 2rem;
+	backdrop-filter: blur(8px);
+}
+
+/* ===== SEASONALITY SECTION ===== */
+.seasonality-preview {
+	width: 100%;
+}
+
+/* ===== KPI CARDS GRID ===== */
 .kpi-cards {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	grid-template-columns: repeat(3, 1fr);
 	gap: 1.25rem;
-	margin-bottom: 1.5rem;
 	width: 100%;
-	max-width: 100%;
-	overflow-x: hidden;
 }
 
+/* ===== BAR KPI CARDS GRID ===== */
 .bar-kpi-cards {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	grid-template-columns: repeat(2, 1fr);
 	gap: 1.25rem;
-	margin-bottom: 1.5rem;
 	width: 100%;
-	max-width: 100%;
-	overflow-x: hidden;
 }
 
+/* ===== CHART KPI CARDS GRID ===== */
 .chart-kpi-cards {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	grid-template-columns: repeat(2, 1fr);
 	gap: 1.25rem;
-	margin-bottom: 1.5rem;
 	width: 100%;
-	max-width: 100%;
-	overflow-x: hidden;
 }
 
+/* ===== PIE CHARTS ROW ===== */
 .pies-row {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 	gap: 1.25rem;
-	margin-bottom: 1.5rem;
 	width: 100%;
-	max-width: 100%;
-	overflow-x: hidden;
 }
 
+/* ===== BIG CARDS GRID ===== */
 .big-card-grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+	grid-template-columns: repeat(2, 1fr);
 	gap: 1.5rem;
-	margin-top: 1rem;
 	width: 100%;
-	max-width: 100%;
-	overflow-x: hidden;
 }
 
-/* Header wrapper for top bar */
-.dashboard-header {
-	display: block;
-	margin-bottom: 0.5rem;
-}
-
+/* ===== CONTROLS ===== */
 .dashboard-controls {
 	display: flex;
 	align-items: center;
 	gap: 1rem;
-	margin-top: 1rem;
-	padding: 1rem;
+	padding: 1rem 1.25rem;
 	background: #ffffff;
 	border-radius: 12px;
-	border: 1px solid #e5e7eb;
-	box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+	border: 1px solid #e2e8f0;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .fetch-btn {
-	padding: 0.6rem 1.2rem;
-	background: #6366f1;
+	padding: 0.625rem 1.25rem;
+	background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
 	color: white;
 	border: none;
-	border-radius: 8px;
+	border-radius: 10px;
 	font-weight: 600;
-	font-size: 0.9rem;
+	font-size: 0.875rem;
 	cursor: pointer;
 	transition: all 0.2s ease;
+	box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
 }
 
 .fetch-btn:hover:not(:disabled) {
-	background: #4f46e5;
+	background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
 	transform: translateY(-1px);
-	box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+	box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+}
+
+.fetch-btn:active:not(:disabled) {
+	transform: translateY(0);
 }
 
 .fetch-btn:disabled {
@@ -144,68 +122,100 @@
 
 .fetch-status {
 	padding: 0.5rem 1rem;
-	background: #fee2e2;
+	background: #fef2f2;
 	color: #dc2626;
 	border-radius: 8px;
 	font-size: 0.875rem;
 	border: 1px solid #fecaca;
 }
 
-/* Make layout responsive */
-@media (max-width: 1400px) {
+/* ===== RESPONSIVE: Extra Large screens (1400px+) ===== */
+@media (min-width: 1400px) {
 	.dashboard-content { 
-		max-width: 100%;
-		padding: 1.25rem;
-	}
-}
-
-@media (max-width: 1200px) {
-	.dashboard-content { 
-		padding: 1rem;
-		gap: 1.25rem;
-	}
-	
-	.big-card-grid { 
-		grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-		gap: 1.25rem;
-	}
-	
-	.chart-kpi-cards {
-		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-	}
-}
-
-@media (max-width: 1000px) {
-	.dashboard-shell {
-		grid-template-columns: 1fr;
-	}
-
-	.dashboard-nav {
-		position: static;
-		height: auto;
-	}
-
-	.dashboard-layout {
-		padding: 1rem;
-	}
-	
-	.dashboard-content { 
-		padding: 0.875rem;
-		gap: 1rem;
+		max-width: 1600px;
+		padding: 1.5rem 2.5rem;
 	}
 	
 	.kpi-cards {
-		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+/* ===== RESPONSIVE: Large screens ===== */
+@media (max-width: 1400px) {
+	.dashboard-content { 
+		padding: 1.25rem 1.75rem;
+	}
+	
+	.dashboard-header {
+		margin: 0 -1.75rem;
+		padding: 1rem 1.75rem;
+	}
+}
+
+/* ===== RESPONSIVE: Medium-Large screens ===== */
+@media (max-width: 1200px) {
+	.dashboard-content { 
+		padding: 1rem 1.5rem;
+		gap: 1.25rem;
+	}
+	
+	.dashboard-header {
+		margin: 0 -1.5rem;
+		padding: 1rem 1.5rem;
+	}
+	
+	.kpi-cards {
+		grid-template-columns: repeat(3, 1fr);
+	}
+	
+	.big-card-grid { 
+		grid-template-columns: repeat(2, 1fr);
+		gap: 1.25rem;
+	}
+	
+	.chart-kpi-cards,
+	.bar-kpi-cards {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+/* ===== RESPONSIVE: Tablet & Small laptops ===== */
+@media (max-width: 1024px) {
+	.dashboard-shell {
+		display: block;
+	}
+
+	.dashboard-layout {
+		padding-left: 0;
+		margin-left: 0;
+	}
+	
+	.dashboard-content { 
+		padding: 1rem 1.25rem;
+		padding-top: 72px; /* Space for hamburger menu */
+		gap: 1.25rem;
+	}
+	
+	.dashboard-header {
+		margin: 0 -1.25rem;
+		padding: 0.75rem 1.25rem;
+		top: 60px;
+	}
+	
+	.kpi-cards {
+		grid-template-columns: repeat(2, 1fr);
 		gap: 1rem;
 	}
 	
 	.big-card-grid { 
-		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-		gap: 1rem;
+		grid-template-columns: 1fr;
+		gap: 1.25rem;
 	}
 	
-	.bar-kpi-cards, .chart-kpi-cards { 
-		grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+	.bar-kpi-cards, 
+	.chart-kpi-cards { 
+		grid-template-columns: repeat(2, 1fr);
 		gap: 1rem;
 	}
 	
@@ -214,31 +224,33 @@
 	}
 }
 
+/* ===== RESPONSIVE: Small tablets ===== */
 @media (max-width: 768px) {
-	.dashboard-shell {
-		grid-template-columns: 1fr;
-	}
-
-	.dashboard-layout {
-		padding: 0.75rem;
-	}
-	
 	.dashboard-content { 
-		padding: 0.75rem;
+		padding: 0.875rem 1rem;
+		padding-top: 68px;
 		gap: 1rem;
 	}
 	
+	.dashboard-header {
+		margin: 0 -1rem;
+		padding: 0.75rem 1rem;
+	}
+	
 	.kpi-cards { 
-		grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+		grid-template-columns: repeat(2, 1fr);
 		gap: 0.875rem;
 	}
 	
-	.bar-kpi-cards, .chart-kpi-cards {
+	.bar-kpi-cards, 
+	.chart-kpi-cards {
 		grid-template-columns: 1fr;
+		gap: 1rem;
 	}
 	
 	.big-card-grid {
 		grid-template-columns: 1fr;
+		gap: 1rem;
 	}
 	
 	.dashboard-controls {
@@ -247,14 +259,17 @@
 	}
 }
 
+/* ===== RESPONSIVE: Mobile ===== */
 @media (max-width: 480px) {
-	.dashboard-layout {
-		padding: 0.5rem;
+	.dashboard-content { 
+		padding: 0.75rem;
+		padding-top: 64px;
+		gap: 0.875rem;
 	}
 	
-	.dashboard-content { 
-		padding: 0.5rem;
-		gap: 0.875rem;
+	.dashboard-header {
+		margin: 0 -0.75rem;
+		padding: 0.625rem 0.75rem;
 	}
 	
 	.kpi-cards { 
@@ -265,26 +280,23 @@
 	.pies-row { 
 		gap: 0.75rem; 
 	}
+	
+	.bar-kpi-cards,
+	.chart-kpi-cards,
+	.big-card-grid {
+		gap: 0.875rem;
+	}
 }
 
-/* Keep top bar visible inside content when scrolling */
-.dashboard-header app-top-bar { 
-	position: sticky; 
-	top: 0.5rem; 
-	z-index: 10;
-	transition: all 0.3s ease;
-}
-
-/* Light / dark safe colors */
+/* ===== THEME VARIABLES ===== */
 body, :root { 
 	--analytics-fg: #0f172a; 
-	--analytics-muted: #6b7280; 
+	--analytics-muted: #64748b; 
 }
-
 
 @media (prefers-color-scheme: dark) {
 	body, :root { 
-		--analytics-fg: #e6eef8; 
+		--analytics-fg: #f1f5f9; 
 		--analytics-muted: rgba(255,255,255,0.7); 
 	}
 }

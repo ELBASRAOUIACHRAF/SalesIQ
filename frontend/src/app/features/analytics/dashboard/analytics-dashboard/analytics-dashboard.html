@@ -1,110 +1,102 @@
-<div class="dashboard-shell">
-  <app-side-menu class="dashboard-nav"></app-side-menu>
+<div class="dashboard-content">
 
-  <div class="dashboard-layout">
-
-    <!-- Main Content -->
-    <div class="dashboard-content">
-
-    <div class="dashboard-header">
-      <app-top-bar
-        [title]="'Dashboard'"
-        [tabs]="['Today','This Week','This Month','This Year']"
-        [activeTab]="'Today'"
-        [dateText]="'05 Feb 2024, Monday'"
-        [buttonLabel]="'LATEST REPORTS'"
-      ></app-top-bar>
-    </div>
-
-    <!-- Seasonality preview inserted for review -->
-    <div class="seasonality-preview">
-      <app-seasonality-chart></app-seasonality-chart>
-    </div>
-
-
-    <!-- Small KPI Cards -->
-    <div class="kpi-cards">
-      <app-kpi-card
-        *ngFor="let k of kpis"
-        [title]="k.title"
-        [value]="k.value"
-        [subtitle]="k.subtitle"
-        [change]="k.change"
-        [sparkline]="k.sparkline"
-        [accentColor]="k.accentColor"
-      >
-      </app-kpi-card>
-    </div>
-
-    <!-- Bar KPI Cards -->
-    <div class="bar-kpi-cards">
-      <app-kpi-bar-chart
-        *ngFor="let b of barCards"
-        [title]="b.title"
-        [value]="b.value"
-        [subtitle]="b.subtitle"
-        [color]="b.color"
-        [bars]="b.bars"
-        [xAxisLabels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
-        [showAxis]="true"
-      >
-      </app-kpi-bar-chart>
-    </div>
-
-    <!-- Chart KPI Cards -->
-    <div class="chart-kpi-cards">
-      <app-chart-kpi-card
-        *ngFor="let c of chartCards"
-        [title]="c.title"
-        [value]="c.value"
-        [subtitle]="c.subtitle"
-        [color]="c.color"
-        [data]="c.data"
-        [xAxisLabels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
-        [showAxes]="true"
-      >
-      </app-chart-kpi-card>
-    </div>
-
-    <!-- Pie Charts -->
-    <div class="pies-row">
-      <app-kpi-pie-chart
-        title="Traffic Sources"
-        [value]="pieTotal"
-        subtitle="This week"
-        [segments]="pieData"
-      ></app-kpi-pie-chart>
-    </div>
-
-    <!-- Big KPI Cards -->
-    <div class="big-card-grid">
-      <app-big-card
-        title="Total Revenue"
-        subtitle="This Month"
-        [value]="123456"
-        [change]="3.5"
-        [chartData]="[120,180,140,200,260,220,280]"
-        color="#00C2A8"
-        footer="Compared to last month"
-        [xAxisLabels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
-        [showAxes]="true"
-      >
-      </app-big-card>
-
-      <app-big-card
-        title="Active Users"
-        subtitle="This Month"
-        [value]="6789"
-        [change]="-1.2"
-        [chartData]="[80,120,100,130,160,150,170]"
-        color="#6C5CE7"
-        footer="Compared to last month"
-        [xAxisLabels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
-        [showAxes]="true"
-      >
-      </app-big-card>
-    </div>
-
-    </div>
+  <div class="dashboard-header">
+    <app-top-bar
+      [title]="'Dashboard'"
+      [tabs]="['Today','This Week','This Month','This Year']"
+      [activeTab]="'Today'"
+      [dateText]="'05 Feb 2024, Monday'"
+      [buttonLabel]="'LATEST REPORTS'"
+    ></app-top-bar>
   </div>
+
+  <!-- Seasonality preview inserted for review -->
+  <div class="seasonality-preview">
+    <app-seasonality-chart></app-seasonality-chart>
+  </div>
+
+
+  <!-- Small KPI Cards -->
+  <div class="kpi-cards">
+    <app-kpi-card
+      *ngFor="let k of kpis"
+      [title]="k.title"
+      [value]="k.value"
+      [subtitle]="k.subtitle"
+      [change]="k.change"
+      [sparkline]="k.sparkline"
+      [accentColor]="k.accentColor"
+    >
+    </app-kpi-card>
+  </div>
+
+  <!-- Bar KPI Cards -->
+  <div class="bar-kpi-cards">
+    <app-kpi-bar-chart
+      *ngFor="let b of barCards"
+      [title]="b.title"
+      [value]="b.value"
+      [subtitle]="b.subtitle"
+      [color]="b.color"
+      [bars]="b.bars"
+      [xAxisLabels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+      [showAxis]="true"
+    >
+    </app-kpi-bar-chart>
+  </div>
+
+  <!-- Chart KPI Cards -->
+  <div class="chart-kpi-cards">
+    <app-chart-kpi-card
+      *ngFor="let c of chartCards"
+      [title]="c.title"
+      [value]="c.value"
+      [subtitle]="c.subtitle"
+      [color]="c.color"
+      [data]="c.data"
+      [xAxisLabels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+      [showAxes]="true"
+    >
+    </app-chart-kpi-card>
+  </div>
+
+  <!-- Pie Charts -->
+  <div class="pies-row">
+    <app-kpi-pie-chart
+      title="Traffic Sources"
+      [value]="pieTotal"
+      subtitle="This week"
+      [segments]="pieData"
+    ></app-kpi-pie-chart>
+  </div>
+
+  <!-- Big KPI Cards -->
+  <div class="big-card-grid">
+    <app-big-card
+      title="Total Revenue"
+      subtitle="This Month"
+      [value]="123456"
+      [change]="3.5"
+      [chartData]="[120,180,140,200,260,220,280]"
+      color="#00C2A8"
+      footer="Compared to last month"
+      [xAxisLabels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+      [showAxes]="true"
+    >
+    </app-big-card>
+
+    <app-big-card
+      title="Active Users"
+      subtitle="This Month"
+      [value]="6789"
+      [change]="-1.2"
+      [chartData]="[80,120,100,130,160,150,170]"
+      color="#6C5CE7"
+      footer="Compared to last month"
+      [xAxisLabels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
+      [showAxes]="true"
+    >
+    </app-big-card>
+  </div>
+
 </div>

@@ -7,7 +7,6 @@ import { BigCardComponent } from '../../components/big-kpi-card/big-kpi-card';
 import { KpiBarChartComponent } from '../../components/kpi-bar-chart/kpi-bar-chart';
 import { SeasonalityAnalysisComponent } from '../../components/seasonality-chart/seasonality-chart';
 import { TopBarComponent } from '../../components/top-bar/top-bar';
-import { SideMenu } from '../../components/side-menu/side-menu';
 
 import { ApiService } from '../../../../core/services/app.service';
 
@@ -18,7 +17,6 @@ import { ApiService } from '../../../../core/services/app.service';
   imports: [
     CommonModule,
     TopBarComponent,
-    SideMenu,
     KpiCardComponent,
     ChartKpiCardComponent,
     BigCardComponent,
