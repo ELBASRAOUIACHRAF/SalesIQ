@@ -1,0 +1,33 @@
+<div class="recommendation-container" *ngIf="recommendedProducts.length > 0">
+  
+    <h3 class="section-title">Vous aimerez aussi</h3>
+    <div class="divider"></div>
+  
+    <div class="products-grid">
+      <div class="product-card" *ngFor="let product of recommendedProducts" (click)="goToProduct(product.id)">
+        
+        <div class="image-wrapper">
+          <img [src]="product.imageUrl" [alt]="product.name" >
+        </div>
+  
+        <div class="details">
+          <h4 class="product-name">{{ product.name }}</h4>
+            
+          <div class="rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <span class="rating-count">(45)</span>
+          </div>
+  
+          <div class="price-row">
+            <span class="price">{{ product.price | currency:'USD' }}</span>
+          </div>
+  
+          <button class="btn-add">Add to Cart</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>

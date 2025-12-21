@@ -13,6 +13,9 @@ export class ProductService {
   
   constructor(private http: HttpClient) { }
 
+  getSimilarProducts(productId: number): Observable<Product[]> {
+    return this.http.get<Product[]>(`${this.apiUrl}api/v1/analytics/similarProducts/${productId}`);
+  }
 
   getProducts(): Observable<Product[]> {
     return this.http.get<Product[]>(`${this.apiUrl}products/getAll`);

@@ -25,7 +25,7 @@ interface Product {
 export class Home implements OnInit {
 
   protected readonly Math = Math;
-
+ 
 
   heroTitle = "Technology for Your Everyday Life";
   heroSubtitle = "Discover the latest innovations: unparalleled performance and exceptional design at unbeatable prices.";
@@ -56,6 +56,11 @@ export class Home implements OnInit {
       name: 'Accessories', 
       imageUrl: 'https://images.unsplash.com/3/www.madebyvadim.com.jpg?q=80&w=2082&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', 
       link: '/category/accessories' 
+    },
+    { 
+      name: 'Gaming', 
+      imageUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60', 
+      link: '/category/gaming' 
     },
     { 
       name: 'Gaming', 
