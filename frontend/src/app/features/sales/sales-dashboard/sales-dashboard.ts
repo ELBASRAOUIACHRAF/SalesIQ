@@ -7,6 +7,8 @@ import { KpiBarChartComponent } from '../../analytics/components/kpi-bar-chart/k
 import { BigCardComponent } from '../../analytics/components/big-kpi-card/big-kpi-card';
 import { TopBarComponent } from '../../analytics/components/top-bar/top-bar';
 import { SalesForecastKpiComponent } from '../../analytics/components/sales-forecast-kpi/sales-forecast-kpi';
+import { SalesTrendChartComponent } from '../../analytics/components/sales-trend-chart/sales-trend-chart';
+import { GrowthRateCardComponent } from '../../analytics/components/growth-rate-card/growth-rate-card';
 
 @Component({
   selector: 'app-sales-dashboard',
@@ -19,7 +21,9 @@ import { SalesForecastKpiComponent } from '../../analytics/components/sales-fore
     BigCardComponent,
     KpiBarChartComponent,
     KpiPieChartComponent,
-    SalesForecastKpiComponent
+    SalesForecastKpiComponent,
+    SalesTrendChartComponent,
+    GrowthRateCardComponent  // Added Growth Rate component
   ],
   templateUrl: './sales-dashboard.html',
   styleUrls: ['./sales-dashboard.css'],

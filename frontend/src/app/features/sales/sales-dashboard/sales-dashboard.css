@@ -107,3 +107,16 @@
 	}
 }
 
+/* Step 5: Style for the Sales Trend section */
+.sales-trend-row {
+	margin-top: 1.5rem;
+	width: 100%;
+	max-width: 100%;
+}
+
+/* Growth Rate Calculator section */
+.growth-rate-row {
+	margin-top: 1.5rem;
+	width: 100%;
+	max-width: 100%;
+}

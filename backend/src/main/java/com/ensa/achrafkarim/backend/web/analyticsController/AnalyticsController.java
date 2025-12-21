@@ -1,9 +1,13 @@
 package com.ensa.achrafkarim.backend.web.analyticsController;
 
 import com.ensa.achrafkarim.backend.dto.analyticsDto.SalesForecastDto;
+import com.ensa.achrafkarim.backend.dto.analyticsDto.SalesTrendAnalysisDto;
+import com.ensa.achrafkarim.backend.dto.analyticsDto.SeasonalityAnalysisDto;
+import com.ensa.achrafkarim.backend.enums.analyticsEnum.TimeGranularity;
 import com.ensa.achrafkarim.backend.service.SaleService;
 import com.ensa.achrafkarim.backend.service.analytics.AdvancedAnalyticsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,5 +45,82 @@ public class AnalyticsController {
     @GetMapping("/segmentCustomers")
     public void segmentationOfCustomers(@RequestParam int nbSegments){
         advancedAnalyticsService.segmentCustomers(nbSegments);
+    }
+
+    /**
+     * Step 1: Backend Controller Endpoint for Sales Trend Analysis
+     * This endpoint receives HTTP GET requests and calls the service method
+     */
+    @GetMapping("/sales-trend")
+    public ResponseEntity<SalesTrendAnalysisDto> getSalesTrend(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @RequestParam(defaultValue = "DAILY") TimeGranularity granularity
+    ) {
+        try {
+            SalesTrendAnalysisDto result = advancedAnalyticsService.analyzeSalesTrend(startDate, endDate, granularity);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Sales trend analysis error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
+    /**
+     * Calculate Sales Growth Rate between two periods
+     * Compares revenue of period2 vs period1 and returns percentage change
+     * 
+     * Formula: ((Revenue2 - Revenue1) / Revenue1) * 100
+     * 
+     * Example: period1 revenue = $1000, period2 revenue = $1200
+     *          Growth rate = ((1200-1000)/1000)*100 = 20%
+     */
+    @GetMapping("/growth-rate")
+    public ResponseEntity<Double> getSalesGrowthRate(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime period1Start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime period1End,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime period2Start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime period2End
+    ) {
+        try {
+            double growthRate = advancedAnalyticsService.calculateSalesGrowthRate(
+                period1Start, period1End, period2Start, period2End
+            );
+            return ResponseEntity.ok(growthRate);
+        } catch (Exception e) {
+            System.err.println("Growth rate calculation error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
+    /**
+     * Analyze Seasonality of sales data
+     * Decomposes time series into: Original, Trend, Seasonal, and Residual components
+     * 
+     * @param startDate - Start of analysis period
+     * @param endDate - End of analysis period
+     * @return SeasonalityAnalysisDto with all components
+     */
+    @GetMapping("/seasonality")
+    public ResponseEntity<SeasonalityAnalysisDto> getSeasonality(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+    ) {
+        try {
+            SeasonalityAnalysisDto result = advancedAnalyticsService.analyzeSeasonality(startDate, endDate);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Seasonality analysis error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
     }
 }
