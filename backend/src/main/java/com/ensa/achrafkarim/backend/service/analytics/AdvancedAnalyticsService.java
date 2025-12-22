@@ -86,7 +86,7 @@ AdvancedAnalyticsService {
      * Analyse du cycle de vie produit (Product Lifecycle Analysis)
      * Phases : Introduction, Croissance, Maturité, Déclin
      */
-    //ProductLifecycleDto analyzeProductLifecycle(Long productId);
+    ProductLifecycleDto analyzeProductLifecycle(Long productId);
 
     /**
      * Calcul du taux de rotation des stocks (Inventory Turnover Ratio)

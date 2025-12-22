@@ -203,4 +203,12 @@ public class AnalyticsController {
     ) {
         return advancedAnalyticsService.performMarketBasketAnalysis(minSupport, minConfidence);
     }
+
+    @GetMapping("/api/v1/analytics/productslifecycle/{productId}")
+    public ResponseEntity<ProductLifecycleDto> getProductLifecycle(
+            @PathVariable("productId") Long productId
+    ) {
+        ProductLifecycleDto lifecycle = advancedAnalyticsService.analyzeProductLifecycle(productId);
+        return ResponseEntity.ok(lifecycle);
+    }
 }

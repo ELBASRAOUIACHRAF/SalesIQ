@@ -7,6 +7,7 @@ import com.ensa.achrafkarim.backend.entities.Sale;
 import com.ensa.achrafkarim.backend.entities.SoldProduct;
 import com.ensa.achrafkarim.backend.entities.Users;
 import com.ensa.achrafkarim.backend.enums.Role;
+import com.ensa.achrafkarim.backend.enums.analyticsEnum.ProductLifecyclePhase;
 import com.ensa.achrafkarim.backend.enums.analyticsEnum.SeasonalityType;
 import com.ensa.achrafkarim.backend.enums.analyticsEnum.TimeGranularity;
 import com.ensa.achrafkarim.backend.mapper.SaleMapper;
@@ -573,7 +574,49 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
         return 0;
     }
 
+    @Override
+    public ProductLifecycleDto analyzeProductLifecycle(Long productId) {
+        List<MonthlySalesDto> monthlySales = saleRepository.findMonthlySalesByProduct(productId);
+        if (monthlySales == null || monthlySales.size() < 0)
+        {
+            return new ProductLifecycleDto(
+                    productId,
+                    ProductLifecyclePhase.INTRODUCTION,
+                    0.0,
+                    0.0
+            );
+        }
 
+        List<Long> quantities = monthlySales.stream()
+                .map(MonthlySalesDto::getTotalQuantity)
+                .toList();
+        double averageMonthlySales = quantities.stream()
+                .mapToLong(Long::longValue)
+                .average()
+                .orElse(0.0);
+
+        long first = quantities.getFirst();
+        long last = quantities.getLast();
+
+        double growthRate = (first == 0) ? 0.0 : (double) (last - first) / first ;
+
+        ProductLifecyclePhase phase;
+
+        if (growthRate > 0.20) {
+            phase = ProductLifecyclePhase.GROWTH;
+        } else if (growthRate >= -0.05) {
+            phase = ProductLifecyclePhase.MATURITY;
+        } else {
+            phase = ProductLifecyclePhase.DECLINE;
+        }
+
+        return new ProductLifecycleDto(
+                productId,
+                phase,
+                averageMonthlySales,
+                growthRate
+        );
+    }
     @Override
     public List<CustomerSegmentDto> segmentCustomers(int numberOfSegments) {
         List<UsersDto> customers = usersService.getUsersByRole(Role.CLIENT);
