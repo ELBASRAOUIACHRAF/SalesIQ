@@ -49,4 +49,18 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     List<MonthlySalesDto> findMonthlySalesByProduct(
             @Param("productId") Long productId
     );
+
+    @Query("""
+    SELECT SUM(sp.quantity * sp.unitPrice)
+    FROM Sale s
+    JOIN s.soldProducts sp
+    WHERE sp.product.id = :productId
+      AND s.dateOfSale BETWEEN :startDate AND :endDate
+    """)
+    Double calculateCostOfSales(
+            @Param("productId") Long productId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
+
 }

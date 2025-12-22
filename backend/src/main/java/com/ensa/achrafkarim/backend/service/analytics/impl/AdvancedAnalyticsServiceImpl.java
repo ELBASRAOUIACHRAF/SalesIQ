@@ -11,6 +11,7 @@ import com.ensa.achrafkarim.backend.enums.analyticsEnum.ProductLifecyclePhase;
 import com.ensa.achrafkarim.backend.enums.analyticsEnum.SeasonalityType;
 import com.ensa.achrafkarim.backend.enums.analyticsEnum.TimeGranularity;
 import com.ensa.achrafkarim.backend.mapper.SaleMapper;
+import com.ensa.achrafkarim.backend.repository.ProductRepository;
 import com.ensa.achrafkarim.backend.repository.SaleRepository;
 import com.ensa.achrafkarim.backend.repository.UsersRepository;
 import com.ensa.achrafkarim.backend.service.*;
@@ -44,6 +45,7 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
     private final SaleRepository saleRepository;
     private final UsersRepository usersRepository;
     private final SaleMapper saleMapper;
+    private final ProductRepository productRepository;
     UsersService  usersService;
     SaleService  saleService;
     ReviewsService  reviewsService;
@@ -617,6 +619,36 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
                 growthRate
         );
     }
+
+    @Override
+    public double calculateInventoryTurnoverRatio(
+            Long productId,
+            LocalDateTime startDate,
+            LocalDateTime endDate
+    ) {
+
+        Double costOfSales = saleRepository.calculateCostOfSales(
+                productId, startDate, endDate
+        );
+
+        if (costOfSales == null || costOfSales == 0) {
+            return 0.0;
+        }
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        Long currentStock = product.getStock();
+
+        double averageStock = currentStock / 2.0;
+
+        if (averageStock == 0) {
+            return 0.0;
+        }
+
+        return costOfSales / averageStock;
+    }
+
     @Override
     public List<CustomerSegmentDto> segmentCustomers(int numberOfSegments) {
         List<UsersDto> customers = usersService.getUsersByRole(Role.CLIENT);

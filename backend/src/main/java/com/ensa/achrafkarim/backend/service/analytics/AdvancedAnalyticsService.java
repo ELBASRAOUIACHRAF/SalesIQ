@@ -92,12 +92,12 @@ AdvancedAnalyticsService {
      * Calcul du taux de rotation des stocks (Inventory Turnover Ratio)
      * Formule : Coût des ventes / Stock moyen
      */
-    //double calculateInventoryTurnoverRatio(Long productId, LocalDateTime startDate, LocalDateTime endDate);
+    double calculateInventoryTurnoverRatio(Long productId, LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Analyse de performance par catégorie
      */
-    //List<CategoryPerformanceDto> analyzeCategoryPerformance(LocalDateTime startDate, LocalDateTime endDate);
+    List<CategoryPerformanceDto> analyzeCategoryPerformance(LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Identification des produits à forte/faible marge

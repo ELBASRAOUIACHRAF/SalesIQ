@@ -26,12 +26,11 @@ public class AnalyticsController {
     @GetMapping("/forecastSales")
     public ResponseEntity<SalesForecastDto> getForecast(
             @RequestParam(defaultValue = "7") int daysAhead
-    ){
+    ) {
         try {
             SalesForecastDto forecast = advancedAnalyticsService.forecastSales(daysAhead);
             return ResponseEntity.ok(forecast);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.err.println("Forecasting error: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity
@@ -41,7 +40,7 @@ public class AnalyticsController {
     }
 
     @GetMapping("/segmentCustomers")
-    public void segmentationOfCustomers(@RequestParam int nbSegments){
+    public void segmentationOfCustomers(@RequestParam int nbSegments) {
         advancedAnalyticsService.segmentCustomers(nbSegments);
     }
 
@@ -71,11 +70,11 @@ public class AnalyticsController {
     /**
      * Calculate Sales Growth Rate between two periods
      * Compares revenue of period2 vs period1 and returns percentage change
-     * 
+     * <p>
      * Formula: ((Revenue2 - Revenue1) / Revenue1) * 100
-     * 
+     * <p>
      * Example: period1 revenue = $1000, period2 revenue = $1200
-     *          Growth rate = ((1200-1000)/1000)*100 = 20%
+     * Growth rate = ((1200-1000)/1000)*100 = 20%
      */
     @GetMapping("/growth-rate")
     public ResponseEntity<Double> getSalesGrowthRate(
@@ -86,7 +85,7 @@ public class AnalyticsController {
     ) {
         try {
             double growthRate = advancedAnalyticsService.calculateSalesGrowthRate(
-                period1Start, period1End, period2Start, period2End
+                    period1Start, period1End, period2Start, period2End
             );
             return ResponseEntity.ok(growthRate);
         } catch (Exception e) {
@@ -101,9 +100,9 @@ public class AnalyticsController {
     /**
      * Analyze Seasonality of sales data
      * Decomposes time series into: Original, Trend, Seasonal, and Residual components
-     * 
+     *
      * @param startDate - Start of analysis period
-     * @param endDate - End of analysis period
+     * @param endDate   - End of analysis period
      * @return SeasonalityAnalysisDto with all components
      */
     @GetMapping("/seasonality")
@@ -124,16 +123,16 @@ public class AnalyticsController {
     }
 
     @GetMapping("/similarProducts/{productId}")
-    public List<ProductDto> getSimilarProducts(@PathVariable Long productId){
+    public List<ProductDto> getSimilarProducts(@PathVariable Long productId) {
         return advancedAnalyticsService.getSimilarProductsByProduct(productId);
     }
 
     /**
      * Cohort Analysis Endpoint
      * Analyzes user cohorts based on registration date
-     * 
+     *
      * @param startDate - Start of analysis period
-     * @param endDate - End of analysis period
+     * @param endDate   - End of analysis period
      * @return CohortAnalysisDto with cohort metrics
      */
     @GetMapping("/cohorts")
@@ -159,7 +158,7 @@ public class AnalyticsController {
      * - Class A: Top 80% of revenue (typically ~20% of products)
      * - Class B: Next 15% of revenue
      * - Class C: Remaining 5% of revenue
-     * 
+     *
      * @return ABCAnalysisDto with classified products
      */
     @GetMapping("/abc-analysis")
@@ -179,7 +178,7 @@ public class AnalyticsController {
     /**
      * Purchase Frequency Analysis Endpoint
      * Analyzes customer purchase patterns and frequency
-     * 
+     *
      * @return List of PurchaseFrequencyAnalysisDto for all customers
      */
     @GetMapping("/purchase-frequency")
@@ -204,11 +203,28 @@ public class AnalyticsController {
         return advancedAnalyticsService.performMarketBasketAnalysis(minSupport, minConfidence);
     }
 
-    @GetMapping("/api/v1/analytics/productslifecycle/{productId}")
+    @GetMapping("/productslifecycle/{productId}")
     public ResponseEntity<ProductLifecycleDto> getProductLifecycle(
             @PathVariable("productId") Long productId
     ) {
         ProductLifecycleDto lifecycle = advancedAnalyticsService.analyzeProductLifecycle(productId);
         return ResponseEntity.ok(lifecycle);
+    }
+
+    // turnover controller
+    @GetMapping("/inventory-turnover/{id}")
+    public ResponseEntity<Double> getInventoryTurnoverRatio(
+            @PathVariable("id") Long productId,
+            @RequestParam("startDate")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDateTime startDate,
+            @RequestParam("endDate")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDateTime endDate
+    ) {
+        double ratio = advancedAnalyticsService
+                .calculateInventoryTurnoverRatio(productId, startDate, endDate);
+
+        return ResponseEntity.ok(ratio);
     }
 }
