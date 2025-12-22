@@ -1,0 +1,62 @@
+<div class="search-page-container">
+  
+    <div class="results-header">
+      <div class="breadcrumb">
+        <a routerLink="/products">Home</a> / <span>Search Results</span>
+      </div>
+      
+      <h1>Results for <span class="highlight">{{ searchQuery }}</span></h1>
+      <p class="results-count">{{ totalResults }} products found</p>
+    </div>
+  
+    <div class="loading-state" *ngIf="isLoading">
+      <div class="spinner"></div>
+      <p>Searching catalog...</p>
+    </div>
+  
+    <div class="empty-state" *ngIf="!isLoading && products.length === 0">
+      <mat-icon class="empty-icon">search_off</mat-icon>
+      <h2>No products found</h2>
+      <p>We couldn't find any matches for "{{ searchQuery }}". Try different keywords.</p>
+      <a routerLink="/products" class="btn-back">Browse Full Catalog</a>
+    </div>
+  
+    <div class="products-grid" *ngIf="!isLoading && products.length > 0">
+      
+      <div class="product-card" *ngFor="let product of products">
+        
+        <div class="product-link" [routerLink]="['/products', product.id]">
+          <div class="image-wrapper">
+            <img [src]="product.imageUrl" [alt]="product.name" onerror="this.src='assets/placeholder.png'">
+          </div>
+  
+          <div class="details">
+            <span class="category-tag">{{ product.category?.name }}</span>
+            <h3 class="product-name">{{ product.name }}</h3>
+            
+            <div class="product-rating" [title]="(product.rating | number:'1.1-1') + ' / 5'">
+              <mat-icon *ngFor="let i of [].constructor(fullStars(product.rating))" class="star">star</mat-icon>
+              <mat-icon *ngIf="hasHalfStar(product.rating)" class="star">star_half</mat-icon>
+              <mat-icon *ngFor="let i of [].constructor(5 - fullStars(product.rating) - (hasHalfStar(product.rating) ? 1 : 0))" class="star empty">star_border</mat-icon>
+              
+              <span class="review-count">({{ product.reviewsCount || 0 }})</span>
+            </div>
+  
+            <div class="price-row">
+              <span class="price">{{ product.price | currency:'USD' }}</span>
+            </div>
+          </div>
+        </div>
+  
+        <div class="action-area">
+          <button class="btn-add">
+            <mat-icon>shopping_cart</mat-icon>
+            Add to Cart
+          </button>
+        </div>
+  
+      </div>
+  
+    </div>
+  
+  </div>

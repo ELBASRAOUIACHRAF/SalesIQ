@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
 import { RouterLink } from '@angular/router'; 
 import { Router, RouterLinkActive } from '@angular/router';
@@ -37,6 +37,7 @@ export class Navbar implements OnInit {
   // searchData!: SearchHistory;
 
   @ViewChild('searchInput') searchInput!: ElementRef;
+  @ViewChild('searchContainer') searchContainer!: ElementRef;
   
   topNavLinks: NavLink[] = [
     { label: 'Home', route: '/' },
@@ -71,6 +72,14 @@ export class Navbar implements OnInit {
     // Initialisation au chargement (ex: basketId = 1)
     this.basketService.updateCartCount(1);
     this.loadSearchHistory();
+  }
+
+  @HostListener('document:click', ['$event'])
+  clickout(event: Event) {
+    // Si l'historique est visible et que le clic n'est PAS dans le conteneur de recherche
+    if (this.isSearchHistoryVisible && this.searchContainer && !this.searchContainer.nativeElement.contains(event.target)) {
+      this.isSearchHistoryVisible = false;
+    }
   }
 
   loadSearchHistory(){
@@ -110,14 +119,15 @@ export class Navbar implements OnInit {
           next: (response) => {
             console.log('Recherche enregistrée avec succès', response);
             
-            this.router.navigate(['/products'], { queryParams: { q: this.searchQuery } });
+            this.router.navigate(['/productsResults'], { queryParams: { q: this.searchQuery } });
+            // this.hideSearchHistory();
           },
           error: (error) => {
             console.error('Erreur lors de la sauvegarde de la recherche', error);
           }
         });
       } else {
-        this.router.navigate(['/products'], { queryParams: { q: this.searchQuery } });
+        this.router.navigate(['/productsResults'], { queryParams: { q: this.searchQuery } });
       }
     }
   }
@@ -153,11 +163,11 @@ export class Navbar implements OnInit {
     this.onSearch(); // Trigger search
 
   }
-  hideSearchHistory() {
-    // Petit délai pour permettre le clic sur un élément de la liste avant fermeture
-    setTimeout(() => {
-      this.isSearchHistoryVisible = false;
-    }, 200);
-  }
+  // hideSearchHistory() {
+  //   // Petit délai pour permettre le clic sur un élément de la liste avant fermeture
+  //   setTimeout(() => {
+  //     this.isSearchHistoryVisible = false;
+  //   }, 200);
+  // }
   
 }

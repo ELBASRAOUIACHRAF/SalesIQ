@@ -19,6 +19,7 @@ import { ProductBuyCard } from './shared/components/product-buy-card/product-buy
 import { RatingDetails } from './shared/components/rating-details/rating-details';
 import { Review } from './shared/components/review/review';
 import { AboutPage } from './shared/pages/about-page/about-page';
+import { SearchResultsPage } from './shared/pages/search-results-page/search-results-page';
 
 import { Basket } from './shared/components/basket/basket';
 import { RecommendationsSidebar } from './shared/components/recommendations-sidebar/recommendations-sidebar';
@@ -41,7 +42,8 @@ import { CategoriesPage } from './shared/pages/categories-page/categories-page';
     FormsModule,
     AboutPage,
     ContactPage,
-    CategoriesPage
+    CategoriesPage,
+    SearchResultsPage,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'

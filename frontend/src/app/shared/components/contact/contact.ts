@@ -16,8 +16,8 @@ export class Contact implements OnInit{
 
   // Données de contact
   contactInfo = [
-    { icon: 'location_on', title: 'Address', content: '123 Tech Avenue, Silicon Valley, CA 94043' },
-    { icon: 'phone', title: 'Phone', content: '+1 (555) 123-4567' },
+    { icon: 'location_on', title: 'Address', content: 'École Nationale des Sciences Appliquées, BP 77 Bd Beni Amir, Khouribga 25000' },
+    { icon: 'phone', title: 'Phone', content: '+212 691763687' },
     { icon: 'email', title: 'Email', content: 'support@salesiq.com' },
     { icon: 'schedule', title: 'Working Hours', content: 'Mon - Fri: 9:00 AM - 6:00 PM' }
   ];

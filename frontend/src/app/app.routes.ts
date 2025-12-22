@@ -8,6 +8,7 @@ import { Auth } from './shared/pages/auth/auth';
 import { AboutPage } from './shared/pages/about-page/about-page';
 import { ContactPage } from './shared/pages/contact-page/contact-page';
 import { CategoriesPage } from './shared/pages/categories-page/categories-page';
+import { SearchResultsPage } from './shared/pages/search-results-page/search-results-page';
 
 
 
@@ -17,6 +18,7 @@ export const routes: Routes = [
     
     // Route pour la liste globale des produits
     { path: 'products', component: ProductsPage },
+    { path: 'productsResults', component: SearchResultsPage },
     
     // Route dynamique pour le détail d'un produit spécifique (:id)
     { path: 'product/:id', component: DetailsProductPage },

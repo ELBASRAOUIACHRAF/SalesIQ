@@ -13,7 +13,7 @@
         </ul>
       </div>
 
-      <div class="search-bar-container">
+      <div class="search-bar-container" #searchContainer>
         <input 
           #searchInput
           type="text" 
@@ -22,7 +22,6 @@
           [(ngModel)]="searchQuery" 
           (keyup.enter)="onSearch()"
           (focus)="showSearchHistory()" 
-          (blur)="hideSearchHistory()" 
         >
         <button class="search-icon" (click)="onSearch()">
           <mat-icon>search</mat-icon>
@@ -38,7 +37,7 @@
                     <mat-icon>history</mat-icon>
                     <span>{{ item.query }}</span>
                   </div>
-          
+
                   <button class="delete-btn" (mousedown)="$event.stopPropagation(); deleteHistoryItem($event, item.id)">
                     Delete
                   </button>
@@ -48,7 +47,7 @@
             </ul>
           </div>
         }
-      </div>
+    </div>
 
       <div class="action-icons">
           <a routerLink="/account" class="icon-link">

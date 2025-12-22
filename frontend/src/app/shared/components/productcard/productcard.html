@@ -69,6 +69,7 @@
           </p>
       
           <button (click)="onAddToCart(product)" class="add-to-cart-button" [disabled]="product.stock === 0">
+            <mat-icon *ngIf="product.stock > 0">shopping_cart</mat-icon>
             {{ product.stock === 0 ? 'Indisponible' : 'Add to cart' }}
           </button>
         </div>
