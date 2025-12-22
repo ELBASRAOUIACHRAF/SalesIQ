@@ -99,20 +99,26 @@ export class Navbar implements OnInit {
   }
 
   onSearch() {
-    
-    if (this.searchQuery.trim().length > 0) {
+    const cleanQuery = this.searchQuery.trim();
 
-      this.searchHistoryService.addUserSearchQuery(this.userId, this.searchQuery).subscribe({
-        next: (response) => {
-          console.log('Recherche enregistrée avec succès', response);
-          
-          this.router.navigate(['/products'], { queryParams: { q: this.searchQuery } });
-        },
-        error: (error) => {
-          console.error('Erreur lors de la sauvegarde de la recherche', error);
-        }
-      });
-
+    if (cleanQuery.length > 0) {
+      const exists = this.searchHistory.some(item => 
+        item.query.toLowerCase() === cleanQuery.toLowerCase()
+      );
+      if(!exists){
+        this.searchHistoryService.addUserSearchQuery(this.userId, this.searchQuery).subscribe({
+          next: (response) => {
+            console.log('Recherche enregistrée avec succès', response);
+            
+            this.router.navigate(['/products'], { queryParams: { q: this.searchQuery } });
+          },
+          error: (error) => {
+            console.error('Erreur lors de la sauvegarde de la recherche', error);
+          }
+        });
+      } else {
+        this.router.navigate(['/products'], { queryParams: { q: this.searchQuery } });
+      }
     }
   }
 
@@ -128,6 +134,7 @@ export class Navbar implements OnInit {
       next: () => {
         // Remove from local array
         this.searchHistory = this.searchHistory.filter(item => item.id !== id);
+        this.cd.detectChanges();
       }
     });
   }

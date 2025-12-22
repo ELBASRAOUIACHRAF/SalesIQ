@@ -29,7 +29,6 @@ export class SearchHistoryService {
   }
 
   getRecentSearches(userId: number): Observable<any>{ 
-    
     let params = new HttpParams().set('page', '0').set('size', '5'); 
     return this.http.get<any>(`${this.apiUrl}search/getRecentSearches/${userId}`, { params });
   }
