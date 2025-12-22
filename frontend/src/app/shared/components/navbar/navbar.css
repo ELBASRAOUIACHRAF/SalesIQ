@@ -33,6 +33,7 @@
 
 /* --- 3. MAIN HEADER --- */
 .main-header {
+  width: 90%;
   padding: 12px 0;
   background-color: var(--color-background);
 }
@@ -152,20 +153,24 @@
   background-color: #1d4ed8; /* Darker blue */
 }
 
-/* Search History Dropdown */
+/* --- CONTAINER DU DROPDOWN --- */
 .search-history-dropdown {
   position: absolute;
-  top: 100%; /* Right below search bar */
-  left: 15px; /* Slight indent */
+  top: 100%; /* Juste en dessous de la barre */
+  left: 15px; /* Alignement avec l'input */
   right: 15px;
   background: white;
+  
+  /* Style de la boîte */
   border: 1px solid var(--color-border);
-  border-top: none;
-  border-radius: 0 0 8px 8px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border-top: none; /* Fusionne visuellement avec l'input */
+  border-radius: 0 0 12px 12px; /* Arrondis plus doux */
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); /* Ombre portée moderne */
+  
   z-index: 1000;
   padding: 8px 0;
-  margin-top: 4px;
+  margin-top: 2px;
+  /* IMPORTANT : Pas de hauteur fixe ici pour laisser la liste grandir */
 }
 
 .search-history-dropdown ul {
@@ -174,49 +179,83 @@
   margin: 0;
 }
 
+/* --- LIGNE DE L'HISTORIQUE --- */
 .search-history-dropdown li {
   display: flex;
+  justify-content: space-between; /* Sépare le contenu (gauche) du bouton (droite) */
   align-items: center;
-  padding: 8px 16px;
+  padding: 10px 16px;
   cursor: pointer;
-  color: var(--color-text-dark);
-  font-size: 14px;
-  transition: background-color 0.15s;
-}
-
-.search-history-dropdown li mat-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-  color: var(--color-text-muted);
-  margin-right: 12px;
-}
-
-.search-history-dropdown li span {
-  flex-grow: 1;
-}
-
-.delete-btn {
-  color: #ef4444; /* Red */
-  font-size: 16px;
-  padding: 4px;
-  border-radius: 50%;
-  opacity: 0; /* Hidden by default */
-  transition: opacity 0.2s, background-color 0.2s;
+  transition: background-color 0.15s ease;
+  min-height: 40px;
 }
 
 .search-history-dropdown li:hover {
-  background-color: #f3f4f6;
+  background-color: #f9fafb; /* Gris très clair au survol */
 }
 
+/* --- CONTENU (ICÔNE + TEXTE) --- */
+/* Nécessite une div wrapper dans le HTML pour grouper icône et texte */
+.history-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1; /* Prend toute la place disponible */
+  overflow: hidden; /* Empêche le texte long de casser la mise en page */
+}
+
+.history-content mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #9ca3af; /* Gris neutre */
+}
+
+.history-content span {
+  font-size: 14px;
+  color: #374151; /* Texte gris foncé */
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/* --- BOUTON DELETE PROFESSIONNEL --- */
+.delete-btn {
+  /* Reset */
+  background: none;
+  border: none;
+  
+  /* Style Pilule */
+  background-color: #fee2e2; /* Fond rouge très pâle */
+  color: #ef4444; /* Texte rouge */
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  
+  /* Animation d'apparition */
+  opacity: 0;
+  transform: translateX(10px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- INTERACTIONS --- */
+
+/* Apparition du bouton quand on survole la ligne */
 .search-history-dropdown li:hover .delete-btn {
-  opacity: 1; /* Show on hover */
+  opacity: 1;
+  transform: translateX(0);
 }
 
+/* Changement de style quand on survole le bouton lui-même */
 .delete-btn:hover {
-  background-color: #fee2e2;
+  background-color: #ef4444;
+  color: white;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.25);
 }
-
 /* Action Icons */
 .action-icons {
   display: flex;
@@ -250,7 +289,7 @@
   position: absolute;
   top: -5px;
   right: -5px;
-  background-color: #ef4444; /* Standard alert red */
+  background-color: #ef4444;
   color: white;
   border-radius: 999px;
   padding: 2px 6px;

@@ -33,15 +33,22 @@
             <ul>
               @for (item of searchHistory; track item.id) {
                 <li (mousedown)="selectHistoryItem(item.query)">
+                  
+                  <div class="history-content">
                     <mat-icon>history</mat-icon>
                     <span>{{ item.query }}</span>
-                    <span class="delete-btn" (mousedown)="$event.stopPropagation(); deleteHistoryItem($event, item.id)">×</span>
+                  </div>
+          
+                  <button class="delete-btn" (mousedown)="$event.stopPropagation(); deleteHistoryItem($event, item.id)">
+                    Delete
+                  </button>
+                  
                 </li>
               }
             </ul>
           </div>
         }
-    </div>
+      </div>
 
       <div class="action-icons">
           <a routerLink="/account" class="icon-link">
