@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface SearchHistoryService {
 
-    SearchHistoryDto addSearchHistory(Long usersId, SearchHistoryDto searchHistoryDto);
+    SearchHistoryDto addSearchHistory(Long usersId, String query);
     void clearSearchHistory(Long usersId);
     void deleteSearchHistory(Long searchHistoryId);
     Page<SearchHistoryDto> getSearchHistory(Long usersId, int page, int size);

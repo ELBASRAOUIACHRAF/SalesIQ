@@ -55,11 +55,8 @@ export class SalesForecastKpiComponent implements OnInit, OnChanges, OnDestroy {
     this.destroy$.complete();
   }
 
-<<<<<<< HEAD
-=======
 
 
->>>>>>> ce2ca7618fe3df57d04f39ab1c51a1556bc6c1ca
   readonly viewBoxWidth = 180;
   readonly viewBoxHeight = 64;
 

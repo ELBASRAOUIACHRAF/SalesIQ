@@ -29,8 +29,8 @@ public class SearchHistoryRestController {
     }
 
     @PostMapping("/addSearch/{usersId}")
-    public SearchHistoryDto addSearchHistory(@PathVariable Long usersId, @RequestBody SearchHistoryDto searchHistoryDto) {
-        return searchHistoryService.addSearchHistory(usersId, searchHistoryDto);
+    public SearchHistoryDto addSearchHistory(@PathVariable Long usersId, @RequestBody String query) {
+        return searchHistoryService.addSearchHistory(usersId, query);
     }
 
     @DeleteMapping("/clearHistory")

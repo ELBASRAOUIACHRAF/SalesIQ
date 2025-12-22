@@ -28,8 +28,9 @@ public class SearchHistoryServiceImpl implements SearchHistoryService {
     private UsersMapper  usersMapper;
 
     @Override
-    public SearchHistoryDto addSearchHistory(Long usersId, SearchHistoryDto searchHistoryDto) {
-        SearchHistory searchHistory = searchHistoryMapper.toEntity(searchHistoryDto);
+    public SearchHistoryDto addSearchHistory(Long usersId, String query) {
+        SearchHistory searchHistory = new SearchHistory();
+        searchHistory.setQuery(query);
         searchHistory.setSearchedAt(LocalDateTime.now());
         Users user = usersMapper.toEntity(usersService.getUsers(usersId));
         searchHistory.setUser(user);

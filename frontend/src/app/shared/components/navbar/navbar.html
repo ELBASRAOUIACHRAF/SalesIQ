@@ -14,8 +14,14 @@
         </div>
   
         <div class="search-bar-container">
-          <input type="text" placeholder="Search for products, brands and more" class="search-input">
-          <button class="search-icon">
+          <input 
+            type="text" 
+            placeholder="Search for products, brands and more" 
+            class="search-input"
+            [(ngModel)]="searchQuery" 
+            (keyup.enter)="onSearch()">
+          
+          <button class="search-icon" (click)="onSearch()">
             <mat-icon>search</mat-icon>
           </button>
         </div>
