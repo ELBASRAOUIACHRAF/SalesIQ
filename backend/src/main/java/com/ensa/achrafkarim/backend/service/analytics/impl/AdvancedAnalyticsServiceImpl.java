@@ -597,8 +597,8 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
                 .average()
                 .orElse(0.0);
 
-        long first = quantities.getFirst();
-        long last = quantities.getLast();
+        Long first = quantities.getFirst();
+        Long last = quantities.getLast();
 
         double growthRate = (first == 0) ? 0.0 : (double) (last - first) / first ;
 

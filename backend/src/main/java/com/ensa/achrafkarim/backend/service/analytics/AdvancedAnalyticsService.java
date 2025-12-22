@@ -97,7 +97,7 @@ AdvancedAnalyticsService {
     /**
      * Analyse de performance par catégorie
      */
-    List<CategoryPerformanceDto> analyzeCategoryPerformance(LocalDateTime startDate, LocalDateTime endDate);
+    //List<CategoryPerformanceDto> analyzeCategoryPerformance(LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Identification des produits à forte/faible marge

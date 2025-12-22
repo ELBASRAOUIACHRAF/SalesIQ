@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MonthlySalesDto {
-    private int year ;
-    private int month;
-    private long totalQuantity;
+    private Integer year ;
+    private Integer month;
+    private Long totalQuantity;
 }
