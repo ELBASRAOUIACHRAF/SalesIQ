@@ -1,77 +1,84 @@
 /* src/app/navbar/navbar.component.css */
 
-/* --- 1. VARIABLES ET BASE --- */
+/* --- 1. VARIABLES AND BASE --- */
 :host {
-  /* Palette professionnelle */
-  --color-primary: #111827;      /* Bleu nuit / anthracite */
-  --color-primary-soft: #1f2937; /* Bande secondaire */
+  /* Professional Palette */
+  --color-primary: #111827;      /* Midnight Blue / Anthracite */
+  --color-primary-soft: #1f2937; /* Secondary Band */
   --color-background: #ffffff;
-  --color-accent: #2563eb;       /* Bleu professionnel */
-  --color-accent-soft: #dbeafe;  /* Bleu très clair */
+  --color-accent: #2563eb;       /* Professional Blue */
+  --color-accent-soft: #dbeafe;  /* Very Light Blue */
   --color-border: #e5e7eb;
   --color-text-light: #f9fafb;
   --color-text-muted: #6b7280;
   --color-text-dark: #111827;
+  --color-gold: #fbbf24;         /* Gold Accent */
 }
-  
-  .navbar-container {
-    width: 100%;
-    box-shadow: 0 1px 0 var(--color-border);
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background-color: var(--color-background);
-  }
 
-  .content-wrapper {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  
-  /* --- 3. BANDE PRINCIPALE (Main Header) --- */
-  .main-header {
-    padding: 12px 0;
-    background-color: var(--color-background);
-  }
-  
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-  }
-  .logo{
-    cursor: pointer;
-  }
+.navbar-container {
+  width: 100%;
+  box-shadow: 0 1px 0 var(--color-border);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--color-background);
+}
 
-/* Conteneur de la liste */
+.content-wrapper {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* --- 3. MAIN HEADER --- */
+.main-header {
+  padding: 12px 0;
+  background-color: var(--color-background);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.logo {
+  cursor: pointer;
+}
+
+.logo-text {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding-right: 15px;
+  color: var(--color-primary);
+}
+
+/* Top Navigation Links */
 .top-nav-links {
   display: flex;
   align-items: center;
   list-style: none;
   margin: 0;
   padding: 0;
-  gap: 25px; /* Espace entre les liens */
+  gap: 25px;
 }
 
-/* Style de base des liens */
 .top-nav-links li a {
   text-decoration: none;
-  color: #2563eb; /* Ajustez selon votre fond (blanc pour fond sombre) */
-  font-size: 17px;
+  color: var(--color-accent);
+  font-size: 15px;
   font-weight: 500;
   transition: all 0.3s ease;
-  position: relative; /* Pour l'effet de soulignement */
+  position: relative;
   padding: 5px 0;
 }
 
-/* Effet au survol (Coloration) */
 .top-nav-links li a:hover {
-  color: #febd69; /* Jaune orangé type Amazon ou bleu #007bff */
+  color: var(--color-gold);
 }
 
-/* Effet de soulignement animé au survol */
 .top-nav-links li a::after {
   content: '';
   position: absolute;
@@ -79,7 +86,7 @@
   height: 2px;
   bottom: 0;
   left: 0;
-  background-color: #febd69;
+  background-color: var(--color-gold);
   transition: width 0.3s ease;
 }
 
@@ -87,215 +94,190 @@
   width: 100%;
 }
 
-/* Style pour le lien actif (RouterLinkActive) */
 .active-link {
-  color: #febd69 !important;
+  color: var(--color-gold) !important;
   font-weight: 600;
 }
-/* navbar.css */
-.secondary-nav-bar {
-  background-color: #1f2937; /* Fond sombre de votre image */
-  padding: 0 20px;
-}
 
-.main-nav-links {
+/* Search Bar */
+.search-bar-container {
+  position: relative;
+  z-index: 100;
   display: flex;
   align-items: center;
-  list-style: none;
-  margin: 0;
-  padding: 0;
+  flex-grow: 1;
+  max-width: 560px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px; /* Pill shape */
+  overflow: visible; /* Changed from hidden to visible for dropdown */
+  height: 42px;
+  margin: 0 32px;
+  background-color: #f9fafb;
 }
 
-.main-nav-links li {
+/* Important: The input needs to have rounded corners on the left only */
+.search-input {
+  flex-grow: 1;
+  border: none;
+  padding: 0 16px;
+  height: 100%;
+  font-size: 15px;
+  background: transparent;
+  border-top-left-radius: 999px;
+  border-bottom-left-radius: 999px;
+}
+
+.search-input:focus {
+  outline: none;
+  background-color: #fff;
+  box-shadow: inset 0 0 0 2px var(--color-accent-soft);
+}
+
+.search-icon {
+  background-color: var(--color-accent);
+  border: none;
+  padding: 0 18px;
+  height: 100%; /* Fill container height */
+  cursor: pointer;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top-right-radius: 999px;
+  border-bottom-right-radius: 999px;
+  transition: background-color 0.2s;
+}
+
+.search-icon:hover {
+  background-color: #1d4ed8; /* Darker blue */
+}
+
+/* Search History Dropdown */
+.search-history-dropdown {
+  position: absolute;
+  top: 100%; /* Right below search bar */
+  left: 15px; /* Slight indent */
+  right: 15px;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  padding: 8px 0;
+  margin-top: 4px;
+}
+
+.search-history-dropdown ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.search-history-dropdown li {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  cursor: pointer;
+  color: var(--color-text-dark);
+  font-size: 14px;
+  transition: background-color 0.15s;
+}
+
+.search-history-dropdown li mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-muted);
+  margin-right: 12px;
+}
+
+.search-history-dropdown li span {
+  flex-grow: 1;
+}
+
+.delete-btn {
+  color: #ef4444; /* Red */
+  font-size: 16px;
+  padding: 4px;
+  border-radius: 50%;
+  opacity: 0; /* Hidden by default */
+  transition: opacity 0.2s, background-color 0.2s;
+}
+
+.search-history-dropdown li:hover {
+  background-color: #f3f4f6;
+}
+
+.search-history-dropdown li:hover .delete-btn {
+  opacity: 1; /* Show on hover */
+}
+
+.delete-btn:hover {
+  background-color: #fee2e2;
+}
+
+/* Action Icons */
+.action-icons {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  color: var(--color-text-muted);
+}
+
+.icon-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  color: var(--color-text-muted);
+  transition: all 0.15s;
+}
+
+.icon-link:hover {
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.cart-icon {
   position: relative;
 }
 
-.main-nav-links li a {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  color: #e5e7eb; /* Blanc cassé */
-  font-size: 13px;
-  padding: 12px 16px;
-  transition: background 0.2s;
-}
-
-/* Effet de survol rectangulaire propre */
-.main-nav-links li a:hover,
-.megamenu-active > a {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-}
-
-/* Style de la flèche dropdown */
-.dropdown-arrow {
-  font-size: 9px;
-  margin-left: 8px;
-  opacity: 0.7;
-}
-
-.megamenu-dropdown {
+.cart-count {
   position: absolute;
-  top: 100%;
-  left: 0;
-  background: white;
-  min-width: 220px;
-  border-radius: 8px; /* Arrondi comme vos cartes de profil */
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  padding: 15px;
-  z-index: 1000;
-  margin-top: 5px;
-  border: 1px solid #f3f4f6;
+  top: -5px;
+  right: -5px;
+  background-color: #ef4444; /* Standard alert red */
+  color: white;
+  border-radius: 999px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  min-width: 18px;
+  text-align: center;
 }
 
-.megamenu-dropdown ul {
-  list-style: none;
-  padding: 0;
-}
-
-.megamenu-dropdown ul li a {
-  color: #374151 !important; /* Texte sombre pour le menu sur fond blanc */
-  padding: 8px 12px !important;
-  border-radius: 4px;
-  display: block;
-}
-
-.megamenu-dropdown ul li a:hover {
-  background-color: #f9fafb !important;
-  color: #2563eb !important;
-}
-
-  
-  .logo-text {
-    font-size: 24px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding-right: 15px;
-    color: var(--color-primary);
-  }
-  
-  .top-nav-links {
-    list-style: none;
-    display: flex;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .top-nav-links a {
-    text-decoration: none;
-    color: var(--color-text-muted);
-    font-size: 14px;
-    padding: 4px 10px;
-    transition: color 0.2s;
-  }
-  
-  .top-nav-links a:hover {
-    color: var(--color-accent);
-  }
-  
-  /* Barre de Recherche */
-  .search-bar-container {
-    display: flex;
-    align-items: center;
-    flex-grow: 1;
-    max-width: 560px;
-    border: 1px solid var(--color-border);
-    border-radius: 999px;
-    overflow: hidden;
-    height: 42px;
-    margin: 0 32px;
-    background-color: #f9fafb;
-  }
-  
-  .search-input {
-    flex-grow: 1;
-    border: none;
-    padding: 0 16px;
-    height: 100%;
-    font-size: 15px;
-    background: transparent;
-  }
-  
-  .search-input:focus {
-    outline: none;
-  }
-  
-  .search-icon {
-    background-color: var(--color-accent);
-    border: none;
-    padding: 0 18px;
-    height: 100%;
-    cursor: pointer;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  /* Icônes d'Action */
-  .action-icons {
-    display: flex;
-    gap: 16px;
-    align-items: center;
-    color: var(--color-text-muted);
-  }
-
-  .icon-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 999px;
-    border: 1px solid transparent;
-    transition: background-color 0.15s, border-color 0.15s, color 0.15s;
-  }
-
-  .icon-link:hover {
-    background-color: var(--color-accent-soft);
-    border-color: var(--color-accent-soft);
-    color: var(--color-accent);
-  }
-  
-  .cart-icon {
-    position: relative;
-  }
-  
-  .cart-count {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background-color: var(--color-accent);
-    color: var(--color-text-light);
-    border-radius: 50%;
-    padding: 2px 6px;
-    font-size: 10px;
-    font-weight: bold;
-    line-height: 1;
-  }
-  
-  /* --- 4. NAVIGATION SECONDAIRE --- */
-  /* --- 4. NAVIGATION SECONDAIRE PROFESSIONNELLE --- */
-
+/* --- 4. PROFESSIONAL SECONDARY NAVIGATION --- */
 .secondary-nav-bar {
-  background-color: var(--color-primary-soft); /* #1f2937 */
-  border-bottom: 1px solid #374151; /* Séparation subtile */
-  height: 48px; /* Hauteur fixe pour l'alignement */
-  display: flex;
-  align-items: center;
+  background-color: var(--color-primary-soft);
+  border-bottom: 1px solid #374151;
+  height: 48px;
 }
 
 .secondary-nav-bar .content-wrapper {
-  height: 100%; /* Prend toute la hauteur pour centrer */
+  height: 100%;
+  /* Using space-between to push links left and shipping info right */
+  justify-content: space-between; 
 }
-
-/* --- LIENS PRINCIPAUX --- */
 
 .main-nav-links {
   list-style: none;
   display: flex;
-  gap: 5px; /* Espace entre les boutons */
+  gap: 5px;
   padding: 0;
   margin: 0;
   height: 100%;
@@ -305,15 +287,15 @@
   height: 100%;
   display: flex;
   align-items: center;
-  position: relative; /* Référence pour le dropdown */
+  position: relative;
 }
 
 .main-nav-links a {
   text-decoration: none;
-  color: #e5e7eb; /* Gris clair */
+  color: #e5e7eb;
   font-size: 13px;
-  font-weight: 600; /* Plus gras pour la lisibilité */
-  text-transform: uppercase; /* Look "Pro" */
+  font-weight: 600;
+  text-transform: uppercase;
   letter-spacing: 0.5px;
   padding: 0 16px;
   height: 100%;
@@ -323,16 +305,16 @@
   transition: color 0.3s ease;
 }
 
-/* Animation de la barre au survol */
+/* Underline Animation */
 .main-nav-links a::after {
   content: '';
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 3px; /* Épaisseur de la barre */
-  background-color: var(--color-accent); /* #2563eb */
-  transform: scaleX(0); /* Caché par défaut */
+  height: 3px;
+  background-color: var(--color-accent);
+  transform: scaleX(0);
   transform-origin: bottom right;
   transition: transform 0.25s ease-out;
 }
@@ -340,12 +322,12 @@
 .main-nav-links a:hover, 
 .megamenu-active > a {
   color: #ffffff;
-  background-color: rgba(255, 255, 255, 0.05); /* Fond très léger */
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .main-nav-links a:hover::after,
 .megamenu-active > a::after {
-  transform: scaleX(1); /* La barre apparaît */
+  transform: scaleX(1);
   transform-origin: bottom left;
 }
 
@@ -356,46 +338,33 @@
   color: var(--color-accent);
 }
 
-/* Rotation de la flèche quand le menu est ouvert */
 .megamenu-active .dropdown-arrow {
   transform: rotate(180deg);
 }
 
-/* --- MEGAMENU DROPDOWN --- */
-
+/* MegaMenu Dropdown */
 .megamenu-dropdown {
   position: absolute;
-  top: 100%; /* Colle au bas de la barre */
+  top: 100%;
   left: 0;
-  min-width: 240px; /* Plus large */
+  min-width: 240px;
   background-color: #ffffff;
-  
-  /* Style de la boîte */
-  border-top: 3px solid var(--color-accent); /* Ligne colorée en haut */
+  border-top: 3px solid var(--color-accent);
   border-radius: 0 0 6px 6px;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15), 0 5px 10px rgba(0,0,0,0.05);
-  
   padding: 20px;
   z-index: 1000;
-  
-  /* Animation d'entrée */
   animation: slideDown 0.2s ease-out forwards;
   transform-origin: top center;
 }
 
 @keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .megamenu-dropdown h5 {
-  color: var(--color-primary); /* Titre sombre */
+  color: var(--color-primary);
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -413,34 +382,26 @@
 .megamenu-dropdown ul li a {
   display: block;
   padding: 8px 10px;
-  color: var(--color-text-muted); /* Gris moyen */
+  color: var(--color-text-muted);
   font-size: 14px;
-  text-transform: none; /* Reset l'uppercase du parent */
+  text-transform: none;
   font-weight: 400;
   border-radius: 4px;
   transition: all 0.2s ease;
-  height: auto; /* Reset la hauteur 100% du parent */
 }
 
-/* Effet hover sur les liens du menu */
 .megamenu-dropdown ul li a:hover {
   color: var(--color-accent);
-  background-color: var(--color-accent-soft); /* Fond bleu très clair */
-  transform: translateX(5px); /* Petit décalage vers la droite */
+  background-color: var(--color-accent-soft);
+  transform: translateX(5px);
 }
 
-/* --- INFO LIVRAISON (Shipping) --- */
-
+/* Shipping Info */
 .shipping-info {
   font-size: 13px;
   font-weight: 500;
-  color: #9ca3af; /* Gris clair */
+  color: #9ca3af;
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-
-.shipping-info span {
-  color: #fbbf24; /* Couleur dorée pour le prix/nombre */
 }

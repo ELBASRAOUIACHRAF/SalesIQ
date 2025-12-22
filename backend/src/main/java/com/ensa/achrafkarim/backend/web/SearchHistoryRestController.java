@@ -33,8 +33,8 @@ public class SearchHistoryRestController {
         return searchHistoryService.addSearchHistory(usersId, query);
     }
 
-    @DeleteMapping("/clearHistory")
-    public void clearSearchHistory(@RequestParam Long usersId) {
+    @DeleteMapping("/clearHistory/{usersId}")
+    public void clearSearchHistory(@PathVariable Long usersId) {
         searchHistoryService.clearSearchHistory(usersId);
     }
 

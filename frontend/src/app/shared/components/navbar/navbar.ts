@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
 import { RouterLink } from '@angular/router'; 
-import { Router } from '@angular/router';
+import { Router, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { BasketService } from '../../../core/services/basket.service';
@@ -21,7 +21,8 @@ interface NavLink {
     CommonModule, 
     RouterLink,
     FormsModule,
-    MatIconModule 
+    MatIconModule,
+    RouterLinkActive 
   ],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
@@ -29,8 +30,13 @@ interface NavLink {
 export class Navbar implements OnInit {
   searchQuery: string = '';
   isMegamenuOpen: boolean = false;
-  searchHistory!: SearchHistory[];
+  searchHistory: SearchHistory[] = [];
+
+  isSearchHistoryVisible: boolean = false;
+  userId = 1;
   // searchData!: SearchHistory;
+
+  @ViewChild('searchInput') searchInput!: ElementRef;
   
   topNavLinks: NavLink[] = [
     { label: 'Home', route: '/' },
@@ -49,7 +55,8 @@ export class Navbar implements OnInit {
     private cd: ChangeDetectorRef, 
     private basketService :BasketService,
     private searchHistoryService: SearchHistoryService,
-    private router: Router
+    private router: Router,
+    private eRef: ElementRef
   ) { }
 
   cartCount: number = 0;
@@ -63,7 +70,27 @@ export class Navbar implements OnInit {
 
     // Initialisation au chargement (ex: basketId = 1)
     this.basketService.updateCartCount(1);
+    this.loadSearchHistory();
   }
+
+  loadSearchHistory(){
+    this.searchHistoryService.getRecentSearches(this.userId).subscribe({
+      next: (response: any) => {
+        // Spring Boot renvoie un objet Page, la liste est dans 'content'
+        this.searchHistory = response.content;
+        
+        console.log('Historique chargé :', this.searchHistory);
+        
+        // Force la détection de changement si nécessaire (utile si les données n'apparaissent pas tout de suite)
+        this.cd.detectChanges();
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement de l\'historique', error);
+      }
+    });
+  }
+
+  
 
   // Méthode pour basculer l'état du Megamenu
   toggleMegamenu(event: Event): void {
@@ -75,7 +102,7 @@ export class Navbar implements OnInit {
     
     if (this.searchQuery.trim().length > 0) {
 
-      this.searchHistoryService.addUserSearchQuery(1, this.searchQuery).subscribe({
+      this.searchHistoryService.addUserSearchQuery(this.userId, this.searchQuery).subscribe({
         next: (response) => {
           console.log('Recherche enregistrée avec succès', response);
           
@@ -87,6 +114,43 @@ export class Navbar implements OnInit {
       });
 
     }
+  }
+
+  showSearchHistory() {
+    this.isSearchHistoryVisible = true;
+    // Optionally refresh history here
+    this.loadSearchHistory(); 
+  }
+
+  deleteHistoryItem(event: Event, id: number) {
+    event.stopPropagation(); // Prevent triggering selectHistoryItem
+    this.searchHistoryService.deleteFromSearchHistory(id).subscribe({
+      next: () => {
+        // Remove from local array
+        this.searchHistory = this.searchHistory.filter(item => item.id !== id);
+      }
+    });
+  }
+
+  clearAllHistory() {
+    this.searchHistoryService.clearUsersHistory(this.userId).subscribe({
+      next: () => {
+        this.searchHistory = [];
+      }
+    });
+  }
+
+  selectHistoryItem(query: string) {
+    this.searchQuery = query;
+    this.isSearchHistoryVisible = false;
+    this.onSearch(); // Trigger search
+
+  }
+  hideSearchHistory() {
+    // Petit délai pour permettre le clic sur un élément de la liste avant fermeture
+    setTimeout(() => {
+      this.isSearchHistoryVisible = false;
+    }, 200);
   }
   
 }

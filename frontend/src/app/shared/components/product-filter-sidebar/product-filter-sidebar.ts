@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatSliderModule } from '@angular/material/slider';
 import { CommonModule } from '@angular/common';
@@ -29,7 +29,8 @@ export class ProductFilterSidebar implements OnInit {
 
   constructor(
     private categoryService: CategoryService,
-    private productService: ProductService
+    private productService: ProductService,
+    private cd: ChangeDetectorRef
   ) {}
 
   @Output() filtersChanged = new EventEmitter<FilterState>();
@@ -89,6 +90,7 @@ export class ProductFilterSidebar implements OnInit {
   ngOnInit(): void {
     this.categoryService.getCategories().subscribe((data) => {
       this.categories = data;
+      this.cd.detectChanges();
     });
     // Décommenter si vous avez un endpoint pour les marques
     // this.productService.getBrands().subscribe((data: string[]) => {
