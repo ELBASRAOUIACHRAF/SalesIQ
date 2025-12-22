@@ -1,5 +1,7 @@
 package com.ensa.achrafkarim.backend.client;
 
+import com.ensa.achrafkarim.backend.dto.analyticsDto.AssociationRuleDto;
+import com.ensa.achrafkarim.backend.dto.analyticsDto.MarketBasketRequestDto;
 import com.ensa.achrafkarim.backend.dto.analyticsDto.SalesForecastDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -8,6 +10,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class FastApiClient {
@@ -41,5 +47,32 @@ public class FastApiClient {
         } catch (Exception e) {
             throw new RuntimeException("Failed to get forecast from FastAPI: " + e.getMessage(), e);
         }
+    }
+
+    //performMarketBasketAnalysis
+    public List<AssociationRuleDto> performMarketBasketAnalysis(
+            double minSupport,
+            double minConfidence,
+            List<Map<Long, Integer>> transactions
+    ) {
+        String url = fastApiBaseUrl + "/api/v1/analytics/marketBasketAnalysis";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        MarketBasketRequestDto request = new MarketBasketRequestDto(minSupport, minConfidence, transactions);
+        HttpEntity<MarketBasketRequestDto> entity = new HttpEntity<>(request, headers);
+
+        try {
+            ResponseEntity<AssociationRuleDto[]> response = restTemplate.postForEntity(
+                    url,
+                    entity,
+                    AssociationRuleDto[].class
+            );
+            return Arrays.asList(response.getBody());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to get forecast from FastAPI: " + e.getMessage(), e);
+        }
+
     }
 }

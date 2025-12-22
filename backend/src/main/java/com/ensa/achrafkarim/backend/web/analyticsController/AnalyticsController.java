@@ -1,12 +1,7 @@
 package com.ensa.achrafkarim.backend.web.analyticsController;
 
 import com.ensa.achrafkarim.backend.dto.ProductDto;
-import com.ensa.achrafkarim.backend.dto.analyticsDto.ABCAnalysisDto;
-import com.ensa.achrafkarim.backend.dto.analyticsDto.CohortAnalysisDto;
-import com.ensa.achrafkarim.backend.dto.analyticsDto.PurchaseFrequencyAnalysisDto;
-import com.ensa.achrafkarim.backend.dto.analyticsDto.SalesForecastDto;
-import com.ensa.achrafkarim.backend.dto.analyticsDto.SalesTrendAnalysisDto;
-import com.ensa.achrafkarim.backend.dto.analyticsDto.SeasonalityAnalysisDto;
+import com.ensa.achrafkarim.backend.dto.analyticsDto.*;
 import com.ensa.achrafkarim.backend.enums.analyticsEnum.TimeGranularity;
 import com.ensa.achrafkarim.backend.service.SaleService;
 import com.ensa.achrafkarim.backend.service.analytics.AdvancedAnalyticsService;
@@ -199,5 +194,13 @@ public class AnalyticsController {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
         }
+    }
+
+    @GetMapping("/api/v1/analytics/marketBasket")
+    public List<AssociationRuleDto> getMarketBasketRules(
+            @RequestParam double minSupport,
+            @RequestParam double minConfidence
+    ) {
+        return advancedAnalyticsService.performMarketBasketAnalysis(minSupport, minConfidence);
     }
 }

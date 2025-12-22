@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from app.api.models.recommendation_model import RecoRequest, RecoResponse
 from app.services.recommendation_service import reco_service
 

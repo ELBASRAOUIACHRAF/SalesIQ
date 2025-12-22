@@ -74,13 +74,13 @@ AdvancedAnalyticsService {
      * Analyse de corrélation entre produits (Product Affinity Analysis)
      * Identifie quels produits sont souvent achetés ensemble
      */
-    //ProductAffinityAnalysisDto analyzeProductAffinity(int minSupportCount);
+    ProductAffinityAnalysisDto analyzeProductAffinity(int minSupportCount);
 
     /**
      * Market Basket Analysis (MBA)
      * Association rules: Si produit A acheté → probabilité d'acheter B
      */
-    //List<AssociationRuleDto> performMarketBasketAnalysis(double minSupport, double minConfidence);
+    List<AssociationRuleDto> performMarketBasketAnalysis(double minSupport, double minConfidence);
 
     /**
      * Analyse du cycle de vie produit (Product Lifecycle Analysis)

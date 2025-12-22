@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -16,6 +17,6 @@ public class SaleDto {
     private LocalDateTime dateOfSale;
     private PaymentMethod paymentMethod;
     private Status status;
-    private List<ProductOrderInfoDto> productOrderInfoList;
+    private List<ProductOrderInfoDto> productOrderInfoList = new ArrayList<>();
 
 }

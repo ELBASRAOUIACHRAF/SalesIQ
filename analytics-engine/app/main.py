@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import recommendation, sales_forecast
+from app.api.routes import recommendation, sales_forecast, mba
 from app.services.recommendation_service import reco_service
 
 app = FastAPI(
@@ -34,6 +34,12 @@ app.include_router(
     recommendation.router,
     prefix="/api/v1/recommendation",
     tags=["Recommendation"]
+)
+
+app.include_router(          
+    mba.router,
+    prefix="/api/v1",
+    tags=["Market Basket Analysis"]
 )
 
 @app.get("/")

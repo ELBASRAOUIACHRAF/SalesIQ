@@ -1,8 +1,6 @@
 package com.ensa.achrafkarim.backend.service.analytics.impl;
 
-import com.ensa.achrafkarim.backend.dto.ProductDto;
-import com.ensa.achrafkarim.backend.dto.SaleDto;
-import com.ensa.achrafkarim.backend.dto.UsersDto;
+import com.ensa.achrafkarim.backend.dto.*;
 import com.ensa.achrafkarim.backend.dto.analyticsDto.*;
 import com.ensa.achrafkarim.backend.entities.Product;
 import com.ensa.achrafkarim.backend.entities.Sale;
@@ -11,6 +9,7 @@ import com.ensa.achrafkarim.backend.entities.Users;
 import com.ensa.achrafkarim.backend.enums.Role;
 import com.ensa.achrafkarim.backend.enums.analyticsEnum.SeasonalityType;
 import com.ensa.achrafkarim.backend.enums.analyticsEnum.TimeGranularity;
+import com.ensa.achrafkarim.backend.mapper.SaleMapper;
 import com.ensa.achrafkarim.backend.repository.SaleRepository;
 import com.ensa.achrafkarim.backend.repository.UsersRepository;
 import com.ensa.achrafkarim.backend.service.*;
@@ -43,6 +42,7 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
 
     private final SaleRepository saleRepository;
     private final UsersRepository usersRepository;
+    private final SaleMapper saleMapper;
     UsersService  usersService;
     SaleService  saleService;
     ReviewsService  reviewsService;
@@ -507,6 +507,66 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
         return dto;
     }
 
+    //still needs controller and front
+    @Override
+    public ProductAffinityAnalysisDto analyzeProductAffinity(int minSupportCount) {
+
+        List<SaleDto> sales = saleRepository.findAll().stream()
+                .map(saleMapper::toDto)
+                .toList();
+        Map<String, Integer> pairCountMap = new HashMap<>();
+
+        for (SaleDto sale: sales) {
+            List<ProductOrderInfoDto> soldProducts = sale.getProductOrderInfoList();
+            if (soldProducts.size() < 2) continue;
+
+            for (int i = 0; i < soldProducts.size(); i++){
+                for(int j = 0; j < soldProducts.size(); i++){
+                    Long productId1 = soldProducts.get(i).getProductId();
+                    Long productId2 = soldProducts.get(j).getProductId();
+                    String key = generatePairKey(productId1, productId2);
+
+                    pairCountMap.put(key, pairCountMap.getOrDefault(key, 0) + 1);
+
+                }
+            }
+        }
+        List<ProductAffinityAnalysisDto.ProductPair> frequentPairs = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : pairCountMap.entrySet()) {
+            if (entry.getValue() >= minSupportCount) {
+                String[] ids = entry.getKey().split("__");
+                Product p1 = new Product(); p1.setId(Long.parseLong(ids[0]));
+                Product p2 = new Product(); p2.setId(Long.parseLong(ids[1]));
+
+                frequentPairs.add(new ProductAffinityAnalysisDto.ProductPair(p1, p2, entry.getValue()));
+            }
+        }
+
+        return new ProductAffinityAnalysisDto(frequentPairs);
+    }
+
+    @Override
+    public List<AssociationRuleDto> performMarketBasketAnalysis(double minSupport, double minConfidence) {
+        List<SaleDto> sales = saleRepository.findAll().stream()
+                .map(saleMapper::toDto)
+                .toList();
+        List<Map<Long, Integer>> transactions = new ArrayList<>();
+        for (SaleDto sale : sales) {
+            Map<Long, Integer> transaction = new HashMap<>();
+            for (ProductOrderInfoDto sp : sale.getProductOrderInfoList() != null
+                    ? sale.getProductOrderInfoList()
+                    : Collections.<ProductOrderInfoDto>emptyList()) {
+                // process sp
+                transaction.put(sp.getProductId(), 1);
+            }
+            transactions.add(transaction);
+        }
+        return fastApiClient.performMarketBasketAnalysis(minSupport, minConfidence, transactions);
+    }
+
+    private String generatePairKey(Long id1, Long id2) {
+        return id1 < id2 ? id1 + "__" + id2 : id2 + "__" + id1;
+    }
 
     @Override
     public double calculateCustomerLifetimeValue(Long userId) {
