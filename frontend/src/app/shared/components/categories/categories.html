@@ -9,7 +9,7 @@
     <div class="categories-grid">
       <div 
         class="category-card" 
-        *ngFor="let cat of activeCategories" 
+        *ngFor="let cat of categories" 
         (click)="navigateToCategory(cat.name)">
         
         <div class="card-image" [style.backgroundImage]="'url(' + cat.imageUrl + ')'">
@@ -19,7 +19,7 @@
         <div class="card-content">
           <div class="content-top">
             <h3>{{ cat.name }}</h3>
-            <span class="product-count">{{ cat.productCount }} products</span>
+            <span class="product-count">{{ cat.productsCount }} products</span>
           </div>
           
           <p class="description">{{ cat.description }}</p>

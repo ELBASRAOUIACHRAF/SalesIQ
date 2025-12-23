@@ -37,12 +37,13 @@ public class ProductServiceImpl implements ProductService {
     @Value("${stock.low.lowStock}")
     private int lowStock;
 
-    public ProductServiceImpl(ReviewsService reviewsService, ProductRepository productRepository,FileStorageService fileStorageService, ProductMapper productMapper, CategoryRepository categoryRepository, ProductDetailsMapper productDetailsMapper) {
+    public ProductServiceImpl(CategoryRepository categoryRepository, ReviewsService reviewsService, ProductRepository productRepository,FileStorageService fileStorageService, ProductMapper productMapper, ProductDetailsMapper productDetailsMapper) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.fileStorageService=fileStorageService;
         this.productDetailsMapper = productDetailsMapper;
         this.reviewsService = reviewsService;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override

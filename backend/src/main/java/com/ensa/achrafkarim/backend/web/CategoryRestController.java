@@ -1,6 +1,7 @@
 package com.ensa.achrafkarim.backend.web;
 
 
+import com.ensa.achrafkarim.backend.dto.CategoryDetailsDto;
 import com.ensa.achrafkarim.backend.dto.CategoryDto;
 import com.ensa.achrafkarim.backend.dto.ProductDto;
 import com.ensa.achrafkarim.backend.service.CategoryService;
@@ -17,6 +18,10 @@ public class CategoryRestController {
 
     private CategoryService categoryService;
 
+    @GetMapping("/categoriesDetails")
+    public List<CategoryDetailsDto> getCategoriesDetails(){
+        return categoryService.listCategoriesDetails();
+    }
 
     @GetMapping("/category/{categoryId}")
     public CategoryDto getCategories(@PathVariable Long categoryId) {

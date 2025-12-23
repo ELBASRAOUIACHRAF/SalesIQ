@@ -1,5 +1,6 @@
 package com.ensa.achrafkarim.backend.service;
 
+import com.ensa.achrafkarim.backend.dto.CategoryDetailsDto;
 import com.ensa.achrafkarim.backend.dto.CategoryDto;
 import org.springframework.data.domain.Page;
 
@@ -17,4 +18,6 @@ public interface CategoryService {
     Long getTotalCategoriesCount();
     Page<CategoryDto> listCategoriesWithPagination(int page, int size);
     boolean canDeleteCategory(Long id);
+
+    List<CategoryDetailsDto> listCategoriesDetails();
 }

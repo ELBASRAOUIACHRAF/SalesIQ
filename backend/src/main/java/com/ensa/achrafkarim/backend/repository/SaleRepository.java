@@ -33,19 +33,19 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     """)
     List<Object[]> countSalesByUser();
     @Query("""
-        SELECT new com.ensa.achrafkarim.backend.dto.analyticsDto.MonthlySalesDto(
-            FUNCTION('YEAR', s.dateOfSale),
-            FUNCTION('MONTH', s.dateOfSale),
-            SUM(sp.quantity)
-        )
-        FROM Sale s
-        JOIN s.soldProducts sp
-        WHERE sp.product.id = :productId
-        GROUP BY FUNCTION('YEAR', s.dateOfSale),
-                 FUNCTION('MONTH', s.dateOfSale)
-        ORDER BY FUNCTION('YEAR', s.dateOfSale),
-                 FUNCTION('MONTH', s.dateOfSale)
-    """)
+    SELECT new com.ensa.achrafkarim.backend.dto.analyticsDto.MonthlySalesDto(
+        YEAR(s.dateOfSale),
+        MONTH(s.dateOfSale),
+        SUM(sp.quantity)
+    )
+    FROM Sale s
+    JOIN s.soldProducts sp
+    WHERE sp.product.id = :productId
+    GROUP BY YEAR(s.dateOfSale),
+             MONTH(s.dateOfSale)
+    ORDER BY YEAR(s.dateOfSale),
+             MONTH(s.dateOfSale)
+""")
     List<MonthlySalesDto> findMonthlySalesByProduct(
             @Param("productId") Long productId
     );

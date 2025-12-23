@@ -7,5 +7,5 @@ export interface CategoryInfo{
     updatedAt?: string;
     // Propriété optionnelle pour l'UI (non présente dans votre classe Java mais utile pour l'affichage)
     imageUrl?: string; 
-    productCount?: number;
+    productsCount?: number;
 }

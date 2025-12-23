@@ -1,5 +1,6 @@
 package com.ensa.achrafkarim.backend.service;
 
+import com.ensa.achrafkarim.backend.dto.CategoryDetailsDto;
 import com.ensa.achrafkarim.backend.dto.CategoryDto;
 import com.ensa.achrafkarim.backend.entities.Category;
 import com.ensa.achrafkarim.backend.mapper.CategoryMapper;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,9 +24,10 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryMapper categoryMapper;
     private ProductService productService;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryMapper categoryMapper, ProductService productService) {
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;
+        this.productService = productService;
     }
 
     @Override
@@ -105,6 +108,20 @@ public class CategoryServiceImpl implements CategoryService {
     public boolean canDeleteCategory(Long id) {
         if (productService.countProductsInCategory(id) == 0) return true;
         return false;
+    }
+
+    @Override
+    public List<CategoryDetailsDto> listCategoriesDetails() {
+        List<CategoryDto> categories = this.listCategories();
+        List<CategoryDetailsDto> detailsDtos = new ArrayList<>();
+        for (CategoryDto categoryDto: categories){
+            Long productsCount = Long.valueOf(
+                    productService.getProductsByCategory(categoryDto.getId()).size()
+            );
+            CategoryDetailsDto dto = new CategoryDetailsDto(categoryDto.getId(),categoryDto.getName(), categoryDto.getDescription(), categoryDto.isActive(), productsCount );
+            detailsDtos.add(dto);
+        }
+        return detailsDtos;
     }
 
 }
