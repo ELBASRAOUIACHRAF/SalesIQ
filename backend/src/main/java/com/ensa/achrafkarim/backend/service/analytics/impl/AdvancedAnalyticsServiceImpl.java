@@ -13,6 +13,7 @@ import com.ensa.achrafkarim.backend.enums.analyticsEnum.TimeGranularity;
 import com.ensa.achrafkarim.backend.mapper.SaleMapper;
 import com.ensa.achrafkarim.backend.repository.ProductRepository;
 import com.ensa.achrafkarim.backend.repository.SaleRepository;
+import com.ensa.achrafkarim.backend.repository.SoldProductRepository;
 import com.ensa.achrafkarim.backend.repository.UsersRepository;
 import com.ensa.achrafkarim.backend.service.*;
 import com.ensa.achrafkarim.backend.service.analytics.AdvancedAnalyticsService;
@@ -46,6 +47,7 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
     private final UsersRepository usersRepository;
     private final SaleMapper saleMapper;
     private final ProductRepository productRepository;
+    private final SoldProductRepository soldProductRepository;
     UsersService  usersService;
     SaleService  saleService;
     ReviewsService  reviewsService;
@@ -647,6 +649,94 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
         }
 
         return costOfSales / averageStock;
+    }
+
+    @Override
+    public List<CategoryPerformanceDto> analyzeCategoryPerformance(
+            LocalDateTime startDate,
+            LocalDateTime endDate
+    ) {
+
+        List<Object[]> results =
+                soldProductRepository.analyzeCategoryPerformance(
+                        startDate, endDate
+                );
+
+        List<CategoryPerformanceDto> analysis = new ArrayList<>();
+
+        for (Object[] row : results) {
+
+            analysis.add(
+                    new CategoryPerformanceDto(
+                            (Long) row[0],      // categoryId
+                            (String) row[1],    // categoryName
+                            (Long) row[2],      // totalQuantitySold
+                            (Double) row[3],    // totalRevenue
+                            (Long) row[4]       // totalSales
+                    )
+            );
+        }
+
+        return analysis;
+    }
+
+    @Override
+    public List<ProfitMarginAnalysisDto> analyzeProfitMargins() {
+
+        List<Object[]> results =
+                soldProductRepository.analyzeProfitMargins();
+
+        List<ProfitMarginAnalysisDto> analysis = new ArrayList<>();
+
+        for (Object[] row : results) {
+
+            Long productId = (Long) row[0];
+            String productName = (String) row[1];
+            Double revenue = (Double) row[2];
+            Double cost = (Double) row[3];
+
+            Double profit = revenue - cost;
+
+            Double margin = revenue == 0
+                    ? 0
+                    : (profit / revenue) * 100;
+
+            analysis.add(
+                    new ProfitMarginAnalysisDto(
+                            productId,
+                            productName,
+                            revenue,
+                            cost,
+                            profit,
+                            margin
+                    )
+            );
+        }
+
+        // Sort products by profit margin (high → low)
+        analysis.sort(
+                Comparator.comparing(
+                        ProfitMarginAnalysisDto::getProfitMargin
+                ).reversed()
+        );
+
+        return analysis;
+    }
+
+    @Override
+    public PromotionImpactAnalysisDto analyzePromotionImpact() {
+
+        Object[] row = soldProductRepository.analyzePromotionImpact();
+
+        if (row == null) {
+            return new PromotionImpactAnalysisDto(0.0, 0L, 0.0);
+        }
+
+        Double avgDiscount = (Double) row[0];
+        Long totalUnits = (Long) row[1];
+        Double totalRevenue = (Double) row[2];
+
+        return new PromotionImpactAnalysisDto(avgDiscount, totalUnits, totalRevenue);
     }
 
     @Override

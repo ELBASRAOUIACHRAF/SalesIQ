@@ -97,18 +97,12 @@ AdvancedAnalyticsService {
     /**
      * Analyse de performance par catégorie
      */
-    //List<CategoryPerformanceDto> analyzeCategoryPerformance(LocalDateTime startDate, LocalDateTime endDate);
+    List<CategoryPerformanceDto> analyzeCategoryPerformance(LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Identification des produits à forte/faible marge
      */
-    //ProfitMarginAnalysisDto analyzeProfitMargins();
-
-    /**
-     * Analyse de la cannibalisation entre produits
-     * Détecte si un produit "vole" les ventes d'un autre
-     */
-    //CannibalizationAnalysisDto analyzeProductCannibalization();
+    List<ProfitMarginAnalysisDto> analyzeProfitMargins();
 
     // ========================================
     // 3. ANALYSES DE PRIX (PRICING ANALYTICS)
@@ -119,29 +113,33 @@ AdvancedAnalyticsService {
      * Mesure la sensibilité de la demande aux changements de prix
      * Formule : (% changement quantité) / (% changement prix)
      */
+    /** future updates*/
     //PriceElasticityDto calculatePriceElasticity(Long productId);
 
     /**
      * Optimisation dynamique des prix (Dynamic Pricing)
      * Recommande le prix optimal basé sur demande, stock, concurrence
      */
+    /** future updates*/
     //OptimalPriceDto calculateOptimalPrice(Long productId);
 
     /**
      * Analyse de l'impact des promotions
      * Mesure l'effet des réductions sur les ventes
      */
-    //PromotionImpactAnalysisDto analyzePromotionImpact(Long promotionId);
+    public PromotionImpactAnalysisDto analyzePromotionImpact();
 
     /**
      * Analyse comparative des prix (Competitive Pricing Analysis)
      */
+    /** future updates*/
     //CompetitivePricingDto analyzeCompetitivePricing(Long productId);
 
     /**
      * Calcul du prix psychologique optimal
      * Trouve le prix maximisant acceptation clients et profit
      */
+    /** future updates*/
     //PsychologicalPricingDto calculatePsychologicalPrice(Long productId);
 
     // ========================================
