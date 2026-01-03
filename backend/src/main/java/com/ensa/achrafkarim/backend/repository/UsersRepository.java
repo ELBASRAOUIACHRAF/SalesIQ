@@ -6,8 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface UsersRepository extends JpaRepository<Users, Long> {
+
 
     List<Users> findByRole(Role role);
     Users findByEmail(String email);
@@ -16,4 +18,6 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 
     boolean existsByEmail(String email);
     List<Users> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+
+
 }

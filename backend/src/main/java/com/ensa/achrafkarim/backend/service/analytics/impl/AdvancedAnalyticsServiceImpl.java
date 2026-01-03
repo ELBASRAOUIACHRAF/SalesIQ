@@ -44,6 +44,44 @@ import org.springframework.web.client.RestTemplate;
 public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
 
     private final SaleRepository saleRepository;
+
+
+    // perform Recency, frequency and monetary analysis
+    @Override
+    public List<RFMSegmentDto> performRFMAnalysis() {
+
+        List<Object[]> rawData = saleRepository.computeRFMRaw();
+
+        if (rawData.isEmpty()) {
+            return List.of();
+        }
+
+        List<RFMInputDto> input = new ArrayList<>();
+
+        for (Object[] row : rawData) {
+
+            Long customerId = (Long) row[0];
+            LocalDateTime lastPurchaseDate =
+                    (LocalDateTime) row[1];
+            Long purchaseCount = (Long) row[2];
+            Double totalAmount = (Double) row[3];
+
+            RFMInputDto dto = new RFMInputDto();
+            dto.setCustomerId(customerId);
+            dto.setLastPurchaseDate(
+                    lastPurchaseDate.toLocalDate()
+            );
+            dto.setPurchaseCount(
+                    purchaseCount.intValue()
+            );
+            dto.setTotalAmount(totalAmount);
+
+            input.add(dto);
+        }
+
+        return fastApiClient.performRFMAnalysis(input);
+    }
+
     private final UsersRepository usersRepository;
     private final SaleMapper saleMapper;
     private final ProductRepository productRepository;

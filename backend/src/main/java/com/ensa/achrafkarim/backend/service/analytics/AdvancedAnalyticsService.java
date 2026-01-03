@@ -153,7 +153,7 @@ AdvancedAnalyticsService {
      * - F : Fréquence d'achat
      * - M : Montant dépensé
      */
-    //List<RFMSegmentDto> performRFMAnalysis();
+    List<RFMSegmentDto> performRFMAnalysis();
 
     /**
      * Calcul de la valeur vie client (Customer Lifetime Value - CLV)

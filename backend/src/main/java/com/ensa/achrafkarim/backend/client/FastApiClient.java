@@ -1,8 +1,6 @@
 package com.ensa.achrafkarim.backend.client;
 
-import com.ensa.achrafkarim.backend.dto.analyticsDto.AssociationRuleDto;
-import com.ensa.achrafkarim.backend.dto.analyticsDto.MarketBasketRequestDto;
-import com.ensa.achrafkarim.backend.dto.analyticsDto.SalesForecastDto;
+import com.ensa.achrafkarim.backend.dto.analyticsDto.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -75,4 +73,33 @@ public class FastApiClient {
         }
 
     }
+
+    public List<RFMSegmentDto> performRFMAnalysis(
+            List<RFMInputDto> request
+    ) {
+        String url = fastApiBaseUrl + "/api/v1/analytics/rfm";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<List<RFMInputDto>> entity =
+                new HttpEntity<>(request, headers);
+
+        try {
+            ResponseEntity<RFMSegmentDto[]> response =
+                    restTemplate.postForEntity(
+                            url,
+                            entity,
+                            RFMSegmentDto[].class
+                    );
+
+            return Arrays.asList(response.getBody());
+
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Failed to perform RFM analysis: " + e.getMessage(), e
+            );
+        }
+    }
+
 }

@@ -2,6 +2,7 @@ package com.ensa.achrafkarim.backend.repository;
 
 import com.ensa.achrafkarim.backend.dto.analyticsDto.MonthlySalesDto;
 import com.ensa.achrafkarim.backend.entities.Sale;
+import com.ensa.achrafkarim.backend.entities.Users;
 import com.ensa.achrafkarim.backend.enums.PaymentMethod;
 import com.ensa.achrafkarim.backend.enums.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface SaleRepository extends JpaRepository<Sale, Long> {
     List<Sale> findByUsersId(Long id);
@@ -62,5 +64,19 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );
+
+    @Query("""
+    SELECT
+        u.id,
+        MAX(s.dateOfSale),
+        COUNT(s.id),
+        SUM(COALESCE(sp.quantity * sp.unitPrice, 0))
+    FROM Sale s
+    JOIN s.users u
+    JOIN s.soldProducts sp
+    WHERE s.status = com.ensa.achrafkarim.backend.enums.Status.COMPLETED
+    GROUP BY u.id
+""")
+    List<Object[]> computeRFMRaw();
 
 }
