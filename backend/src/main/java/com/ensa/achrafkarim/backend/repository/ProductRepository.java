@@ -16,7 +16,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findAllByOrderByPriceDesc();
     List<Product> findAllByOrderByPriceAsc();
     List<Product> findByStockLessThan(long lowStock);
-    // Query for getting the top selling products
+    // Query for getting the top-selling products
     @Query("SELECT p FROM Product p JOIN p.soldProducts sp GROUP BY p ORDER BY SUM(sp.quantity) DESC")
     List<Product> getTopSellingProducts(Pageable pageable);
     // Query for getting the least selling products
@@ -36,4 +36,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByStockLessThan(Long stock);
 
     List<Product> findByCategoryIdIn(List<Long> categoryIds);
+
+    Product findByName(String productName);
 }
