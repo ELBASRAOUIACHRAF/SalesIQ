@@ -60,4 +60,59 @@ public interface SoldProductRepository extends JpaRepository<SoldProduct, Long> 
           AND p.discount > 0
     """)
     Object[] analyzePromotionImpact();
+
+
+    @Query("SELECT CAST(s.dateOfSale AS LocalDate), SUM(sp.quantity * sp.unitPrice) " +
+            "FROM SoldProduct sp " +
+            "JOIN sp.sale s " +
+            "WHERE sp.product.id = :productId " +
+            "GROUP BY CAST(s.dateOfSale AS LocalDate) " +
+            "ORDER BY CAST(s.dateOfSale AS LocalDate)")
+    List<Object[]> findDailySalesByProduct(@Param("productId") Long productId);
+
+    @Query("SELECT sp.product.id, sp.product.name, SUM(sp.quantity * sp.unitPrice) " +
+            "FROM SoldProduct sp " +
+            "JOIN sp.sale s " +
+            "GROUP BY sp.product.id, sp.product.name " +
+            "ORDER BY SUM(sp.quantity * sp.unitPrice) DESC")
+    List<Object[]> findAllProductsWithTotalSales();
+
+
+    @Query("SELECT sp.product.id, " +
+            "sp.product.name, " +
+            "sp.product.category.name, " +
+            "COUNT(r.id), " +
+            "AVG(r.rating), " +
+            "sp.product.createdAt " +
+            "FROM SoldProduct sp " +
+            "JOIN sp.product p " +
+            "LEFT JOIN p.reviewsList r " +
+            "GROUP BY sp.product.id, sp.product.name, sp.product.category.name, sp.product.createdAt")
+    List<Object[]> findProductMetricsForBestSeller();
+
+    @Query("SELECT CAST(s.dateOfSale AS LocalDate), SUM(sp.quantity * sp.unitPrice) " +
+            "FROM SoldProduct sp " +
+            "JOIN sp.sale s " +
+            "WHERE sp.product.id = :productId " +
+            "AND s.dateOfSale >= :startDate " +
+            "GROUP BY CAST(s.dateOfSale AS LocalDate) " +
+            "ORDER BY CAST(s.dateOfSale AS LocalDate)")
+    List<Object[]> findRecentSalesByProduct(@Param("productId") Long productId,
+                                            @Param("startDate") LocalDateTime startDate);
+
+
+    @Query("SELECT p.id, p.name, p.stock " +
+            "FROM Product p " +
+            "WHERE p.isActive = true")
+    List<Object[]> findAllActiveProductsWithStock();
+
+    @Query("SELECT CAST(s.dateOfSale AS LocalDate), SUM(sp.quantity) " +
+            "FROM SoldProduct sp " +
+            "JOIN sp.sale s " +
+            "WHERE sp.product.id = :productId " +
+            "AND s.dateOfSale >= :startDate " +
+            "GROUP BY CAST(s.dateOfSale AS LocalDate) " +
+            "ORDER BY CAST(s.dateOfSale AS LocalDate)")
+    List<Object[]> findDailyQuantitySoldByProduct(@Param("productId") Long productId,
+                                                  @Param("startDate") LocalDateTime startDate);
 }

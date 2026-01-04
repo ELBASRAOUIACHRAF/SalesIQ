@@ -122,4 +122,26 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
             "GROUP BY s.users.id")
     List<Object[]> findUserPurchaseMetrics();
 
+    @Query("SELECT SUM(sp.quantity * sp.unitPrice), " +
+            "COUNT(DISTINCT s.id), " +
+            "COUNT(DISTINCT s.users.id), " +
+            "SUM(sp.quantity) " +
+            "FROM Sale s " +
+            "JOIN s.soldProducts sp " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate")
+    Object[] calculateRevenueMetrics(@Param("startDate") LocalDateTime startDate,
+                                     @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT COUNT(DISTINCT s.users.id) FROM Sale s " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate " +
+            "AND s.users.id NOT IN (SELECT DISTINCT s2.users.id FROM Sale s2 WHERE s2.dateOfSale < :startDate)")
+    Long countNewCustomers(@Param("startDate") LocalDateTime startDate,
+                           @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT COUNT(DISTINCT s.users.id) FROM Sale s " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate " +
+            "AND s.users.id IN (SELECT DISTINCT s2.users.id FROM Sale s2 WHERE s2.dateOfSale < :startDate)")
+    Long countReturningCustomers(@Param("startDate") LocalDateTime startDate,
+                                 @Param("endDate") LocalDateTime endDate);
+
 }

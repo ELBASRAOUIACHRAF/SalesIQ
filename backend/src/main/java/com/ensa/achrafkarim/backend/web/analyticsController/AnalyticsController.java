@@ -277,6 +277,23 @@ public class AnalyticsController {
     }
 
 
+    @GetMapping("/ranking-prediction/{productId}")
+    public ResponseEntity<RankingPredictionDto> getRankingPrediction(
+            @PathVariable Long productId,
+            @RequestParam(defaultValue = "7") int daysAhead
+    ) {
+        try {
+            RankingPredictionDto result = advancedAnalyticsService.predictFutureRanking(productId, daysAhead);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Ranking prediction error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
     /**
      * Churn Rate - Measures the percentage of users who stopped buying during a period. Users who made purchases before the period but didn't make any during it are considered "churned" or lost.
      * Retention Rate - Measures the percentage of users who continued buying during a period. It calculates how many of your existing users came back and made purchases again.
@@ -302,6 +319,34 @@ public class AnalyticsController {
         }
     }
 
+    @GetMapping("/potential-bestsellers")
+    public ResponseEntity<List<PotentialBestSellerDto>> getPotentialBestSellers() {
+        try {
+            List<PotentialBestSellerDto> result = advancedAnalyticsService.identifyPotentialBestSellers();
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Potential best sellers identification error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
 
+    @GetMapping("/stockout-prediction")
+    public ResponseEntity<List<StockoutPredictionDto>> getStockoutPredictions(
+            @RequestParam(defaultValue = "14") int daysAhead
+    ) {
+        try {
+            List<StockoutPredictionDto> result = advancedAnalyticsService.predictStockouts(daysAhead);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Stockout prediction error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
 
 }

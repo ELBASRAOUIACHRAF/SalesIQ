@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,4 +50,10 @@ public interface ReviewsRepository extends JpaRepository<Reviews, Long> {
     boolean existsById(Long reviewId);
 
     List<Reviews> findAllByproductId(Long productId);
+
+    @Query("SELECT COUNT(r.id), AVG(r.rating) FROM Reviews r " +
+            "WHERE r.reviewDate BETWEEN :startDate AND :endDate")
+    Object[] calculateReviewMetrics(@Param("startDate") LocalDateTime startDate,
+                                    @Param("endDate") LocalDateTime endDate);
+
 }

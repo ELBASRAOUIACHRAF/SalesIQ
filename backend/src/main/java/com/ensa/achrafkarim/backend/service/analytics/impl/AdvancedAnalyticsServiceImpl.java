@@ -12,10 +12,7 @@ import com.ensa.achrafkarim.backend.enums.analyticsEnum.ProductLifecyclePhase;
 import com.ensa.achrafkarim.backend.enums.analyticsEnum.SeasonalityType;
 import com.ensa.achrafkarim.backend.enums.analyticsEnum.TimeGranularity;
 import com.ensa.achrafkarim.backend.mapper.SaleMapper;
-import com.ensa.achrafkarim.backend.repository.ProductRepository;
-import com.ensa.achrafkarim.backend.repository.SaleRepository;
-import com.ensa.achrafkarim.backend.repository.SoldProductRepository;
-import com.ensa.achrafkarim.backend.repository.UsersRepository;
+import com.ensa.achrafkarim.backend.repository.*;
 import com.ensa.achrafkarim.backend.service.*;
 import com.ensa.achrafkarim.backend.service.analytics.AdvancedAnalyticsService;
 import lombok.AllArgsConstructor;
@@ -49,6 +46,7 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
     private final SaleMapper saleMapper;
     private final ProductRepository productRepository;
     private final SoldProductRepository soldProductRepository;
+    private ReviewsRepository reviewsRepository;
     UsersService  usersService;
     SaleService  saleService;
     ReviewsService  reviewsService;
@@ -63,6 +61,169 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
 
 
 
+
+    @Override
+    public List<StockoutPredictionDto> predictStockouts(int daysAhead) {
+        List<Object[]> products = soldProductRepository.findAllActiveProductsWithStock();
+
+        if (products.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+
+        List<StockoutInputDto> inputs = products.stream()
+                .map(row -> {
+                    Long productId = ((Number) row[0]).longValue();
+                    String productName = (String) row[1];
+                    Long currentStock = row[2] != null ? ((Number) row[2]).longValue() : 0L;
+
+                    List<Object[]> salesData = soldProductRepository.findDailyQuantitySoldByProduct(productId, thirtyDaysAgo);
+
+                    List<DailySalesDto> recentSales = salesData.stream()
+                            .map(r -> new DailySalesDto(
+                                    (LocalDate) r[0],
+                                    ((Number) r[1]).doubleValue()
+                            ))
+                            .toList();
+
+                    return new StockoutInputDto(
+                            productId,
+                            productName,
+                            currentStock,
+                            recentSales,
+                            daysAhead
+                    );
+                })
+                .toList();
+
+        return fastApiClient.predictStockouts(inputs);
+    }
+
+
+    @Override
+    public List<PotentialBestSellerDto> identifyPotentialBestSellers() {
+        List<Object[]> productMetrics = soldProductRepository.findProductMetricsForBestSeller();
+
+        if (productMetrics.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+
+        List<BestSellerInputDto> inputs = productMetrics.stream()
+                .map(row -> {
+                    Long productId = ((Number) row[0]).longValue();
+                    String productName = (String) row[1];
+                    String categoryName = row[2] != null ? (String) row[2] : "Uncategorized";
+                    Integer totalReviews = row[3] != null ? ((Number) row[3]).intValue() : 0;
+                    Double avgRating = row[4] != null ? ((Number) row[4]).doubleValue() : 0.0;
+                    LocalDateTime createdAt = row[5] != null ? (LocalDateTime) row[5] : LocalDateTime.now();
+
+                    int daysOnMarket = (int) java.time.temporal.ChronoUnit.DAYS.between(createdAt, LocalDateTime.now());
+
+                    List<Object[]> recentSalesData = soldProductRepository.findRecentSalesByProduct(productId, thirtyDaysAgo);
+
+                    List<DailySalesDto> recentSales = recentSalesData.stream()
+                            .map(r -> new DailySalesDto(
+                                    (LocalDate) r[0],
+                                    ((Number) r[1]).doubleValue()
+                            ))
+                            .toList();
+
+                    return new BestSellerInputDto(
+                            productId,
+                            productName,
+                            categoryName,
+                            totalReviews,
+                            avgRating,
+                            daysOnMarket,
+                            recentSales
+                    );
+                })
+                .toList();
+
+        return fastApiClient.identifyBestSellers(inputs);
+    }
+
+
+    @Override
+    public RankingPredictionDto predictFutureRanking(Long productId, int daysAhead) {
+        List<Object[]> allProductsSales = soldProductRepository.findAllProductsWithTotalSales();
+
+        if (allProductsSales.isEmpty()) {
+            return new RankingPredictionDto(productId, null, 0, 0, 0.0, 0.0, "STABLE", daysAhead);
+        }
+
+        List<RankingPredictionInputDto> allProductsInput = new ArrayList<>();
+
+        for (Object[] row : allProductsSales) {
+            Long pId = ((Number) row[0]).longValue();
+            String pName = (String) row[1];
+
+            List<Object[]> dailySales = soldProductRepository.findDailySalesByProduct(pId);
+
+            List<DailySalesDto> historicalSales = dailySales.stream()
+                    .map(r -> new DailySalesDto(
+                            (LocalDate) r[0],
+                            ((Number) r[1]).doubleValue()
+                    ))
+                    .toList();
+
+            allProductsInput.add(new RankingPredictionInputDto(
+                    pId,
+                    pName,
+                    historicalSales,
+                    daysAhead
+            ));
+        }
+
+        RankingPredictionRequestDto request = new RankingPredictionRequestDto(
+                productId,
+                daysAhead,
+                allProductsInput
+        );
+
+        return fastApiClient.predictRanking(request);
+    }
+
+    @Override
+    public DashboardKPIsDto calculateMainKPIs(LocalDateTime startDate, LocalDateTime endDate) {
+        Object[] revenueMetrics = saleRepository.calculateRevenueMetrics(startDate, endDate);
+        Long newCustomers = saleRepository.countNewCustomers(startDate, endDate);
+        Long returningCustomers = saleRepository.countReturningCustomers(startDate, endDate);
+        Object[] reviewMetrics = reviewsRepository.calculateReviewMetrics(startDate, endDate);
+        Long totalUsers = usersRepository.countTotalUsers(endDate);
+
+        Double totalRevenue = revenueMetrics[0] != null ? ((Number) revenueMetrics[0]).doubleValue() : 0.0;
+        Long totalOrders = revenueMetrics[1] != null ? ((Number) revenueMetrics[1]).longValue() : 0L;
+        Long totalCustomers = revenueMetrics[2] != null ? ((Number) revenueMetrics[2]).longValue() : 0L;
+        Long totalProductsSold = revenueMetrics[3] != null ? ((Number) revenueMetrics[3]).longValue() : 0L;
+
+        Double averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0.0;
+        Double revenuePerCustomer = totalCustomers > 0 ? totalRevenue / totalCustomers : 0.0;
+        Double averageBasketSize = totalOrders > 0 ? (double) totalProductsSold / totalOrders : 0.0;
+
+        Long totalReviews = reviewMetrics[0] != null ? ((Number) reviewMetrics[0]).longValue() : 0L;
+        Double averageRating = reviewMetrics[1] != null ? ((Number) reviewMetrics[1]).doubleValue() : 0.0;
+
+        Double conversionRate = totalUsers > 0 ? ((double) totalCustomers / totalUsers) * 100 : 0.0;
+
+        return new DashboardKPIsDto(
+                totalRevenue,
+                totalOrders,
+                totalCustomers,
+                totalProductsSold,
+                averageOrderValue,
+                revenuePerCustomer,
+                newCustomers,
+                returningCustomers,
+                averageBasketSize,
+                totalReviews,
+                averageRating,
+                conversionRate
+        );
+    }
 
     @Override
     public List<ChurnPredictionDto> predictCustomerChurn() {

@@ -192,6 +192,7 @@ AdvancedAnalyticsService {
     /**
      * Analyse du Net Promoter Score (NPS)
      * Basé sur les avis : Promoteurs (9-10), Passifs (7-8), Détracteurs (0-6)
+     * future updates
      */
     //NPSAnalysisDto calculateNPS();
 
@@ -203,11 +204,12 @@ AdvancedAnalyticsService {
      * Calcul des KPIs principaux (Key Performance Indicators)
      * Revenue, Profit, Conversion Rate, AOV, etc.
      */
-    //DashboardKPIsDto calculateMainKPIs(LocalDateTime startDate, LocalDateTime endDate);
+    DashboardKPIsDto calculateMainKPIs(LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Analyse de conversion (Conversion Funnel Analysis)
      * Vues → Clics → Paniers → Achats
+     * future updates
      */
     //ConversionFunnelDto analyzeConversionFunnel(LocalDateTime startDate, LocalDateTime endDate);
 
@@ -215,12 +217,14 @@ AdvancedAnalyticsService {
 
     /**
      * Analyse de la performance par canal de vente
+     * future updates
      */
     //List<ChannelPerformanceDto> analyzeChannelPerformance(LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Calcul du taux de marge brute
      * Formule : ((Ventes - Coût des ventes) / Ventes) × 100
+     * future updates
      */
     //double calculateGrossMarginRate(LocalDateTime startDate, LocalDateTime endDate);
 
@@ -231,18 +235,18 @@ AdvancedAnalyticsService {
     /**
      * Prédiction de la position future dans le classement
      */
-    //RankingPredictionDto predictFutureRanking(Long productId, int daysAhead);
+    RankingPredictionDto predictFutureRanking(Long productId, int daysAhead);
 
     /**
      * Identification des best-sellers potentiels
      * Utilise ML pour détecter les produits qui vont exploser
      */
-    //List<PotentialBestSellerDto> identifyPotentialBestSellers();
+    List<PotentialBestSellerDto> identifyPotentialBestSellers();
 
     /**
      * Prédiction de rupture de stock (Stock-out Prediction)
      */
-    //List<StockoutPredictionDto> predictStockouts(int daysAhead);
+    List<StockoutPredictionDto> predictStockouts(int daysAhead);
 
     /**
      * Recommandation de réapprovisionnement

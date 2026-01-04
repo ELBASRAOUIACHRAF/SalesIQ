@@ -122,4 +122,64 @@ public class FastApiClient {
         }
     }
 
+    public RankingPredictionDto predictRanking(RankingPredictionRequestDto request) {
+        String url = fastApiBaseUrl + "/api/v1/analytics/predict-ranking";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<RankingPredictionRequestDto> entity = new HttpEntity<>(request, headers);
+
+        try {
+            ResponseEntity<RankingPredictionDto> response = restTemplate.postForEntity(
+                    url,
+                    entity,
+                    RankingPredictionDto.class
+            );
+            return response.getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to predict ranking from FastAPI: " + e.getMessage(), e);
+        }
+    }
+
+    public List<PotentialBestSellerDto> identifyBestSellers(List<BestSellerInputDto> request) {
+        String url = fastApiBaseUrl + "/api/v1/analytics/identify-bestsellers";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<List<BestSellerInputDto>> entity = new HttpEntity<>(request, headers);
+
+        try {
+            ResponseEntity<PotentialBestSellerDto[]> response = restTemplate.postForEntity(
+                    url,
+                    entity,
+                    PotentialBestSellerDto[].class
+            );
+            return Arrays.asList(response.getBody());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to identify best sellers from FastAPI: " + e.getMessage(), e);
+        }
+    }
+
+    public List<StockoutPredictionDto> predictStockouts(List<StockoutInputDto> request) {
+        String url = fastApiBaseUrl + "/api/v1/analytics/predict-stockouts";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<List<StockoutInputDto>> entity = new HttpEntity<>(request, headers);
+
+        try {
+            ResponseEntity<StockoutPredictionDto[]> response = restTemplate.postForEntity(
+                    url,
+                    entity,
+                    StockoutPredictionDto[].class
+            );
+            return Arrays.asList(response.getBody());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to predict stockouts from FastAPI: " + e.getMessage(), e);
+        }
+    }
+
 }
