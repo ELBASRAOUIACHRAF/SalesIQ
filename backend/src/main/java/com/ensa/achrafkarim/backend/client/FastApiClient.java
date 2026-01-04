@@ -102,4 +102,24 @@ public class FastApiClient {
         }
     }
 
+    public List<ChurnPredictionDto> predictChurn(List<ChurnInputDto> request) {
+        String url = fastApiBaseUrl + "/api/v1/analytics/predict-churn";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<List<ChurnInputDto>> entity = new HttpEntity<>(request, headers);
+
+        try {
+            ResponseEntity<ChurnPredictionDto[]> response = restTemplate.postForEntity(
+                    url,
+                    entity,
+                    ChurnPredictionDto[].class
+            );
+            return Arrays.asList(response.getBody());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to predict churn from FastAPI: " + e.getMessage(), e);
+        }
+    }
+
 }

@@ -165,13 +165,13 @@ AdvancedAnalyticsService {
      * Analyse du taux de rétention (Retention Rate)
      * Formule : ((Clients fin - Nouveaux clients) / Clients début) × 100
      */
-    //double calculateRetentionRate(LocalDateTime startDate, LocalDateTime endDate);
+    double calculateRetentionRate(LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Analyse du taux de churn (Churn Rate)
      * Pourcentage de clients perdus sur une période
      */
-    //ChurnAnalysisDto analyzeChurnRate(LocalDateTime startDate, LocalDateTime endDate);
+    ChurnAnalysisDto analyzeChurnRate(LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Segmentation client automatique (K-Means Clustering)
@@ -181,13 +181,13 @@ AdvancedAnalyticsService {
     /**
      * Analyse du comportement d'achat par segment
      */
-    //SegmentBehaviorAnalysisDto analyzeBehaviorBySegment(String segmentName);
+    SegmentBehaviorAnalysisDto analyzeBehaviorBySegment(String segmentName);
 
     /**
      * Prédiction du churn client (Churn Prediction)
      * Identifie les clients à risque de partir
      */
-    //List<ChurnPredictionDto> predictCustomerChurn();
+    List<ChurnPredictionDto> predictCustomerChurn();
 
     /**
      * Analyse du Net Promoter Score (NPS)

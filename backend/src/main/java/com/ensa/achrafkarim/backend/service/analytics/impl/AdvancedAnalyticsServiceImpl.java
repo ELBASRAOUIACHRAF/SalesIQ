@@ -7,6 +7,7 @@ import com.ensa.achrafkarim.backend.entities.Sale;
 import com.ensa.achrafkarim.backend.entities.SoldProduct;
 import com.ensa.achrafkarim.backend.entities.Users;
 import com.ensa.achrafkarim.backend.enums.Role;
+import com.ensa.achrafkarim.backend.enums.Segment;
 import com.ensa.achrafkarim.backend.enums.analyticsEnum.ProductLifecyclePhase;
 import com.ensa.achrafkarim.backend.enums.analyticsEnum.SeasonalityType;
 import com.ensa.achrafkarim.backend.enums.analyticsEnum.TimeGranularity;
@@ -19,7 +20,6 @@ import com.ensa.achrafkarim.backend.service.*;
 import com.ensa.achrafkarim.backend.service.analytics.AdvancedAnalyticsService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.cglib.core.Local;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -44,6 +44,85 @@ import org.springframework.web.client.RestTemplate;
 public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
 
     private final SaleRepository saleRepository;
+
+    private final UsersRepository usersRepository;
+    private final SaleMapper saleMapper;
+    private final ProductRepository productRepository;
+    private final SoldProductRepository soldProductRepository;
+    UsersService  usersService;
+    SaleService  saleService;
+    ReviewsService  reviewsService;
+    SearchHistoryService searchHistoryService;
+    SoldProductService  soldProductService;
+    ProductService  productService;
+
+    private final FastApiClient fastApiClient;
+    private final RestTemplate restTemplate;// ← ADD THIS
+
+    private final UsersServiceImpl usersServiceImpl;
+
+
+
+
+    @Override
+    public List<ChurnPredictionDto> predictCustomerChurn() {
+        List<Object[]> rawData = saleRepository.findUserPurchaseMetrics();
+
+        if (rawData.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<ChurnInputDto> churnInputs = rawData.stream()
+                .map(row -> {
+                    Long userId = ((Number) row[0]).longValue();
+                    Integer daysSinceLastPurchase = row[1] != null ? ((Number) row[1]).intValue() : 999;
+                    Integer totalPurchases = ((Number) row[2]).intValue();
+                    Double totalSpent = row[3] != null ? ((Number) row[3]).doubleValue() : 0.0;
+                    Double avgOrderValue = totalPurchases > 0 ? totalSpent / totalPurchases : 0.0;
+                    Integer purchaseFrequency = totalPurchases;
+
+                    return new ChurnInputDto(
+                            userId,
+                            daysSinceLastPurchase,
+                            totalPurchases,
+                            totalSpent,
+                            avgOrderValue,
+                            purchaseFrequency
+                    );
+                })
+                .toList();
+
+        return fastApiClient.predictChurn(churnInputs);
+    }
+
+    @Override
+    public SegmentBehaviorAnalysisDto analyzeBehaviorBySegment(String segmentName) {
+        Segment segment = Segment.valueOf(segmentName.toUpperCase());
+
+        Object[] row = saleRepository.analyzeSegmentBehavior(segment);
+
+        if (row == null || row[0] == null) {
+            return new SegmentBehaviorAnalysisDto(segmentName, 0L, 0L, 0.0, 0.0, 0.0, 0L);
+        }
+
+        Long totalUsers = ((Number) row[0]).longValue();
+        Long totalPurchases = ((Number) row[1]).longValue();
+        Double totalRevenue = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
+        Long totalProductsBought = row[3] != null ? ((Number) row[3]).longValue() : 0L;
+
+        Double avgOrderValue = totalPurchases > 0 ? totalRevenue / totalPurchases : 0.0;
+        Double avgPurchasesPerUser = totalUsers > 0 ? (double) totalPurchases / totalUsers : 0.0;
+
+        return new SegmentBehaviorAnalysisDto(
+                segmentName,
+                totalUsers,
+                totalPurchases,
+                totalRevenue,
+                avgOrderValue,
+                avgPurchasesPerUser,
+                totalProductsBought
+        );
+    }
 
 
     // perform Recency, frequency and monetary analysis
@@ -81,22 +160,6 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
 
         return fastApiClient.performRFMAnalysis(input);
     }
-
-    private final UsersRepository usersRepository;
-    private final SaleMapper saleMapper;
-    private final ProductRepository productRepository;
-    private final SoldProductRepository soldProductRepository;
-    UsersService  usersService;
-    SaleService  saleService;
-    ReviewsService  reviewsService;
-    SearchHistoryService searchHistoryService;
-    SoldProductService  soldProductService;
-    ProductService  productService;
-
-    private final FastApiClient fastApiClient;
-    private final RestTemplate restTemplate;// ← ADD THIS
-
-    private final UsersServiceImpl usersServiceImpl;
 
 
     private LocalDateTime truncateDate(LocalDateTime date, TimeGranularity timeGranularity) {
@@ -612,8 +675,44 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
     }
 
     @Override
+    public ChurnAnalysisDto analyzeChurnRate(LocalDateTime startDate, LocalDateTime endDate) {
+        Long usersAtStart = saleRepository.countUsersBeforeDate(startDate);
+        Long churnedUsers = saleRepository.countChurnedUsers(startDate, endDate);
+        Long activeUsers = saleRepository.countActiveUsersDuringPeriod(startDate, endDate);
+
+        if (usersAtStart == null || usersAtStart == 0) {
+            return new ChurnAnalysisDto(0L, 0L, 0.0, 0L, 0L);
+        }
+
+        double churnRate = ((double) churnedUsers / usersAtStart) * 100;
+        Long totalUsersAtEnd = usersAtStart - churnedUsers + activeUsers;
+
+        return new ChurnAnalysisDto(
+                usersAtStart,
+                churnedUsers,
+                churnRate,
+                activeUsers,
+                totalUsersAtEnd
+        );
+    }
+
+    @Override
     public double calculateCustomerLifetimeValue(Long userId) {
         return 0;
+    }
+
+    @Override
+    public double calculateRetentionRate(LocalDateTime startDate, LocalDateTime endDate) {
+        Long usersAtStart = saleRepository.countUsersBeforeDate(startDate);
+        Long usersAtEnd = saleRepository.countUsersByEndDate(endDate);
+        Long newUsers = saleRepository.countNewUsersDuringPeriod(startDate, endDate);
+
+        if (usersAtStart == null || usersAtStart == 0) {
+            return 0.0;
+        }
+
+        long retainedUsers = usersAtEnd - newUsers;
+        return ((double) retainedUsers / usersAtStart) * 100;
     }
 
     @Override

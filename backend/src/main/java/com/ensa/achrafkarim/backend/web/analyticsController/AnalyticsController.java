@@ -227,4 +227,81 @@ public class AnalyticsController {
 
         return ResponseEntity.ok(ratio);
     }
+
+    @GetMapping("/churn-rate")
+    public ResponseEntity<ChurnAnalysisDto> getChurnRate(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+    ) {
+        try {
+            ChurnAnalysisDto result = advancedAnalyticsService.analyzeChurnRate(startDate, endDate);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Churn rate analysis error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
+
+    @GetMapping("/segment-behavior/{segmentName}")
+    public ResponseEntity<SegmentBehaviorAnalysisDto> getSegmentBehavior(
+            @PathVariable String segmentName
+    ) {
+        try {
+            SegmentBehaviorAnalysisDto result = advancedAnalyticsService.analyzeBehaviorBySegment(segmentName);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Segment behavior analysis error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
+    @GetMapping("/churn-prediction")
+    public ResponseEntity<List<ChurnPredictionDto>> getChurnPrediction() {
+        try {
+            List<ChurnPredictionDto> result = advancedAnalyticsService.predictCustomerChurn();
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Churn prediction error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
+
+    /**
+     * Churn Rate - Measures the percentage of users who stopped buying during a period. Users who made purchases before the period but didn't make any during it are considered "churned" or lost.
+     * Retention Rate - Measures the percentage of users who continued buying during a period. It calculates how many of your existing users came back and made purchases again.
+     * They are essentially opposite metrics:
+     *
+     * High churn = bad (losing customers)
+     * High retention = good (keeping customers)*/
+
+    @GetMapping("/retention-rate")
+    public ResponseEntity<Double> getRetentionRate(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+    ) {
+        try {
+            double retentionRate = advancedAnalyticsService.calculateRetentionRate(startDate, endDate);
+            return ResponseEntity.ok(retentionRate);
+        } catch (Exception e) {
+            System.err.println("Retention rate calculation error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
+
+
 }
