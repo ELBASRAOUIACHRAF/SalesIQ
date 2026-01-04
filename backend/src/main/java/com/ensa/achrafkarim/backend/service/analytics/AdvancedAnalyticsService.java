@@ -303,6 +303,7 @@ AdvancedAnalyticsService {
     /**
      * Extraction de topics des avis (Topic Modeling)
      * Identifie les thèmes récurrents dans les commentaires
+     * for future updates
      */
     //List<TopicDto> extractReviewTopics(Long productId);
 
@@ -319,6 +320,7 @@ AdvancedAnalyticsService {
 
     // ========================================
     // 9. ANALYSES GÉOGRAPHIQUES (GEO ANALYTICS)
+    // for future updates
     // ========================================
 
     /**
@@ -343,17 +345,17 @@ AdvancedAnalyticsService {
     /**
      * Génération du dashboard exécutif complet
      */
-    //ExecutiveDashboardDto generateExecutiveDashboard(LocalDateTime startDate, LocalDateTime endDate);
+    ExecutiveDashboardDto generateExecutiveDashboard(LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Rapport d'analyse complet pour un produit
      */
-    //ComprehensiveProductReportDto generateProductReport(Long productId);
+    ComprehensiveProductReportDto generateProductReport(Long productId);
 
     /**
      * Rapport d'analyse de portefeuille produits
      */
-    //PortfolioAnalysisReportDto generatePortfolioReport();
+    PortfolioAnalysisReportDto generatePortfolioReport();
 
     /**
      * Scorecard de performance globale

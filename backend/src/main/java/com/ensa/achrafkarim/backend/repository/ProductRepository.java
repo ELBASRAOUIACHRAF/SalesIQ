@@ -38,4 +38,29 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByCategoryIdIn(List<Long> categoryIds);
 
     Product findByName(String productName);
+
+    @Query("SELECT COUNT(p) FROM Product p WHERE p.isActive = true")
+    Long countActiveProducts();
+
+    @Query("SELECT COUNT(p) FROM Product p WHERE p.isActive = true AND p.stock <= 10 AND p.stock > 0")
+    Long countLowStockProducts();
+
+    @Query("SELECT COUNT(p) FROM Product p WHERE p.isActive = true AND p.stock = 0")
+    Long countOutOfStockProducts();
+
+    @Query("SELECT AVG(p.stock), SUM(p.stock * p.price) FROM Product p WHERE p.isActive = true")
+    Object[] calculateInventoryStats();
+
+    @Query("SELECT COUNT(p), " +
+            "SUM(CASE WHEN p.isActive = true THEN 1 ELSE 0 END), " +
+            "SUM(CASE WHEN p.isActive = false THEN 1 ELSE 0 END), " +
+            "AVG(p.price), " +
+            "MIN(p.price), " +
+            "MAX(p.price), " +
+            "SUM(p.stock * p.price) " +
+            "FROM Product p")
+    Object[] findPortfolioSummaryMetrics();
+
+    @Query("SELECT COUNT(DISTINCT p.category.id) FROM Product p WHERE p.category IS NOT NULL")
+    Long countCategories();
 }

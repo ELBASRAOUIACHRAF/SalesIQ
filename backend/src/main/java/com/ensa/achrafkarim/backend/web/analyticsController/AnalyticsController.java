@@ -387,4 +387,53 @@ public class AnalyticsController {
                     .body(null);
         }
     }
+
+    @GetMapping("/executive-dashboard")
+    public ResponseEntity<ExecutiveDashboardDto> getExecutiveDashboard(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+    ) {
+        try {
+            ExecutiveDashboardDto result = advancedAnalyticsService.generateExecutiveDashboard(startDate, endDate);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Executive dashboard generation error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
+    @GetMapping("/product-report/{productId}")
+    public ResponseEntity<ComprehensiveProductReportDto> getProductReport(
+            @PathVariable Long productId
+    ) {
+        try {
+            ComprehensiveProductReportDto result = advancedAnalyticsService.generateProductReport(productId);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Product report generation error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
+
+    @GetMapping("/portfolio-report")
+    public ResponseEntity<PortfolioAnalysisReportDto> getPortfolioReport() {
+        try {
+            PortfolioAnalysisReportDto result = advancedAnalyticsService.generatePortfolioReport();
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Portfolio report generation error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
 }
