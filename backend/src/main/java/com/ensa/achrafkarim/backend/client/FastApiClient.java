@@ -182,4 +182,24 @@ public class FastApiClient {
         }
     }
 
+    public List<AnomalyDetectionDto> detectAnomalies(AnomalyDetectionRequestDto request) {
+        String url = fastApiBaseUrl + "/api/v1/analytics/detect-anomalies";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<AnomalyDetectionRequestDto> entity = new HttpEntity<>(request, headers);
+
+        try {
+            ResponseEntity<AnomalyDetectionDto[]> response = restTemplate.postForEntity(
+                    url,
+                    entity,
+                    AnomalyDetectionDto[].class
+            );
+            return Arrays.asList(response.getBody());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to detect anomalies from FastAPI: " + e.getMessage(), e);
+        }
+    }
+
 }

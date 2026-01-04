@@ -251,6 +251,7 @@ AdvancedAnalyticsService {
     /**
      * Recommandation de réapprovisionnement
      * Calcule la quantité optimale à commander
+     * for future updates
      */
     //ReplenishmentRecommendationDto recommendReplenishment(Long productId);
 
@@ -258,10 +259,11 @@ AdvancedAnalyticsService {
      * Détection d'anomalies dans les ventes
      * Identifie les pics ou chutes inhabituels
      */
-    //List<AnomalyDetectionDto> detectSalesAnomalies(LocalDateTime startDate, LocalDateTime endDate);
+    List<AnomalyDetectionDto> detectSalesAnomalies(LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Prédiction de la demande future (Demand Forecasting)
+     * for future updates
      */
     //DemandForecastDto forecastDemand(Long productId, int daysAhead);
 
@@ -273,7 +275,7 @@ AdvancedAnalyticsService {
      * Comparaison de performance entre périodes
      * Exemple : Ce mois vs mois dernier
      */
-    //PeriodComparisonDto comparePeriods(LocalDateTime period1Start, LocalDateTime period1End,LocalDateTime period2Start, LocalDateTime period2End);
+    PeriodComparisonDto comparePeriods(LocalDateTime period1Start, LocalDateTime period1End,LocalDateTime period2Start, LocalDateTime period2End);
 
     /**
      * Benchmarking de produits similaires

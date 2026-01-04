@@ -63,6 +63,104 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
 
 
     @Override
+    public PeriodComparisonDto comparePeriods(LocalDateTime period1Start, LocalDateTime period1End,
+                                              LocalDateTime period2Start, LocalDateTime period2End) {
+        Object[] period1Metrics = saleRepository.calculatePeriodMetrics(period1Start, period1End);
+        Object[] period2Metrics = saleRepository.calculatePeriodMetrics(period2Start, period2End);
+
+        Double period1Revenue = period1Metrics[0] != null ? ((Number) period1Metrics[0]).doubleValue() : 0.0;
+        Long period1Orders = period1Metrics[1] != null ? ((Number) period1Metrics[1]).longValue() : 0L;
+        Long period1Customers = period1Metrics[2] != null ? ((Number) period1Metrics[2]).longValue() : 0L;
+        Long period1ProductsSold = period1Metrics[3] != null ? ((Number) period1Metrics[3]).longValue() : 0L;
+
+        Double period2Revenue = period2Metrics[0] != null ? ((Number) period2Metrics[0]).doubleValue() : 0.0;
+        Long period2Orders = period2Metrics[1] != null ? ((Number) period2Metrics[1]).longValue() : 0L;
+        Long period2Customers = period2Metrics[2] != null ? ((Number) period2Metrics[2]).longValue() : 0L;
+        Long period2ProductsSold = period2Metrics[3] != null ? ((Number) period2Metrics[3]).longValue() : 0L;
+
+        Double revenueChange = period2Revenue - period1Revenue;
+        Double revenueChangePercent = period1Revenue > 0 ? (revenueChange / period1Revenue) * 100 : 0.0;
+
+        Long ordersChange = period2Orders - period1Orders;
+        Double ordersChangePercent = period1Orders > 0 ? ((double) ordersChange / period1Orders) * 100 : 0.0;
+
+        Long customersChange = period2Customers - period1Customers;
+        Double customersChangePercent = period1Customers > 0 ? ((double) customersChange / period1Customers) * 100 : 0.0;
+
+        Long productsSoldChange = period2ProductsSold - period1ProductsSold;
+        Double productsSoldChangePercent = period1ProductsSold > 0 ? ((double) productsSoldChange / period1ProductsSold) * 100 : 0.0;
+
+        Double period1AvgOrderValue = period1Orders > 0 ? period1Revenue / period1Orders : 0.0;
+        Double period2AvgOrderValue = period2Orders > 0 ? period2Revenue / period2Orders : 0.0;
+        Double avgOrderValueChange = period2AvgOrderValue - period1AvgOrderValue;
+        Double avgOrderValueChangePercent = period1AvgOrderValue > 0 ? (avgOrderValueChange / period1AvgOrderValue) * 100 : 0.0;
+
+        String overallTrend = determineOverallTrend(revenueChangePercent, ordersChangePercent, customersChangePercent);
+
+        return new PeriodComparisonDto(
+                period1Start,
+                period1End,
+                period2Start,
+                period2End,
+                period1Revenue,
+                period2Revenue,
+                revenueChange,
+                revenueChangePercent,
+                period1Orders,
+                period2Orders,
+                ordersChange,
+                ordersChangePercent,
+                period1Customers,
+                period2Customers,
+                customersChange,
+                customersChangePercent,
+                period1ProductsSold,
+                period2ProductsSold,
+                productsSoldChange,
+                productsSoldChangePercent,
+                period1AvgOrderValue,
+                period2AvgOrderValue,
+                avgOrderValueChange,
+                avgOrderValueChangePercent,
+                overallTrend
+        );
+    }
+
+    private String determineOverallTrend(Double revenueChange, Double ordersChange, Double customersChange) {
+        double avgChange = (revenueChange + ordersChange + customersChange) / 3;
+
+        if (avgChange > 10) {
+            return "STRONG_GROWTH";
+        } else if (avgChange > 0) {
+            return "GROWTH";
+        } else if (avgChange > -10) {
+            return "DECLINE";
+        } else {
+            return "STRONG_DECLINE";
+        }
+    }
+
+    @Override
+    public List<AnomalyDetectionDto> detectSalesAnomalies(LocalDateTime startDate, LocalDateTime endDate) {
+        List<Object[]> salesData = saleRepository.findDailySalesInPeriod(startDate, endDate);
+
+        if (salesData.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<DailySalesDto> dailySales = salesData.stream()
+                .map(row -> new DailySalesDto(
+                        (LocalDate) row[0],
+                        ((Number) row[1]).doubleValue()
+                ))
+                .toList();
+
+        AnomalyDetectionRequestDto request = new AnomalyDetectionRequestDto(dailySales, 2.0);
+
+        return fastApiClient.detectAnomalies(request);
+    }
+
+    @Override
     public List<StockoutPredictionDto> predictStockouts(int daysAhead) {
         List<Object[]> products = soldProductRepository.findAllActiveProductsWithStock();
 

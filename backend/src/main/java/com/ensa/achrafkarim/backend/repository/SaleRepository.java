@@ -144,4 +144,24 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     Long countReturningCustomers(@Param("startDate") LocalDateTime startDate,
                                  @Param("endDate") LocalDateTime endDate);
 
+
+    @Query("SELECT CAST(s.dateOfSale AS LocalDate), SUM(sp.quantity * sp.unitPrice) " +
+            "FROM Sale s " +
+            "JOIN s.soldProducts sp " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate " +
+            "GROUP BY CAST(s.dateOfSale AS LocalDate) " +
+            "ORDER BY CAST(s.dateOfSale AS LocalDate)")
+    List<Object[]> findDailySalesInPeriod(@Param("startDate") LocalDateTime startDate,
+                                          @Param("endDate") LocalDateTime endDate);
+
+
+    @Query("SELECT SUM(sp.quantity * sp.unitPrice), " +
+            "COUNT(DISTINCT s.id), " +
+            "COUNT(DISTINCT s.users.id), " +
+            "SUM(sp.quantity) " +
+            "FROM Sale s " +
+            "JOIN s.soldProducts sp " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate")
+    Object[] calculatePeriodMetrics(@Param("startDate") LocalDateTime startDate,
+                                    @Param("endDate") LocalDateTime endDate);
 }

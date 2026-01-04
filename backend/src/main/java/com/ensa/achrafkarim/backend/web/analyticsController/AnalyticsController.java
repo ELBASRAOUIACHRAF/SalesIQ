@@ -349,4 +349,42 @@ public class AnalyticsController {
         }
     }
 
+    @GetMapping("/anomaly-detection")
+    public ResponseEntity<List<AnomalyDetectionDto>> detectAnomalies(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+    ) {
+        try {
+            List<AnomalyDetectionDto> result = advancedAnalyticsService.detectSalesAnomalies(startDate, endDate);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Anomaly detection error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
+
+    @GetMapping("/compare-periods")
+    public ResponseEntity<PeriodComparisonDto> comparePeriods(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime period1Start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime period1End,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime period2Start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime period2End
+    ) {
+        try {
+            PeriodComparisonDto result = advancedAnalyticsService.comparePeriods(
+                    period1Start, period1End, period2Start, period2End
+            );
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Period comparison error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
 }
