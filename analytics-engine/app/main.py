@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import (recommendation, sales_forecast, mba, rfm, 
-                            churn, ranking, bestseller, stockout, anomaly)
+                            churn, ranking, bestseller, stockout, anomaly,
+                            topic)
 from app.services.recommendation_service import reco_service
 
 app = FastAPI(
@@ -77,6 +78,12 @@ app.include_router(
     anomaly.router,
     prefix="/api/v1",
     tags=["anomaly detection"]
+)
+
+app.include_router(
+    topic.router,
+    prefix="/api/v1",
+    tags=["topic modeling"]
 )
 
 @app.get("/")

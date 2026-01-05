@@ -197,4 +197,10 @@ public interface SoldProductRepository extends JpaRepository<SoldProduct, Long> 
             "WHERE s.dateOfSale >= :startDate AND p.category IS NOT NULL " +
             "GROUP BY p.category.id")
     List<Object[]> findCategoryRevenueSince(@Param("startDate") LocalDateTime startDate);
+
+    @Query("SELECT SUM(sp.quantity) FROM SoldProduct sp " +
+            "JOIN sp.sale s WHERE s.dateOfSale BETWEEN :startDate AND :endDate")
+    Long countUnitsSoldInPeriod(@Param("startDate") LocalDateTime startDate,
+                                @Param("endDate") LocalDateTime endDate);
+
 }

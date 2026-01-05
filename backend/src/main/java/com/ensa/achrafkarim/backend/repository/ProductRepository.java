@@ -63,4 +63,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT COUNT(DISTINCT p.category.id) FROM Product p WHERE p.category IS NOT NULL")
     Long countCategories();
+
+
+    @Query("SELECT COUNT(p) FROM Product p")
+    Long countTotalProducts();
+
+    @Query("SELECT COUNT(p) FROM Product p WHERE p.isActive = true AND p.stock > 10")
+    Long countHealthyStockProducts();
+
+    @Query("SELECT SUM(p.stock * p.price) FROM Product p WHERE p.isActive = true")
+    Double calculateTotalInventoryValue();
 }

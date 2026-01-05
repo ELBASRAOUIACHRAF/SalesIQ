@@ -436,4 +436,39 @@ public class AnalyticsController {
         }
     }
 
+
+    @GetMapping("/performance-scorecard")
+    public ResponseEntity<PerformanceScorecardDto> getPerformanceScorecard(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+    ) {
+        try {
+            PerformanceScorecardDto result = advancedAnalyticsService.generatePerformanceScorecard(startDate, endDate);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Performance scorecard generation error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
+    @GetMapping("/variance-analysis")
+    public ResponseEntity<VarianceAnalysisDto> getVarianceAnalysis(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+    ) {
+        try {
+            VarianceAnalysisDto result = advancedAnalyticsService.analyzeVariance(startDate, endDate);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Variance analysis error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
 }

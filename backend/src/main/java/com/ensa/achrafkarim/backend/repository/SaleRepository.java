@@ -203,4 +203,56 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
             "GROUP BY CAST(s.dateOfSale AS LocalDate))")
     Object[] calculateRevenueStats(@Param("startDate") LocalDateTime startDate,
                                    @Param("endDate") LocalDateTime endDate);
+
+
+
+    @Query("SELECT SUM(sp.quantity * sp.unitPrice), " +
+            "COUNT(DISTINCT s.id), " +
+            "COUNT(DISTINCT s.users.id) " +
+            "FROM Sale s " +
+            "JOIN s.soldProducts sp " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate")
+    Object[] findFinancialMetrics(@Param("startDate") LocalDateTime startDate,
+                                  @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT COUNT(DISTINCT s.id) FROM Sale s " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate " +
+            "AND s.status = 'COMPLETED'")
+    Long countCompletedOrders(@Param("startDate") LocalDateTime startDate,
+                              @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT COUNT(DISTINCT s.id) FROM Sale s " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate")
+    Long countTotalOrders(@Param("startDate") LocalDateTime startDate,
+                          @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT CAST(s.dateOfSale AS LocalDate), " +
+            "SUM(sp.quantity * sp.unitPrice), " +
+            "COUNT(DISTINCT s.users.id) " +
+            "FROM Sale s " +
+            "JOIN s.soldProducts sp " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate " +
+            "GROUP BY CAST(s.dateOfSale AS LocalDate) " +
+            "ORDER BY CAST(s.dateOfSale AS LocalDate)")
+    List<Object[]> findDailyMetrics(@Param("startDate") LocalDateTime startDate,
+                                    @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT YEAR(s.dateOfSale), MONTH(s.dateOfSale), SUM(sp.quantity * sp.unitPrice) " +
+            "FROM Sale s " +
+            "JOIN s.soldProducts sp " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate " +
+            "GROUP BY YEAR(s.dateOfSale), MONTH(s.dateOfSale) " +
+            "ORDER BY YEAR(s.dateOfSale), MONTH(s.dateOfSale)")
+    List<Object[]> findMonthlyRevenue(@Param("startDate") LocalDateTime startDate,
+                                      @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT p.category.id, p.category.name, SUM(sp.quantity * sp.unitPrice) " +
+            "FROM SoldProduct sp " +
+            "JOIN sp.product p " +
+            "JOIN sp.sale s " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate " +
+            "AND p.category IS NOT NULL " +
+            "GROUP BY p.category.id, p.category.name")
+    List<Object[]> findCategoryRevenue(@Param("startDate") LocalDateTime startDate,
+                                       @Param("endDate") LocalDateTime endDate);
 }

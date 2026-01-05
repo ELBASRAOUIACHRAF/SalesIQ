@@ -65,4 +65,16 @@ public interface ReviewsRepository extends JpaRepository<Reviews, Long> {
             "FROM Reviews r WHERE r.product.id = :productId")
     Object[] findProductReviewMetrics(@Param("productId") Long productId);
 
+
+    @Query("SELECT AVG(r.rating), COUNT(r.id), " +
+            "SUM(CASE WHEN r.rating >= 4 THEN 1 ELSE 0 END) " +
+            "FROM Reviews r " +
+            "WHERE r.reviewDate BETWEEN :startDate AND :endDate")
+    Object[] findReviewMetrics(@Param("startDate") LocalDateTime startDate,
+                               @Param("endDate") LocalDateTime endDate);
+
+
+    @Query("SELECT r.id, r.comment, r.rating FROM Reviews r " +
+            "WHERE r.product.id = :productId AND r.comment IS NOT NULL AND r.comment <> ''")
+    List<Object[]> findReviewTextsByProduct(@Param("productId") Long productId);
 }

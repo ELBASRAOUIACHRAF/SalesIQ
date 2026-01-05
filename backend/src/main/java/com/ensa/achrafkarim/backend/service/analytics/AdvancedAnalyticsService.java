@@ -279,6 +279,7 @@ AdvancedAnalyticsService {
 
     /**
      * Benchmarking de produits similaires
+     * for future updates
      */
     //ProductBenchmarkDto benchmarkProduct(Long productId, List<Long> competitorIds);
 
@@ -286,8 +287,7 @@ AdvancedAnalyticsService {
      * Analyse d'écart (Variance Analysis)
      * Compare résultats réels vs prévisions/objectifs
      */
-    //VarianceAnalysisDto analyzeVariance(LocalDateTime startDate, LocalDateTime endDate);
-
+    VarianceAnalysisDto analyzeVariance(LocalDateTime startDate, LocalDateTime endDate);
     // ========================================
     // 8. ANALYSES DE CONTENU (CONTENT ANALYTICS)
     // ========================================
@@ -303,13 +303,13 @@ AdvancedAnalyticsService {
     /**
      * Extraction de topics des avis (Topic Modeling)
      * Identifie les thèmes récurrents dans les commentaires
-     * for future updates
      */
-    //List<TopicDto> extractReviewTopics(Long productId);
+    List<TopicDto> extractReviewTopics(Long productId);
 
     /**
      * Analyse de corrélation note/ventes
      * Mesure l'impact des notes sur les performances
+     * for future updates
      */
     //RatingSalesCorrelationDto analyzeRatingSalesCorrelation();
 
@@ -360,5 +360,5 @@ AdvancedAnalyticsService {
     /**
      * Scorecard de performance globale
      */
-    //PerformanceScorecardDto generatePerformanceScorecard(LocalDateTime startDate, LocalDateTime endDate);
+    PerformanceScorecardDto generatePerformanceScorecard(LocalDateTime startDate, LocalDateTime endDate);
 }

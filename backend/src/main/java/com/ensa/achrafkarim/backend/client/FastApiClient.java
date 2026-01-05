@@ -202,4 +202,24 @@ public class FastApiClient {
         }
     }
 
+    public List<TopicDto> extractTopics(TopicExtractionRequestDto request) {
+        String url = fastApiBaseUrl + "/api/v1/analytics/extract-topics";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<TopicExtractionRequestDto> entity = new HttpEntity<>(request, headers);
+
+        try {
+            ResponseEntity<TopicDto[]> response = restTemplate.postForEntity(
+                    url,
+                    entity,
+                    TopicDto[].class
+            );
+            return Arrays.asList(response.getBody());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to extract topics from FastAPI: " + e.getMessage(), e);
+        }
+    }
+
 }
