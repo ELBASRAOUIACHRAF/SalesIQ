@@ -15,6 +15,8 @@ public interface ReviewsService {
     // =====================
     // CORE CRUD OPERATIONS
     // =====================
+    List<ReviewsDto> getAllReviews();
+
     List<ReviewsDto> getReviewsByProduct(Long productId);
 
     List<ReviewsDetailsDto> getReviewsByProductWithUsers(Long productId);

@@ -1,0 +1,265 @@
+<div class="management-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">📄 Reports & Export</h1>
+      <p class="page-subtitle">Generate and download professional PDF reports for your business data</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="refreshData()" [disabled]="loading">
+        <span class="btn-icon">🔄</span>
+        <span>Refresh Data</span>
+      </button>
+      <button class="btn btn-primary" (click)="generateAllReports()" [disabled]="loading || generatingPdf">
+        <span class="btn-icon">📊</span>
+        <span>{{ generatingPdf === 'all' ? 'Generating...' : 'Export All Reports' }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-overlay" *ngIf="loading">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Loading report data...</p>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-section" *ngIf="summary && !loading">
+    <h2 class="section-title">📈 Quick Overview</h2>
+    <div class="summary-grid">
+      <div class="summary-card users">
+        <div class="card-icon">👥</div>
+        <div class="card-content">
+          <span class="card-value">{{ summary.totalUsers }}</span>
+          <span class="card-label">Total Users</span>
+          <span class="card-sub">{{ summary.activeUsers }} active</span>
+        </div>
+      </div>
+      <div class="summary-card products">
+        <div class="card-icon">📦</div>
+        <div class="card-content">
+          <span class="card-value">{{ summary.totalProducts }}</span>
+          <span class="card-label">Products</span>
+          <span class="card-sub">{{ summary.lowStockProducts }} low stock</span>
+        </div>
+      </div>
+      <div class="summary-card sales">
+        <div class="card-icon">💰</div>
+        <div class="card-content">
+          <span class="card-value">{{ summary.totalRevenue | currency:'USD':'symbol':'1.0-0' }}</span>
+          <span class="card-label">Total Revenue</span>
+          <span class="card-sub">{{ summary.totalSales }} orders</span>
+        </div>
+      </div>
+      <div class="summary-card reviews">
+        <div class="card-icon">⭐</div>
+        <div class="card-content">
+          <span class="card-value">{{ summary.averageRating }}</span>
+          <span class="card-label">Avg. Rating</span>
+          <span class="card-sub">{{ summary.totalReviews }} reviews</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report Types Grid -->
+  <div class="reports-section" *ngIf="!loading">
+    <h2 class="section-title">📑 Available Reports</h2>
+    <div class="reports-grid">
+      <div class="report-card" *ngFor="let report of reportTypes" [style.--accent-color]="report.color">
+        <div class="report-header">
+          <span class="report-icon">{{ report.icon }}</span>
+          <div class="report-info">
+            <h3 class="report-name">{{ report.name }}</h3>
+            <span class="record-count">{{ getDataCount(report) }} records</span>
+          </div>
+        </div>
+        
+        <p class="report-description">{{ report.description }}</p>
+        
+        <div class="report-columns">
+          <span class="column-label">Includes:</span>
+          <div class="columns-list">
+            <span class="column-tag" *ngFor="let col of report.columns.slice(0, 5)">{{ col }}</span>
+            <span class="column-tag more" *ngIf="report.columns.length > 5">+{{ report.columns.length - 5 }} more</span>
+          </div>
+        </div>
+        
+        <div class="report-actions">
+          <button class="action-btn preview" (click)="openPreview(report)" [disabled]="getDataCount(report) === 0">
+            <span>👁️</span>
+            <span>Preview</span>
+          </button>
+          <button 
+            class="action-btn export" 
+            (click)="generatePdf(report)" 
+            [disabled]="generatingPdf !== null || getDataCount(report) === 0"
+          >
+            <span>{{ generatingPdf === report.id ? '⏳' : '📥' }}</span>
+            <span>{{ generatingPdf === report.id ? 'Generating...' : 'Download PDF' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Banner -->
+  <div class="info-banner" *ngIf="!loading">
+    <span class="info-icon">💡</span>
+    <div class="info-content">
+      <h3>How to Download PDF Reports</h3>
+      <p>
+        Click "Download PDF" to open a print preview. In the print dialog, select 
+        <strong>"Save as PDF"</strong> as your printer destination to save the report. 
+        Reports include comprehensive data tables and summary statistics.
+        <strong>Note:</strong> Sensitive information like passwords is never included in reports.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal-overlay" *ngIf="showPreviewModal" (click)="closePreview()">
+  <div class="modal-content preview-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>
+        <span>{{ previewReport?.icon }}</span>
+        {{ previewReport?.name }} Preview
+      </h2>
+      <button class="modal-close" (click)="closePreview()">✕</button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="preview-stats" *ngIf="previewReport">
+        <div class="stat-item">
+          <span class="stat-value">{{ getDataCount(previewReport!) }}</span>
+          <span class="stat-label">Total Records</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ previewReport.columns.length }}</span>
+          <span class="stat-label">Data Columns</span>
+        </div>
+      </div>
+      
+      <div class="preview-table-wrapper" *ngIf="previewReport">
+        <!-- Users Preview -->
+        <table class="preview-table" *ngIf="previewReport.dataKey === 'users'">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Username</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Location</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users.slice(0, 10)">
+              <td>{{ user.id }}</td>
+              <td><strong>{{ user.username }}</strong></td>
+              <td>{{ user.firstName }} {{ user.lastName }}</td>
+              <td>{{ user.email }}</td>
+              <td><span class="role-badge">{{ user.role }}</span></td>
+              <td>
+                <span class="status-badge" [class.active]="user.active" [class.inactive]="!user.active">
+                  {{ user.active ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>{{ user.city || '-' }}, {{ user.country || '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Products Preview -->
+        <table class="preview-table" *ngIf="previewReport.dataKey === 'products'">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Brand</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Rating</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let product of products.slice(0, 10)">
+              <td>{{ product.id }}</td>
+              <td><strong>{{ product.name | slice:0:30 }}{{ (product.name.length || 0) > 30 ? '...' : '' }}</strong></td>
+              <td>{{ product.mark || '-' }}</td>
+              <td class="currency">{{ product.price | currency:'USD' }}</td>
+              <td [class.low-stock]="(product.stock || 0) < 10">{{ product.stock }}</td>
+              <td class="rating">{{ (product.rating || 0).toFixed(1) }} ⭐</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Sales Preview -->
+        <table class="preview-table" *ngIf="previewReport.dataKey === 'sales'">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Payment</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let sale of sales.slice(0, 10)">
+              <td>{{ sale.id }}</td>
+              <td>{{ sale.dateOfSale | date:'mediumDate' }}</td>
+              <td class="currency">{{ sale.totalAmount | currency:'USD' }}</td>
+              <td>{{ sale.paymentMethod }}</td>
+              <td>
+                <span class="status-badge" [ngClass]="(sale.status || '').toLowerCase()">{{ sale.status }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Reviews Preview -->
+        <table class="preview-table" *ngIf="previewReport.dataKey === 'reviews'">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>User</th>
+              <th>Rating</th>
+              <th>Comment</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let review of reviews.slice(0, 10)">
+              <td>{{ review.id }}</td>
+              <td>{{ review.userName || 'Anonymous' }}</td>
+              <td class="rating">{{ (review.rating || 0).toFixed(1) }} ⭐</td>
+              <td>{{ review.comment | slice:0:50 }}{{ (review.comment.length || 0) > 50 ? '...' : '' }}</td>
+              <td>{{ review.reviewDate | date:'mediumDate' }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="preview-note" *ngIf="getDataCount(previewReport!) > 10">
+          Showing first 10 of {{ getDataCount(previewReport!) }} records. Download PDF for complete data.
+        </p>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closePreview()">Close</button>
+      <button 
+        class="btn btn-primary" 
+        (click)="generatePdf(previewReport!); closePreview()"
+        [disabled]="generatingPdf !== null"
+      >
+        <span>📥</span>
+        Download PDF
+      </button>
+    </div>
+  </div>
+</div>

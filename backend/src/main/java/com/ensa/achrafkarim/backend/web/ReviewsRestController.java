@@ -21,6 +21,11 @@ public class ReviewsRestController {
 
     ReviewsService reviewsService;
 
+    @GetMapping("/getallreviews")
+    public List<ReviewsDto> getAllReviews(){
+        return reviewsService.getAllReviews();
+    }
+
     @GetMapping("/productreviews/{productId}")
     public List<ReviewsDto> getReviewsByProduct(@PathVariable Long productId){
         return reviewsService.getReviewsByProduct(productId);

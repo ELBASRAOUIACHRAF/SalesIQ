@@ -1,0 +1,158 @@
+<div class="reports-container">
+  <!-- Header Section -->
+  <div class="reports-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1>📊 Analytics Reports</h1>
+        <p class="subtitle">Generate comprehensive AI-powered analytics reports</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-refresh" (click)="loadAllData()" [disabled]="isLoading">
+          <span class="icon">🔄</span>
+          Refresh Data
+        </button>
+        <button class="btn-export-all" (click)="generateComprehensiveReport()" [disabled]="isLoading">
+          <span class="icon">📄</span>
+          Export All Reports
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="loading-spinner"></div>
+    <p>{{ loadingMessage }}</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-banner" *ngIf="errorMessage && !isLoading">
+    <span class="error-icon">⚠️</span>
+    <span>{{ errorMessage }}</span>
+    <button class="btn-retry" (click)="loadAllData()">Retry</button>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="summary-section" *ngIf="summary && !isLoading">
+    <div class="summary-card blue">
+      <div class="card-icon">👥</div>
+      <div class="card-content">
+        <span class="value">{{ summary.totalCustomers }}</span>
+        <span class="label">Customers Analyzed</span>
+      </div>
+    </div>
+    <div class="summary-card red">
+      <div class="card-icon">⚠️</div>
+      <div class="card-content">
+        <span class="value">{{ summary.atRiskCustomers }}</span>
+        <span class="label">At-Risk Customers</span>
+      </div>
+    </div>
+    <div class="summary-card amber">
+      <div class="card-icon">📦</div>
+      <div class="card-content">
+        <span class="value">{{ summary.lowStockProducts }}</span>
+        <span class="label">Low Stock Alerts</span>
+      </div>
+    </div>
+    <div class="summary-card green">
+      <div class="card-icon">💰</div>
+      <div class="card-content">
+        <span class="value">${{ summary.forecastedRevenue | number:'1.0-0' }}</span>
+        <span class="label">7-Day Forecast</span>
+      </div>
+    </div>
+    <div class="summary-card purple">
+      <div class="card-icon">🔍</div>
+      <div class="card-content">
+        <span class="value">{{ summary.anomaliesDetected }}</span>
+        <span class="label">Anomalies Found</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reports Grid -->
+  <div class="reports-grid" *ngIf="!isLoading">
+    <div class="report-card" *ngFor="let report of reportTypes" [style.--accent-color]="report.color">
+      <div class="card-header">
+        <div class="report-icon">{{ report.icon }}</div>
+        <div class="report-info">
+          <h3>{{ report.name }}</h3>
+          <p>{{ report.description }}</p>
+        </div>
+      </div>
+      
+      <div class="card-stats">
+        <div class="stat">
+          <span class="stat-value">{{ getRecordCount(report) }}</span>
+          <span class="stat-label">Records</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-value">{{ report.columns.length }}</span>
+          <span class="stat-label">Data Points</span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn-preview" (click)="openPreview(report)" [disabled]="getRecordCount(report) === 0">
+          <span class="icon">👁️</span>
+          Preview
+        </button>
+        <button class="btn-download" (click)="generatePdf(report)" [disabled]="getRecordCount(report) === 0">
+          <span class="icon">📥</span>
+          Download PDF
+        </button>
+      </div>
+
+      <div class="card-badge" *ngIf="getRecordCount(report) === 0">
+        No Data
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview Modal -->
+  <div class="modal-overlay" *ngIf="showPreviewModal" (click)="closePreview()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ previewTitle }}</h2>
+        <button class="btn-close" (click)="closePreview()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="preview-table-wrapper">
+          <table class="preview-table">
+            <thead>
+              <tr>
+                <th *ngFor="let col of previewColumns">{{ col }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of previewData">
+                <td *ngFor="let col of previewColumns; let i = index">
+                  {{ getPreviewCellValue(row, i, previewTitle) }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="preview-note" *ngIf="previewData.length === 20">
+          Showing first 20 records. Download the full report for complete data.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closePreview()">Close</button>
+        <button class="btn-primary" (click)="downloadPreviewReport()">
+          Download Full Report
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" [class.show]="showToastFlag" [class]="'toast ' + toastType">
+    <span class="toast-icon">
+      {{ toastType === 'success' ? '✓' : toastType === 'error' ? '✕' : 'ℹ' }}
+    </span>
+    <span class="toast-message">{{ toastMessage }}</span>
+  </div>
+</div>

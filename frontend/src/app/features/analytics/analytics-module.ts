@@ -9,6 +9,7 @@ import { CategoriesDashboard } from '../categories/categories-dashboard/categori
 import { ReviewsDashboard } from '../reviews/reviews-dashboard/reviews-dashboard';
 import { SalesDashboard } from '../sales/sales-dashboard/sales-dashboard';
 import { UsersDashboard } from '../users/users-dashboard/users-dashboard';
+import { AnalyticsReports } from './components/analytics-reports/analytics-reports';
 
 
 @NgModule({
@@ -18,6 +19,7 @@ import { UsersDashboard } from '../users/users-dashboard/users-dashboard';
     KpiCardComponent,
     AnalyticsDashboard,
     AnalyticsLayout,
+    AnalyticsReports,
     RouterModule.forChild([
       {
         path: '',
@@ -28,7 +30,8 @@ import { UsersDashboard } from '../users/users-dashboard/users-dashboard';
           { path: 'categories', component: CategoriesDashboard },
           { path: 'reviews', component: ReviewsDashboard },
           { path: 'sales', component: SalesDashboard },
-          { path: 'users', component: UsersDashboard }
+          { path: 'users', component: UsersDashboard },
+          { path: 'reports', component: AnalyticsReports }
         ]
       }
     ])
