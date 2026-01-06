@@ -158,13 +158,15 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 0.5rem;
-	padding: 0.6rem 1rem;
+	padding: 0.75rem 1.5rem;
 	border: none;
 	border-radius: 8px;
 	font-weight: 600;
-	font-size: 0.85rem;
+	font-size: 0.95rem;
 	cursor: pointer;
 	transition: all 0.2s ease;
+	min-width: 120px;
+	justify-content: center;
 }
 
 .action-btn .icon {

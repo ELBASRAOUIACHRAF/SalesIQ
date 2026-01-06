@@ -36,13 +36,19 @@ export class AnalyticsService {
    * Shows revenue, quantity sold, and sales count per category
    */
   getCategoryPerformance(startDate?: string, endDate?: string): Observable<CategoryPerformanceDto[]> {
-    const params: any = {};
-    if (startDate) params.startDate = startDate;
-    if (endDate) params.endDate = endDate;
+    // Default to last 2 years if no date range provided
+    if (!startDate) {
+      const defaultStart = new Date();
+      defaultStart.setFullYear(defaultStart.getFullYear() - 2);
+      startDate = defaultStart.toISOString().split('T')[0];
+    }
+    if (!endDate) {
+      endDate = new Date().toISOString().split('T')[0];
+    }
     
     return this.http.get<CategoryPerformanceDto[] | null>(
       `${this.API_URL}/category-performance`,
-      { params }
+      { params: { startDate, endDate } }
     ).pipe(
       map(res => res ?? defaultCategoryPerformance)
     );

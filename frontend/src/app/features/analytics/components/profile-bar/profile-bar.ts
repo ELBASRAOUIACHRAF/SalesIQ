@@ -1,19 +1,20 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { Subject, takeUntil, catchError, of } from 'rxjs';
 import { UsersService } from '../../../../core/services/users.service';
 import { ProfileModel } from '../../../../core/models/profile.model';
+import { NotificationService, AppNotification } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-profile-bar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './profile-bar.html',
   styleUrls: ['./profile-bar.css']
 })
 export class ProfileBarComponent implements OnInit, OnDestroy {
-  @Input() notifications = 0;
-  @Input() userId = 1; // Can be passed from parent
+  @Input() userId = 1;
   @Input() compact = false;
 
   private destroy$ = new Subject<void>();
@@ -23,15 +24,46 @@ export class ProfileBarComponent implements OnInit, OnDestroy {
   isLoading = true;
   loadError = false;
 
-  constructor(private usersService: UsersService) {}
+  // Notifications state
+  notifications: AppNotification[] = [];
+  unreadCount = 0;
+  notificationPanelOpen = false;
+
+  constructor(
+    private usersService: UsersService,
+    private notificationService: NotificationService,
+    private elementRef: ElementRef
+  ) {}
 
   ngOnInit(): void {
     this.loadUserProfile();
+    this.setupNotifications();
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    if (!this.elementRef.nativeElement.contains(event.target)) {
+      this.notificationPanelOpen = false;
+    }
+  }
+
+  setupNotifications(): void {
+    this.notificationService.notifications$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(notifications => {
+        this.notifications = notifications;
+      });
+
+    this.notificationService.unreadCount$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(count => {
+        this.unreadCount = count;
+      });
   }
 
   loadUserProfile(): void {
@@ -52,6 +84,56 @@ export class ProfileBarComponent implements OnInit, OnDestroy {
         this.profile = profile;
         this.isLoading = false;
       });
+  }
+
+  toggleNotificationPanel(event: Event): void {
+    event.stopPropagation();
+    this.notificationPanelOpen = !this.notificationPanelOpen;
+  }
+
+  markAsRead(notification: AppNotification, event: Event): void {
+    event.stopPropagation();
+    this.notificationService.markAsRead(notification.id);
+  }
+
+  markAllAsRead(): void {
+    this.notificationService.markAllAsRead();
+  }
+
+  refreshNotifications(): void {
+    this.notificationService.refreshNotifications();
+  }
+
+  getSeverityIcon(severity: string): string {
+    switch (severity) {
+      case 'critical': return '🚨';
+      case 'warning': return '⚠️';
+      default: return 'ℹ️';
+    }
+  }
+
+  getTypeIcon(type: string): string {
+    switch (type) {
+      case 'low_stock': return '📦';
+      case 'high_churn': return '👥';
+      case 'sales_anomaly': return '📊';
+      case 'new_review': return '⭐';
+      default: return '🔔';
+    }
+  }
+
+  formatTime(date: Date): string {
+    const now = new Date();
+    const diff = now.getTime() - new Date(date).getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 1) return 'Just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    if (days < 7) return `${days}d ago`;
+    return new Date(date).toLocaleDateString();
   }
 
   get displayInitial(): string {

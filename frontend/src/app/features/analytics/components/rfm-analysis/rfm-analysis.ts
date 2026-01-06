@@ -56,16 +56,19 @@ export class RfmAnalysisComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.errorMessage = '';
 
+    console.log('🔥 RFM Component: Calling getRFMAnalysis()...');
+
     this.analyticsService.getRFMAnalysis()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
+          console.log('✅ RFM Component: Received data:', data);
           this.customers = data;
           this.isLoading = false;
           this.cdr.detectChanges();
         },
         error: (err) => {
-          console.error('RFM Analysis error:', err);
+          console.error('❌ RFM Analysis error:', err);
           this.errorMessage = 'Failed to load RFM Analysis';
           this.isLoading = false;
           this.cdr.detectChanges();

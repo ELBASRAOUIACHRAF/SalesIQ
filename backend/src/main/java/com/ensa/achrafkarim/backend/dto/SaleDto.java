@@ -17,6 +17,10 @@ public class SaleDto {
     private LocalDateTime dateOfSale;
     private PaymentMethod paymentMethod;
     private Status status;
+    private Double totalAmount;
+    private Long userId;
     private List<ProductOrderInfoDto> productOrderInfoList = new ArrayList<>();
+    
+    public SaleDto() {}
 
 }

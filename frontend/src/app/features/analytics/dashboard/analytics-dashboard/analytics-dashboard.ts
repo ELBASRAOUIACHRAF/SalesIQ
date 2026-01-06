@@ -91,18 +91,21 @@ export class AnalyticsDashboard implements OnInit, OnDestroy {
     this.loading = true;
     this.error = null;
 
-    // Get data for last 30 days
+    // Get ALL data - use a wide date range to capture everything
     const endDate = new Date();
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 30);
+    const startDate = new Date('2024-01-01'); // Start from 2024 to capture all historical data
 
     const startStr = startDate.toISOString().split('T')[0];
     const endStr = endDate.toISOString().split('T')[0];
+
+    console.log('🚀 Loading dashboard data:', { startStr, endStr });
 
     this.analyticsService.getExecutiveDashboard(startStr, endStr)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
+          console.log('✅ Dashboard data received:', data);
+          console.log('📊 KPIs object:', data?.kpis);
           this.ngZone.run(() => {
             this.dashboardData = data;
             this.processKpis(data);
@@ -112,12 +115,13 @@ export class AnalyticsDashboard implements OnInit, OnDestroy {
             this.updateHealthStatus(data);
             this.lastUpdated = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
             this.loading = false;
+            console.log('📈 Processed KPIs:', this.kpis);
             this.cdr.detectChanges();
           });
         },
         error: (err) => {
           this.ngZone.run(() => {
-            console.error('Failed to load dashboard data:', err);
+            console.error('❌ Failed to load dashboard data:', err);
             this.error = 'Failed to load dashboard data. Please try again.';
             this.setFallbackData();
             this.loading = false;
@@ -170,6 +174,8 @@ export class AnalyticsDashboard implements OnInit, OnDestroy {
 
   private processKpis(data: ExecutiveDashboardDto): void {
     const kpis = data?.kpis;
+    console.log('Processing KPIs - raw data:', JSON.stringify(kpis));
+    console.log('Total Revenue:', kpis?.totalRevenue, 'formatted:', this.formatCurrency(kpis?.totalRevenue));
     
     this.kpis = [
       {

@@ -3141,11 +3141,11 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
 
             analysis.add(
                     new CategoryPerformanceDto(
-                            (Long) row[0],      // categoryId
-                            (String) row[1],    // categoryName
-                            (Long) row[2],      // totalQuantitySold
-                            (Double) row[3],    // totalRevenue
-                            (Long) row[4]       // totalSales
+                            ((Number) row[0]).longValue(),      // categoryId
+                            (String) row[1],                     // categoryName
+                            ((Number) row[2]).longValue(),       // totalQuantitySold
+                            ((Number) row[3]).doubleValue(),     // totalRevenue
+                            ((Number) row[4]).longValue()        // totalSales
                     )
             );
         }
@@ -3163,10 +3163,10 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
 
         for (Object[] row : results) {
 
-            Long productId = (Long) row[0];
+            Long productId = ((Number) row[0]).longValue();
             String productName = (String) row[1];
-            Double revenue = (Double) row[2];
-            Double cost = (Double) row[3];
+            Double revenue = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
+            Double cost = row[3] != null ? ((Number) row[3]).doubleValue() : 0.0;
 
             Double profit = revenue - cost;
 
@@ -3205,9 +3205,9 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
             return new PromotionImpactAnalysisDto(0.0, 0L, 0.0);
         }
 
-        Double avgDiscount = (Double) row[0];
-        Long totalUnits = (Long) row[1];
-        Double totalRevenue = (Double) row[2];
+        Double avgDiscount = row[0] != null ? ((Number) row[0]).doubleValue() : 0.0;
+        Long totalUnits = row[1] != null ? ((Number) row[1]).longValue() : 0L;
+        Double totalRevenue = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
 
         return new PromotionImpactAnalysisDto(avgDiscount, totalUnits, totalRevenue);
     }

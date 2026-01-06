@@ -97,9 +97,10 @@ export class SeasonalityAnalysisComponent implements OnInit, OnDestroy {
     this.errorMessage = '';
     this.hasAnalyzed = true;
 
-    // Convert to ISO format
-    const startISO = new Date(this.startDate).toISOString();
-    const endISO = new Date(this.endDate).toISOString();
+    // Convert to LocalDateTime format (without milliseconds and timezone)
+    // Java expects: 2025-01-01T00:00:00 (not 2025-01-01T00:00:00.000Z)
+    const startISO = this.formatToLocalDateTime(new Date(this.startDate));
+    const endISO = this.formatToLocalDateTime(new Date(this.endDate));
 
     console.log('🚀 Analyzing seasonality:', { startISO, endISO });
 
@@ -135,6 +136,20 @@ export class SeasonalityAnalysisComponent implements OnInit, OnDestroy {
 
   private formatDateForInput(date: Date): string {
     return date.toISOString().split('T')[0];
+  }
+
+  /**
+   * Format date to LocalDateTime format expected by Java backend
+   * Returns: "2025-01-01T00:00:00" (no milliseconds, no timezone Z)
+   */
+  private formatToLocalDateTime(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
   }
 
   private setSeries(name: 'original' | 'trend' | 'seasonal' | 'residual', series: TimeSeriesPointDto[]) {

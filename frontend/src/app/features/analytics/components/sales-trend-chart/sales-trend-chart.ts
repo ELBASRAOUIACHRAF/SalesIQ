@@ -82,8 +82,8 @@ export class SalesTrendChartComponent implements OnInit, OnDestroy {
     this.startDate = this.formatDateForInput(start);
     this.endDate = this.formatDateForInput(end);
     
-    // NOTE: We do NOT auto-load data anymore
-    // User must click the button to trigger the API call
+    // Auto-load sales trend data on component initialization
+    this.onAnalyzeClick();
   }
 
   ngOnDestroy(): void {
@@ -124,10 +124,10 @@ export class SalesTrendChartComponent implements OnInit, OnDestroy {
     this.errorMessage = '';
     this.hasSearched = true;
 
-    // Step 3: Convert date strings to ISO format for backend
-    // Backend expects: "2024-01-01T00:00:00.000Z"
-    const startISO = new Date(this.startDate).toISOString();
-    const endISO = new Date(this.endDate).toISOString();
+    // Step 3: Convert date strings to LocalDateTime format for backend
+    // Backend expects: "2024-01-01T00:00:00" (no milliseconds, no timezone Z)
+    const startISO = this.formatToLocalDateTime(new Date(this.startDate));
+    const endISO = this.formatToLocalDateTime(new Date(this.endDate));
 
     console.log('🚀 Making API call with:', {
       startDate: startISO,
@@ -172,6 +172,20 @@ export class SalesTrendChartComponent implements OnInit, OnDestroy {
   /** Format Date object to 'YYYY-MM-DD' for input[type="date"] */
   private formatDateForInput(date: Date): string {
     return date.toISOString().split('T')[0];
+  }
+
+  /**
+   * Format date to LocalDateTime format expected by Java backend
+   * Returns: "2025-01-01T00:00:00" (no milliseconds, no timezone Z)
+   */
+  private formatToLocalDateTime(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
   }
 
   /** Calculate total revenue from all data points */

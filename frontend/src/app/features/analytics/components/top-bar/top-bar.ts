@@ -35,9 +35,6 @@ export class TopBarComponent implements OnInit, AfterViewInit {
 
   /** User ID for profile API call */
   @Input() userId = 1;
-  
-  /** Notification count to display */
-  @Input() notificationCount = 3;
 
   compactTabs = false;
   profileMenuOpen = signal(false);

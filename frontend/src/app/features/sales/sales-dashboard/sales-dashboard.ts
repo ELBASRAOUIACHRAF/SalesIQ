@@ -121,27 +121,30 @@ export class SalesDashboard implements OnInit, OnDestroy, AfterViewInit {
     // Filter completed sales
     const completedSales = sales.filter(s => s.status === 'COMPLETED');
     
-    // Current period
-    const currentPeriodSales = completedSales.filter(s => {
-      const saleDate = new Date(s.dateOfSale);
-      return saleDate >= currentStart && saleDate <= currentEnd;
-    });
-    
-    // Previous period
-    const prevPeriodSales = completedSales.filter(s => {
-      const saleDate = new Date(s.dateOfSale);
-      return saleDate >= prevStart && saleDate <= prevEnd;
-    });
-
-    // Calculate current metrics
-    this.totalOrders = currentPeriodSales.length;
-    this.totalRevenue = currentPeriodSales.reduce((sum, s) => sum + (s.totalAmount || 0), 0);
+    // Use ALL completed sales for main KPIs (not filtered by current month)
+    this.totalOrders = completedSales.length;
+    this.totalRevenue = completedSales.reduce((sum, s) => sum + (s.totalAmount || 0), 0);
     this.avgOrderValue = this.totalOrders > 0 ? this.totalRevenue / this.totalOrders : 0;
     this.totalSales = completedSales.length;
 
-    // Calculate previous metrics
-    this.previousOrders = prevPeriodSales.length;
-    this.previousSales = prevPeriodSales.reduce((sum, s) => sum + (s.totalAmount || 0), 0);
+    // Calculate previous period for comparison (last 30 days vs prior 30 days)
+    const now = new Date();
+    const last30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const prior30Days = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+    
+    const recentSales = completedSales.filter(s => {
+      const saleDate = new Date(s.dateOfSale);
+      return saleDate >= last30Days && saleDate <= now;
+    });
+    
+    const priorSales = completedSales.filter(s => {
+      const saleDate = new Date(s.dateOfSale);
+      return saleDate >= prior30Days && saleDate < last30Days;
+    });
+
+    // Previous metrics for comparison
+    this.previousOrders = priorSales.length;
+    this.previousSales = priorSales.reduce((sum, s) => sum + (s.totalAmount || 0), 0);
     this.previousAvgOrder = this.previousOrders > 0 ? this.previousSales / this.previousOrders : 0;
   }
 
@@ -162,7 +165,7 @@ export class SalesDashboard implements OnInit, OnDestroy, AfterViewInit {
       { 
         title: 'Total Revenue', 
         value: this.totalRevenue, 
-        subtitle: 'This month', 
+        subtitle: 'All time completed', 
         change: revenueChange, 
         sparkline: [0], 
         accentColor: '#6366f1',
@@ -171,7 +174,7 @@ export class SalesDashboard implements OnInit, OnDestroy, AfterViewInit {
       { 
         title: 'Orders', 
         value: this.totalOrders, 
-        subtitle: 'This month', 
+        subtitle: 'All time completed', 
         change: ordersChange, 
         sparkline: [0], 
         accentColor: '#10b981',

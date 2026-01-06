@@ -53,8 +53,17 @@ export class ApiService {
 
   getCategoryPerformance(startDate?: string, endDate?: string): Observable<CategoryPerformanceDto[]> {
     let params = new HttpParams();
-    if (startDate) params = params.set('startDate', startDate);
-    if (endDate) params = params.set('endDate', endDate);
+    // Default to last 2 years if no date range provided
+    if (!startDate) {
+      const defaultStart = new Date();
+      defaultStart.setFullYear(defaultStart.getFullYear() - 2);
+      startDate = defaultStart.toISOString().split('T')[0];
+    }
+    if (!endDate) {
+      endDate = new Date().toISOString().split('T')[0];
+    }
+    params = params.set('startDate', startDate);
+    params = params.set('endDate', endDate);
     return this.http.get<CategoryPerformanceDto[]>(`${this.BASE_URL}/api/v1/analytics/category-performance`, { params });
   }
 
