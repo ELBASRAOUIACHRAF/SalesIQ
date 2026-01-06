@@ -22,6 +22,8 @@ public interface ReviewsRepository extends JpaRepository<Reviews, Long> {
     List<Reviews> findAllByproductIdWithUser(Long productId);
 
     List<Reviews> findAllByusersId(Long usersId);
+    
+    void deleteAllByUsersId(Long usersId);
 
     List<Reviews> findByRatingBetween(double minRating, double maxRating);
 

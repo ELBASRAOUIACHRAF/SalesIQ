@@ -1,0 +1,100 @@
+<button class="menu-toggle" (click)="toggle()" [attr.aria-expanded]="!closed()" aria-label="Toggle navigation">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+</button>
+
+<nav class="admin-sidebar" [class.closed]="closed()" role="navigation" aria-label="Admin Navigation"
+     [style.--width]="width" [style.--collapsed-width]="collapsedWidth">
+  
+  <div class="brand">
+    <div class="logo-wrapper">
+      <span class="logo-icon">🛡️</span>
+      <span class="logo-text">Admin Panel</span>
+    </div>
+    <span class="brand-badge">{{ siteName() }}</span>
+  </div>
+
+  <div class="menu-section">
+    <span class="section-label">Overview</span>
+    <ul class="menu-list">
+      <li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <a routerLink="/admin" (click)="handleNavClick()">
+          <span class="icon">📊</span>
+          <span class="label">Dashboard</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="menu-section">
+    <span class="section-label">Management</span>
+    <ul class="menu-list">
+      <li routerLinkActive="active">
+        <a routerLink="/admin/users" (click)="handleNavClick()">
+          <span class="icon">👥</span>
+          <span class="label">Users</span>
+          <span class="badge">CRUD</span>
+        </a>
+      </li>
+      <li routerLinkActive="active">
+        <a routerLink="/admin/products" (click)="handleNavClick()">
+          <span class="icon">📦</span>
+          <span class="label">Products</span>
+          <span class="badge">CRUD</span>
+        </a>
+      </li>
+      <li routerLinkActive="active">
+        <a routerLink="/admin/categories" (click)="handleNavClick()">
+          <span class="icon">🏷️</span>
+          <span class="label">Categories</span>
+          <span class="badge">CRUD</span>
+        </a>
+      </li>
+      <li routerLinkActive="active">
+        <a routerLink="/admin/reviews" (click)="handleNavClick()">
+          <span class="icon">⭐</span>
+          <span class="label">Reviews</span>
+          <span class="badge">CRUD</span>
+        </a>
+      </li>
+      <li routerLinkActive="active">
+        <a routerLink="/admin/sales" (click)="handleNavClick()">
+          <span class="icon">💰</span>
+          <span class="label">Sales</span>
+          <span class="badge">CRUD</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="menu-section">
+    <span class="section-label">System</span>
+    <ul class="menu-list">
+      <li routerLinkActive="active">
+        <a routerLink="/admin/data" (click)="handleNavClick()">
+          <span class="icon">📁</span>
+          <span class="label">Data Import/Export</span>
+          <span class="badge csv">CSV</span>
+        </a>
+      </li>
+      <li routerLinkActive="active">
+        <a routerLink="/admin/settings" (click)="handleNavClick()">
+          <span class="icon">⚙️</span>
+          <span class="label">Settings</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="sidebar-footer">
+    <a routerLink="/analytics" class="footer-link">
+      <span class="icon">📈</span>
+      <span class="label">Go to Analytics</span>
+    </a>
+    <a routerLink="/" class="footer-link">
+      <span class="icon">🏠</span>
+      <span class="label">Back to Store</span>
+    </a>
+  </div>
+</nav>

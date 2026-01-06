@@ -18,6 +18,8 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     List<Sale> findByUsersId(Long id);
     List<Sale> findAllByStatus(Status status);
     List<Sale> findByDateOfSaleBetween(LocalDateTime start, LocalDateTime end);
+    
+    void deleteAllByUsersId(Long usersId);
 
     List<Sale> findAllByPaymentMethod(PaymentMethod paymentMethod);
 

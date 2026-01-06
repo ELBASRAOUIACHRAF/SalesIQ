@@ -1,0 +1,150 @@
+<div class="management-page">
+  <!-- Header -->
+  <header class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">📊 Data Management</h1>
+      <p class="page-subtitle">Import and export data across all system entities</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="exportAll()">
+        <span class="btn-icon">📤</span>
+        Export All Data
+      </button>
+    </div>
+  </header>
+
+  <!-- Info Banner -->
+  <div class="info-banner">
+    <div class="info-icon">💡</div>
+    <div class="info-content">
+      <h3>Data Import/Export Hub</h3>
+      <p>Manage your data in bulk using CSV files. Export data for backups or analysis, and import data to quickly populate your system.</p>
+    </div>
+  </div>
+
+  <!-- Entity Cards Grid -->
+  <div class="entities-grid">
+    <div 
+      *ngFor="let entity of entities" 
+      class="entity-card"
+      [style.--accent-color]="entity.color"
+    >
+      <div class="entity-header">
+        <div class="entity-icon">{{ entity.icon }}</div>
+        <h3 class="entity-name">{{ entity.name }}</h3>
+      </div>
+      <p class="entity-description">{{ entity.description }}</p>
+      <div class="entity-actions">
+        <button 
+          class="action-btn export" 
+          (click)="entity.exportFn()"
+          [disabled]="exportingEntity === entity.name"
+        >
+          <span *ngIf="exportingEntity !== entity.name">📤 Export</span>
+          <span *ngIf="exportingEntity === entity.name" class="loading-text">
+            <span class="mini-spinner"></span> Exporting...
+          </span>
+        </button>
+        <button class="action-btn import" (click)="openImportModal(entity)">
+          📥 Import
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="quick-stats">
+    <div class="stat-item">
+      <span class="stat-number">{{ entities.length }}</span>
+      <span class="stat-label">Data Entities</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">CSV</span>
+      <span class="stat-label">Format Supported</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">Instant</span>
+      <span class="stat-label">Export/Import</span>
+    </div>
+  </div>
+
+  <!-- Tips Section -->
+  <div class="tips-section">
+    <h3 class="tips-title">📝 Tips & Best Practices</h3>
+    <div class="tips-grid">
+      <div class="tip-card">
+        <div class="tip-icon">⚠️</div>
+        <h4>Backup First</h4>
+        <p>Always export your current data before importing new data to prevent data loss.</p>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">📋</div>
+        <h4>CSV Format</h4>
+        <p>Ensure your CSV files use UTF-8 encoding and proper column headers matching the export format.</p>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🔄</div>
+        <h4>Import Order</h4>
+        <p>When importing related data, import parent entities (Categories) before child entities (Products).</p>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">✅</div>
+        <h4>Validation</h4>
+        <p>The system validates imported data automatically. Invalid rows will be skipped with error messages.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import Modal -->
+  <div *ngIf="showImportModal" class="modal-overlay" (click)="closeImportModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>📥 Import {{ selectedEntity?.name }}</h2>
+        <button class="close-btn" (click)="closeImportModal()">✕</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="upload-area" [class.has-file]="selectedFile">
+          <div *ngIf="!selectedFile" class="upload-prompt">
+            <div class="upload-icon">📁</div>
+            <p class="upload-text">Drag & drop your CSV file here</p>
+            <p class="upload-subtext">or click to browse</p>
+            <input 
+              type="file" 
+              accept=".csv" 
+              (change)="onFileSelected($event)"
+              class="file-input"
+            />
+          </div>
+          <div *ngIf="selectedFile" class="file-selected">
+            <div class="file-icon">📄</div>
+            <div class="file-info">
+              <span class="file-name">{{ selectedFile.name }}</span>
+              <span class="file-size">{{ (selectedFile.size / 1024).toFixed(2) }} KB</span>
+            </div>
+            <button class="remove-file" (click)="selectedFile = null">✕</button>
+          </div>
+        </div>
+
+        <div class="import-warning">
+          <span class="warning-icon">⚠️</span>
+          <p>Importing data will add new records. Existing records with matching IDs may be updated.</p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeImportModal()">Cancel</button>
+        <button 
+          class="btn btn-primary" 
+          (click)="importData()"
+          [disabled]="!selectedFile || importing"
+        >
+          <span *ngIf="!importing">📥 Import Data</span>
+          <span *ngIf="importing" class="loading-text">
+            <span class="mini-spinner"></span> Importing...
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -11,5 +11,7 @@ public class CategoryDto {
     private Long id;
     private String name;
     private String description;
-    private boolean isActive;
+    private Boolean isActive;
+
+    public CategoryDto() {}
 }

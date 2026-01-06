@@ -11,3 +11,116 @@
     border-radius: 8px !important;
     padding: 0 !important;
   }
+
+/* System settings side effects */
+
+/* Compact mode - reduce all padding/margins */
+body.compact-mode {
+  font-size: 0.9rem;
+}
+
+body.compact-mode .settings-page,
+body.compact-mode .page-header,
+body.compact-mode .settings-container {
+  padding: 1rem;
+}
+
+body.compact-mode .settings-group {
+  margin-bottom: 0.75rem;
+}
+
+body.compact-mode .setting-item {
+  padding: 0.5rem;
+}
+
+/* Animations off - disable ALL transitions and animations */
+body.animations-off,
+body.animations-off *,
+body.animations-off *::before,
+body.animations-off *::after {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+}
+
+/* CSS Variables for theming */
+:root {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --accent: #6366f1;
+  --border: #334155;
+}
+
+/* Apply theme variables globally */
+html, body {
+  background-color: var(--bg) !important;
+  color: var(--text);
+}
+
+/* Settings page theming */
+.settings-page {
+  background: var(--bg) !important;
+}
+
+.settings-group {
+  background: var(--panel) !important;
+  border-color: var(--border) !important;
+}
+
+.group-header {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: var(--border) !important;
+}
+
+.page-title,
+.group-title,
+.setting-label,
+.info-content h4 {
+  color: var(--text) !important;
+}
+
+.page-subtitle,
+.group-description,
+.setting-description,
+.info-content p {
+  color: var(--muted) !important;
+}
+
+.setting-input,
+.setting-select {
+  background: var(--bg) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+
+.btn-secondary {
+  background: var(--panel) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+}
+
+.btn-outline {
+  border-color: var(--border) !important;
+  color: var(--muted) !important;
+}
+
+.btn-outline:hover {
+  background: var(--panel) !important;
+}
+
+.changes-banner {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.2) 0%, rgba(245, 158, 11, 0.1) 100%) !important;
+  border-color: rgba(234, 179, 8, 0.4) !important;
+}
+
+.info-card {
+  background: var(--panel) !important;
+  border-color: var(--border) !important;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%);
+}

@@ -45,9 +45,12 @@ export class NotificationService {
 
   private generateNotifications(): Observable<AppNotification[]> {
     return forkJoin({
-      products: this.http.get<any[]>(`${this.API_URL}/products/getproducts`).pipe(catchError(() => of([]))),
+      products: this.http.get<any[]>(`${this.API_URL}/products/getAll`).pipe(catchError(() => of([]))),
       sales: this.http.get<any[]>(`${this.API_URL}/sales/getsales`).pipe(catchError(() => of([]))),
-      users: this.http.get<any[]>(`${this.API_URL}/users/getusers`).pipe(catchError(() => of([]))),
+      users: this.http.get(`${this.API_URL}/api/csv/users/export`, { responseType: 'text' }).pipe(
+        map(csv => this.parseCsvToUsers(csv)),
+        catchError(() => of([]))
+      ),
     }).pipe(
       map(({ products, sales, users }) => {
         const notifications: AppNotification[] = [];
@@ -191,5 +194,34 @@ export class NotificationService {
 
   getUnreadCount(): number {
     return this.unreadCountSubject.value;
+  }
+
+  private parseCsvToUsers(csv: string): any[] {
+    const lines = csv.trim().split('\n');
+    if (lines.length < 2) return [];
+    
+    const headers = lines[0].split(',').map(h => h.trim());
+    const users: any[] = [];
+    
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(',');
+      const user: any = {};
+      
+      headers.forEach((header, index) => {
+        const value = values[index]?.trim() || '';
+        switch (header) {
+          case 'ID': user.id = parseInt(value) || 0; break;
+          case 'USERNAME': user.username = value; break;
+          case 'FIRST_NAME': user.firstName = value; break;
+          case 'LAST_NAME': user.lastName = value; break;
+          case 'EMAIL': user.email = value; break;
+          case 'ROLE': user.role = value; break;
+        }
+      });
+      
+      if (user.id) users.push(user);
+    }
+    
+    return users;
   }
 }

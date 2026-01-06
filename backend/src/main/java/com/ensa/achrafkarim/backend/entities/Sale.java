@@ -23,7 +23,7 @@ public class Sale {
     private Status status;
 
     private LocalDateTime updatedAt;
-    @OneToMany(mappedBy = "sale")
+    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SoldProduct> soldProducts ;
 
     @ManyToOne
