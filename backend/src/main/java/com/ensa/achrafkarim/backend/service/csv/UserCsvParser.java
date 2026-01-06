@@ -8,7 +8,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import com.ensa.achrafkarim.backend.csv.dto.UserCsvDto;
+import com.ensa.achrafkarim.backend.dto.csv.UserCsvDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,18 +22,18 @@ public class UserCsvParser extends AbstractCsvParser<UserCsvDto, Users> {
 
     @Override
     protected Class<UserCsvDto> getDtoClass() {
-        return com.ensa.achrafkarim.backend.csv.dto.UserCsvDto.class;
+        return UserCsvDto.class;
     }
 
     @Override
-    protected List<com.ensa.achrafkarim.backend.csv.dto.UserCsvDto> getAllDtos() {
+    protected List<UserCsvDto> getAllDtos() {
         return usersRepository.findAll().stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Users toEntity(com.ensa.achrafkarim.backend.csv.dto.UserCsvDto dto) {
+    public Users toEntity(UserCsvDto dto) {
         Users user = new Users();
 
         if (dto.getId() != null) {
@@ -69,8 +69,8 @@ public class UserCsvParser extends AbstractCsvParser<UserCsvDto, Users> {
     }
 
     @Override
-    public com.ensa.achrafkarim.backend.csv.dto.UserCsvDto toDto(Users entity) {
-        com.ensa.achrafkarim.backend.csv.dto.UserCsvDto dto = new com.ensa.achrafkarim.backend.csv.dto.UserCsvDto();
+    public UserCsvDto toDto(Users entity) {
+        UserCsvDto dto = new UserCsvDto();
 
         dto.setId(entity.getId());
         dto.setUsername(entity.getUsername());
@@ -101,7 +101,7 @@ public class UserCsvParser extends AbstractCsvParser<UserCsvDto, Users> {
     @Override
     @Transactional
     public int importCsv(MultipartFile file) throws Exception {
-        List<com.ensa.achrafkarim.backend.csv.dto.UserCsvDto> dtos = parseCsv(file);
+        List<UserCsvDto> dtos = parseCsv(file);
 
         List<Users> users = dtos.stream()
                 .map(this::toEntity)

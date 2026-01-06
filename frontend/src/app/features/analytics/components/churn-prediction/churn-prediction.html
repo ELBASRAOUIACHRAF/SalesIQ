@@ -1,0 +1,141 @@
+<section class="prediction-container">
+  <!-- Header -->
+  <header class="prediction-header">
+    <div class="header-content">
+      <h3>🔮 Churn Prediction</h3>
+      <p class="subtitle">AI-powered identification of at-risk customers</p>
+    </div>
+    <button class="refresh-btn" (click)="loadPredictions()" [disabled]="isLoading">
+      🔄 Refresh
+    </button>
+  </header>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Analyzing customer behavior patterns...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-state">
+    <p>⚠️ {{ errorMessage }}</p>
+    <button class="retry-button" (click)="loadPredictions()">🔄 Retry</button>
+  </div>
+
+  <!-- Results -->
+  <div *ngIf="!isLoading && !errorMessage" class="results-section">
+    
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+      <div class="summary-card total">
+        <div class="card-icon">👥</div>
+        <div class="card-content">
+          <span class="card-value">{{ predictions.length }}</span>
+          <span class="card-label">Total Analyzed</span>
+        </div>
+      </div>
+
+      <div class="summary-card critical">
+        <div class="card-icon">🔴</div>
+        <div class="card-content">
+          <span class="card-value">{{ criticalCount }}</span>
+          <span class="card-label">Critical Risk</span>
+        </div>
+      </div>
+
+      <div class="summary-card high">
+        <div class="card-icon">🟠</div>
+        <div class="card-content">
+          <span class="card-value">{{ highCount }}</span>
+          <span class="card-label">High Risk</span>
+        </div>
+      </div>
+
+      <div class="summary-card avg">
+        <div class="card-icon">📊</div>
+        <div class="card-content">
+          <span class="card-value">{{ avgChurnProbability | number:'1.0-0' }}%</span>
+          <span class="card-label">Avg Churn Prob.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert Banner -->
+    <div *ngIf="totalAtRisk > 0" class="alert-banner">
+      <span class="alert-icon">⚠️</span>
+      <span class="alert-text">
+        <strong>{{ totalAtRisk }} customers</strong> are at high risk of churning. Consider implementing retention strategies.
+      </span>
+    </div>
+
+    <!-- Filters & Sort -->
+    <div class="controls">
+      <div class="filter-group">
+        <span class="control-label">Filter:</span>
+        <button [class.active]="filterRisk === 'all'" (click)="setFilter('all')">All</button>
+        <button [class.active]="filterRisk === 'CRITICAL'" (click)="setFilter('CRITICAL')">🔴 Critical</button>
+        <button [class.active]="filterRisk === 'HIGH'" (click)="setFilter('HIGH')">🟠 High</button>
+        <button [class.active]="filterRisk === 'MEDIUM'" (click)="setFilter('MEDIUM')">🟡 Medium</button>
+        <button [class.active]="filterRisk === 'LOW'" (click)="setFilter('LOW')">🟢 Low</button>
+      </div>
+      
+      <div class="sort-group">
+        <span class="control-label">Sort by:</span>
+        <select [(ngModel)]="sortBy" (change)="setSort(sortBy)">
+          <option value="probability">Churn Probability</option>
+          <option value="daysSince">Days Since Purchase</option>
+          <option value="spent">Total Spent</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Customer List -->
+    <div class="customer-list">
+      <div *ngIf="filteredPredictions.length === 0" class="empty-state">
+        <p>🎉 No customers match the selected filter</p>
+      </div>
+
+      <div *ngFor="let customer of filteredPredictions; let i = index" 
+           class="customer-card" 
+           [class]="getRiskClass(customer.riskLevel)">
+        
+        <div class="customer-rank">{{ i + 1 }}</div>
+        
+        <div class="customer-info">
+          <div class="customer-header">
+            <span class="customer-id">Customer #{{ customer.userId }}</span>
+            <span class="risk-badge" [class]="getRiskClass(customer.riskLevel)">
+              {{ getRiskIcon(customer.riskLevel) }} {{ customer.riskLevel }}
+            </span>
+          </div>
+          
+          <div class="probability-bar">
+            <div class="probability-fill" 
+                 [style.width]="customer.churnProbability + '%'"
+                 [class]="getRiskClass(customer.riskLevel)">
+            </div>
+            <span class="probability-value">{{ customer.churnProbability | number:'1.0-0' }}%</span>
+          </div>
+        </div>
+
+        <div class="customer-metrics">
+          <div class="metric">
+            <span class="metric-icon">📅</span>
+            <span class="metric-value">{{ customer.daysSinceLastPurchase }}</span>
+            <span class="metric-label">Days Inactive</span>
+          </div>
+          <div class="metric">
+            <span class="metric-icon">🛒</span>
+            <span class="metric-value">{{ customer.totalPurchases }}</span>
+            <span class="metric-label">Purchases</span>
+          </div>
+          <div class="metric">
+            <span class="metric-icon">💰</span>
+            <span class="metric-value">{{ customer.totalSpent | currency:'USD':'symbol':'1.0-0' }}</span>
+            <span class="metric-label">Total Spent</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

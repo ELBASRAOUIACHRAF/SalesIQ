@@ -59,8 +59,27 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
 
     private final UsersServiceImpl usersServiceImpl;
 
-
-
+    /**
+     * Helper method to unwrap query results that may be wrapped in extra array layers.
+     * Hibernate 7.x may return results wrapped differently than earlier versions.
+     */
+    private Object[] unwrapResult(Object result, int expectedSize) {
+        if (result == null) {
+            return new Object[expectedSize];
+        }
+        if (result instanceof Object[]) {
+            Object[] arr = (Object[]) result;
+            // Check if it's an array of arrays (wrapped result)
+            if (arr.length > 0 && arr[0] instanceof Object[]) {
+                return (Object[]) arr[0];
+            }
+            return arr;
+        }
+        // Single value - wrap in array
+        Object[] single = new Object[expectedSize];
+        single[0] = result;
+        return single;
+    }
 
     @Override
     public VarianceAnalysisDto analyzeVariance(LocalDateTime startDate, LocalDateTime endDate) {
@@ -1987,7 +2006,8 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
     }
 
     private RevenueBreakdownDto getRevenueBreakdown(LocalDateTime startDate, LocalDateTime endDate, DashboardKPIsDto kpis) {
-        Object[] stats = saleRepository.calculateRevenueStats(startDate, endDate);
+        Object result = saleRepository.calculateRevenueStats(startDate, endDate);
+        Object[] stats = unwrapResult(result, 3);
 
         Double avgDaily = stats[0] != null ? ((Number) stats[0]).doubleValue() : 0.0;
         Double maxDaily = stats[1] != null ? ((Number) stats[1]).doubleValue() : 0.0;
@@ -2026,7 +2046,7 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
         Long activeProducts = productRepository.countActiveProducts();
         Long lowStockProducts = productRepository.countLowStockProducts();
         Long outOfStockProducts = productRepository.countOutOfStockProducts();
-        Object[] inventoryStats = productRepository.calculateInventoryStats();
+        Object[] inventoryStats = unwrapResult(productRepository.calculateInventoryStats(), 2);
 
         Double avgStockLevel = inventoryStats[0] != null ? ((Number) inventoryStats[0]).doubleValue() : 0.0;
         Double totalInventoryValue = inventoryStats[1] != null ? ((Number) inventoryStats[1]).doubleValue() : 0.0;
@@ -2112,8 +2132,11 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
     @Override
     public PeriodComparisonDto comparePeriods(LocalDateTime period1Start, LocalDateTime period1End,
                                               LocalDateTime period2Start, LocalDateTime period2End) {
-        Object[] period1Metrics = saleRepository.calculatePeriodMetrics(period1Start, period1End);
-        Object[] period2Metrics = saleRepository.calculatePeriodMetrics(period2Start, period2End);
+        Object period1Result = saleRepository.calculatePeriodMetrics(period1Start, period1End);
+        Object period2Result = saleRepository.calculatePeriodMetrics(period2Start, period2End);
+
+        Object[] period1Metrics = unwrapResult(period1Result, 4);
+        Object[] period2Metrics = unwrapResult(period2Result, 4);
 
         Double period1Revenue = period1Metrics[0] != null ? ((Number) period1Metrics[0]).doubleValue() : 0.0;
         Long period1Orders = period1Metrics[1] != null ? ((Number) period1Metrics[1]).longValue() : 0L;
@@ -2334,25 +2357,32 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
 
     @Override
     public DashboardKPIsDto calculateMainKPIs(LocalDateTime startDate, LocalDateTime endDate) {
-        Object[] revenueMetrics = saleRepository.calculateRevenueMetrics(startDate, endDate);
+        Object revenueResult = saleRepository.calculateRevenueMetrics(startDate, endDate);
         Long newCustomers = saleRepository.countNewCustomers(startDate, endDate);
         Long returningCustomers = saleRepository.countReturningCustomers(startDate, endDate);
-        Object[] reviewMetrics = reviewsRepository.calculateReviewMetrics(startDate, endDate);
+        Object reviewResult = reviewsRepository.calculateReviewMetrics(startDate, endDate);
         Long totalUsers = usersRepository.countTotalUsers(endDate);
 
-        Double totalRevenue = revenueMetrics[0] != null ? ((Number) revenueMetrics[0]).doubleValue() : 0.0;
-        Long totalOrders = revenueMetrics[1] != null ? ((Number) revenueMetrics[1]).longValue() : 0L;
-        Long totalCustomers = revenueMetrics[2] != null ? ((Number) revenueMetrics[2]).longValue() : 0L;
-        Long totalProductsSold = revenueMetrics[3] != null ? ((Number) revenueMetrics[3]).longValue() : 0L;
+        Object[] revenueMetrics = unwrapResult(revenueResult, 4);
+        Object[] reviewMetrics = unwrapResult(reviewResult, 2);
+
+        Double totalRevenue = (revenueMetrics.length > 0 && revenueMetrics[0] != null) ? ((Number) revenueMetrics[0]).doubleValue() : 0.0;
+        Long totalOrders = (revenueMetrics.length > 1 && revenueMetrics[1] != null) ? ((Number) revenueMetrics[1]).longValue() : 0L;
+        Long totalCustomers = (revenueMetrics.length > 2 && revenueMetrics[2] != null) ? ((Number) revenueMetrics[2]).longValue() : 0L;
+        Long totalProductsSold = (revenueMetrics.length > 3 && revenueMetrics[3] != null) ? ((Number) revenueMetrics[3]).longValue() : 0L;
 
         Double averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0.0;
         Double revenuePerCustomer = totalCustomers > 0 ? totalRevenue / totalCustomers : 0.0;
         Double averageBasketSize = totalOrders > 0 ? (double) totalProductsSold / totalOrders : 0.0;
 
-        Long totalReviews = reviewMetrics[0] != null ? ((Number) reviewMetrics[0]).longValue() : 0L;
-        Double averageRating = reviewMetrics[1] != null ? ((Number) reviewMetrics[1]).doubleValue() : 0.0;
+        Long totalReviews = (reviewMetrics.length > 0 && reviewMetrics[0] != null) ? ((Number) reviewMetrics[0]).longValue() : 0L;
+        Double averageRating = (reviewMetrics.length > 1 && reviewMetrics[1] != null) ? ((Number) reviewMetrics[1]).doubleValue() : 0.0;
 
-        Double conversionRate = totalUsers > 0 ? ((double) totalCustomers / totalUsers) * 100 : 0.0;
+        Long safeNewCustomers = newCustomers != null ? newCustomers : 0L;
+        Long safeReturningCustomers = returningCustomers != null ? returningCustomers : 0L;
+        Long safeTotalUsers = totalUsers != null ? totalUsers : 0L;
+
+        Double conversionRate = safeTotalUsers > 0 ? ((double) totalCustomers / safeTotalUsers) * 100 : 0.0;
 
         return new DashboardKPIsDto(
                 totalRevenue,
@@ -2361,8 +2391,8 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
                 totalProductsSold,
                 averageOrderValue,
                 revenuePerCustomer,
-                newCustomers,
-                returningCustomers,
+                safeNewCustomers,
+                safeReturningCustomers,
                 averageBasketSize,
                 totalReviews,
                 averageRating,

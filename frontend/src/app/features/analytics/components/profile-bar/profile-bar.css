@@ -3,7 +3,20 @@
 .profile-bar .notif{position:relative;background:transparent;border:0;color:inherit;padding:6px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center}
 .profile-bar .notif .badge{position:absolute;top:-4px;right:-6px;background:#ef4444;color:white;font-size:11px;padding:2px 5px;border-radius:999px}
 .profile-bar .profile{display:flex;align-items:center;gap:8px;cursor:pointer}
-.profile-bar .avatar{width:32px;height:32px;border-radius:999px;background:linear-gradient(135deg,#374151,#111827);color:white;display:flex;align-items:center;justify-content:center;font-weight:700}
-.profile-bar .name{font-weight:600;color:var(--profile-text,#111827)}
+.profile-bar .avatar{width:32px;height:32px;border-radius:999px;background:linear-gradient(135deg,#374151,#111827);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;transition:all 0.2s ease}
+.profile-bar .name{font-weight:600;color:var(--profile-text,#111827);transition:opacity 0.2s ease}
 .profile-bar.compact .name{display:none}
 .profile-bar.compact .avatar{width:26px;height:26px}
+
+/* Loading state */
+.profile-bar .avatar-loading{background:linear-gradient(135deg,#9ca3af,#6b7280);animation:pulse 1.5s ease-in-out infinite;font-size:10px}
+.profile-bar .profile-loading .name{opacity:0.6}
+
+/* Error state - subtle, not alarming */
+.profile-bar .avatar-error{background:linear-gradient(135deg,#6b7280,#4b5563);color:#d1d5db}
+.profile-bar .profile-error .name{color:#6b7280;font-style:italic}
+
+@keyframes pulse{
+  0%,100%{opacity:1}
+  50%{opacity:0.6}
+}

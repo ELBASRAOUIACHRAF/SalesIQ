@@ -101,3 +101,33 @@
 	}
 }
 
+/* Loading State */
+.loading-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 60px 20px;
+	color: #6b7280;
+}
+
+.loading-spinner {
+	width: 48px;
+	height: 48px;
+	border: 4px solid #e5e7eb;
+	border-top-color: #3b82f6;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+	margin-bottom: 16px;
+}
+
+@keyframes spin {
+	to { transform: rotate(360deg); }
+}
+
+/* Analytics Section */
+.analytics-section {
+	margin-top: 1.5rem;
+	width: 100%;
+}
+

@@ -30,16 +30,35 @@ export class Account implements OnInit {
   ) {}
 
   // @Input() userId!: number;
-  userId = 3;
+  userId = 1;
 
   profileModel!: ProfileModel;
+  profileLoadError = false;
 
   loadUsersProfile(usersId: number){
-    this.usersService.getUsersProfile(usersId).subscribe((data) => {
-      this.profileModel = data;
-      console.log('Données reçues :', data)
-      this.cdr.detectChanges();
-    })
+    this.usersService.getUsersProfile(usersId).subscribe({
+      next: (data) => {
+        this.profileModel = data;
+        console.log('Données reçues :', data);
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Failed to load profile:', err);
+        this.profileLoadError = true;
+        // Set default profile data
+        this.profileModel = {
+          firstName: 'Admin',
+          lastName: 'User',
+          email: 'admin@salesiq.com',
+          phoneNumber: '',
+          bio: '',
+          country: '',
+          city: '',
+          postalCode: ''
+        } as ProfileModel;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
  

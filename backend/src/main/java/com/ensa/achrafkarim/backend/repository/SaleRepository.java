@@ -114,7 +114,7 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     Object[] analyzeSegmentBehavior(@Param("segment") Segment segment);
 
     @Query("SELECT s.users.id, " +
-            "DATEDIFF(CURRENT_DATE, MAX(s.dateOfSale)), " +
+            "DATEDIFF(DAY, MAX(s.dateOfSale), CURRENT_DATE), " +
             "COUNT(s.id), " +
             "SUM(sp.quantity * sp.unitPrice) " +
             "FROM Sale s " +

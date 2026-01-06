@@ -1,70 +1,198 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Subject, takeUntil, forkJoin } from 'rxjs';
 import { KpiCardComponent } from '../../../shared/components/kpi-card/kpi-card';
-import { ChartKpiCardComponent } from '../../analytics/components/chart-kpi-card/chart-kpi-card';
-import { KpiPieChartComponent } from '../../analytics/components/kpi-pie-chart/kpi-pie-chart';
-import { KpiBarChartComponent } from '../../analytics/components/kpi-bar-chart/kpi-bar-chart';
-import { BigCardComponent } from '../../analytics/components/big-kpi-card/big-kpi-card';
 import { TopBarComponent } from '../../analytics/components/top-bar/top-bar';
-import { SalesForecastKpiComponent } from '../../analytics/components/sales-forecast-kpi/sales-forecast-kpi';
+
+// Sales Analytics Components
 import { SalesTrendChartComponent } from '../../analytics/components/sales-trend-chart/sales-trend-chart';
+import { SalesForecastComponent } from '../../analytics/components/sales-forecast/sales-forecast';
+import { PeriodComparisonComponent } from '../../analytics/components/period-comparison/period-comparison';
+import { AnomalyDetectionComponent } from '../../analytics/components/anomaly-detection/anomaly-detection';
 import { GrowthRateCardComponent } from '../../analytics/components/growth-rate-card/growth-rate-card';
+import { SeasonalityAnalysisComponent } from '../../analytics/components/seasonality-chart/seasonality-chart';
+
+// Services
+import { AnalyticsService } from '../../../core/services/analytics.service';
+import { SaleService } from '../../../core/services/sale.service';
 
 @Component({
   selector: 'app-sales-dashboard',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     TopBarComponent,
     KpiCardComponent,
-    ChartKpiCardComponent,
-    BigCardComponent,
-    KpiBarChartComponent,
-    KpiPieChartComponent,
-    SalesForecastKpiComponent,
+    // Sales Analytics
     SalesTrendChartComponent,
-    GrowthRateCardComponent  // Added Growth Rate component
+    SalesForecastComponent,
+    PeriodComparisonComponent,
+    AnomalyDetectionComponent,
+    GrowthRateCardComponent,
+    SeasonalityAnalysisComponent
   ],
   templateUrl: './sales-dashboard.html',
   styleUrls: ['./sales-dashboard.css'],
 })
-export class SalesDashboard implements OnInit {
-  ngOnInit(): void {}
+export class SalesDashboard implements OnInit, OnDestroy, AfterViewInit {
+  
+  private destroy$ = new Subject<void>();
+  isLoading = true;
 
-  forecastHistory = [98000, 102000, 108500, 112000, 117500, 122000, 125500];
-  forecastProjection = [128000, 130500, 133000, 135500, 138200, 141000, 144000];
+  // KPI Data
+  totalSales = 0;
+  totalOrders = 0;
+  avgOrderValue = 0;
+  totalRevenue = 0;
+  
+  // Previous period for comparison
+  previousSales = 0;
+  previousOrders = 0;
+  previousAvgOrder = 0;
 
-  onForecastRequest(days: number) {
-    // Placeholder: backend hook goes here; keep UI responsive with simple projection
-    const base = this.forecastHistory[this.forecastHistory.length - 1] || 100000;
-    this.forecastProjection = Array.from({ length: days }, (_, i) => Math.round(base * Math.pow(1.01, i + 1)));
+  constructor(
+    private analyticsService: AnalyticsService,
+    private saleService: SaleService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    this.loadKPIs();
   }
 
-  kpis = [
-    { title: 'Total Sales', value: 1234567, subtitle: 'This month', change: 15.8, sparkline: [1000000, 1050000, 1100000, 1150000, 1200000, 1220000, 1234567], accentColor: '#6366f1' },
-    { title: 'Orders', value: 8923, subtitle: 'Completed', change: 12.4, sparkline: [7500, 7800, 8000, 8300, 8600, 8800, 8923], accentColor: '#10b981' },
-    { title: 'Average Order', value: 138.45, subtitle: 'USD', change: 3.2, sparkline: [130, 132, 134, 136, 137, 138, 138.45], accentColor: '#8b5cf6' },
-    { title: 'Conversion Rate', value: 3.45, subtitle: '%', change: 0.8, sparkline: [3.0, 3.1, 3.2, 3.3, 3.4, 3.4, 3.45], accentColor: '#f59e0b' },
-  ];
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 100);
+  }
 
-  chartCards = [
-    { title: 'Sales Revenue', value: 1234567, subtitle: 'This month', color: '#6366f1', data: [1000000, 1050000, 1100000, 1150000, 1200000, 1220000, 1234567] },
-    { title: 'Order Volume', value: 8923, subtitle: 'Total orders', color: '#10b981', data: [7500, 7800, 8000, 8300, 8600, 8800, 8923] }
-  ];
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
-  barCards = [
-    { title: 'Daily Sales', value: 45678, subtitle: 'Today', color: '#6366f1', bars: [30000, 35000, 40000, 42000, 44000, 45000, 45678] },
-    { title: 'Top Products', value: 234, subtitle: 'Best sellers', color: '#8b5cf6', bars: [180, 200, 210, 220, 230, 232, 234] }
-  ];
+  loadKPIs(): void {
+    this.isLoading = true;
+    
+    // Get date ranges
+    const now = new Date();
+    const currentStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const currentEnd = now;
+    
+    const prevStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const prevEnd = new Date(now.getFullYear(), now.getMonth(), 0);
 
-  pieData = [
-    { label: 'Online', value: 65, color: '#6366f1' },
-    { label: 'In-Store', value: 25, color: '#10b981' },
-    { label: 'Mobile', value: 10, color: '#8b5cf6' }
-  ];
+    // Call the sale service to get real data
+    this.saleService.getSales()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (sales: any[]) => {
+          this.calculateKPIs(sales, currentStart, currentEnd, prevStart, prevEnd);
+          this.isLoading = false;
+          this.cdr.detectChanges();
+          setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+        },
+        error: (err) => {
+          console.error('Sales dashboard error:', err);
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        }
+      });
+  }
 
-  get pieTotal(): number {
-    return this.pieData.reduce((sum, p) => sum + (p.value || 0), 0);
+  calculateKPIs(sales: any[], currentStart: Date, currentEnd: Date, prevStart: Date, prevEnd: Date): void {
+    // Filter completed sales
+    const completedSales = sales.filter(s => s.status === 'COMPLETED');
+    
+    // Current period
+    const currentPeriodSales = completedSales.filter(s => {
+      const saleDate = new Date(s.dateOfSale);
+      return saleDate >= currentStart && saleDate <= currentEnd;
+    });
+    
+    // Previous period
+    const prevPeriodSales = completedSales.filter(s => {
+      const saleDate = new Date(s.dateOfSale);
+      return saleDate >= prevStart && saleDate <= prevEnd;
+    });
+
+    // Calculate current metrics
+    this.totalOrders = currentPeriodSales.length;
+    this.totalRevenue = currentPeriodSales.reduce((sum, s) => sum + (s.totalAmount || 0), 0);
+    this.avgOrderValue = this.totalOrders > 0 ? this.totalRevenue / this.totalOrders : 0;
+    this.totalSales = completedSales.length;
+
+    // Calculate previous metrics
+    this.previousOrders = prevPeriodSales.length;
+    this.previousSales = prevPeriodSales.reduce((sum, s) => sum + (s.totalAmount || 0), 0);
+    this.previousAvgOrder = this.previousOrders > 0 ? this.previousSales / this.previousOrders : 0;
+  }
+
+  get kpis() {
+    const revenueChange = this.previousSales > 0 
+      ? ((this.totalRevenue - this.previousSales) / this.previousSales) * 100 
+      : 0;
+    
+    const ordersChange = this.previousOrders > 0 
+      ? ((this.totalOrders - this.previousOrders) / this.previousOrders) * 100 
+      : 0;
+    
+    const avgChange = this.previousAvgOrder > 0 
+      ? ((this.avgOrderValue - this.previousAvgOrder) / this.previousAvgOrder) * 100 
+      : 0;
+
+    return [
+      { 
+        title: 'Total Revenue', 
+        value: this.totalRevenue, 
+        subtitle: 'This month', 
+        change: revenueChange, 
+        sparkline: [0], 
+        accentColor: '#6366f1',
+        isCurrency: true
+      },
+      { 
+        title: 'Orders', 
+        value: this.totalOrders, 
+        subtitle: 'This month', 
+        change: ordersChange, 
+        sparkline: [0], 
+        accentColor: '#10b981',
+        isCurrency: false
+      },
+      { 
+        title: 'Avg Order Value', 
+        value: this.avgOrderValue, 
+        subtitle: 'Per order', 
+        change: avgChange, 
+        sparkline: [0], 
+        accentColor: '#8b5cf6',
+        isCurrency: true
+      },
+      { 
+        title: 'Total Sales', 
+        value: this.totalSales, 
+        subtitle: 'All time completed', 
+        change: 0, 
+        sparkline: [0], 
+        accentColor: '#f59e0b',
+        isCurrency: false
+      },
+    ];
+  }
+
+  formatCurrency(value: number): string {
+    if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
+    if (value >= 1000) return `$${(value / 1000).toFixed(1)}K`;
+    return `$${value.toFixed(2)}`;
+  }
+
+  formatNumber(value: number): string {
+    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+    if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
+    return value.toString();
   }
 }
 

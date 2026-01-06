@@ -1,0 +1,184 @@
+<section class="rfm-container">
+  <!-- Header -->
+  <header class="rfm-header">
+    <div class="header-content">
+      <h3>🎯 RFM Customer Segmentation</h3>
+      <p class="subtitle">Segment customers by Recency, Frequency & Monetary value</p>
+    </div>
+    <button class="refresh-btn" (click)="loadRFMAnalysis()" [disabled]="isLoading">
+      🔄 Refresh
+    </button>
+  </header>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Analyzing customer segments...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-state">
+    <p>⚠️ {{ errorMessage }}</p>
+    <button class="retry-button" (click)="loadRFMAnalysis()">🔄 Retry</button>
+  </div>
+
+  <!-- Results -->
+  <div *ngIf="!isLoading && !errorMessage" class="results-section">
+    
+    <!-- Overview Stats -->
+    <div class="overview-grid">
+      <div class="overview-card">
+        <div class="overview-icon">👥</div>
+        <div class="overview-content">
+          <span class="overview-value">{{ totalCustomers }}</span>
+          <span class="overview-label">Total Customers</span>
+        </div>
+      </div>
+
+      <div class="overview-card recency">
+        <div class="overview-icon">📅</div>
+        <div class="overview-content">
+          <span class="overview-value">{{ avgRecency | number:'1.0-0' }}</span>
+          <span class="overview-label">Avg Days Since Purchase</span>
+        </div>
+      </div>
+
+      <div class="overview-card frequency">
+        <div class="overview-icon">🔄</div>
+        <div class="overview-content">
+          <span class="overview-value">{{ avgFrequency | number:'1.1-1' }}</span>
+          <span class="overview-label">Avg Purchase Count</span>
+        </div>
+      </div>
+
+      <div class="overview-card monetary">
+        <div class="overview-icon">💰</div>
+        <div class="overview-content">
+          <span class="overview-value">{{ avgMonetary | currency:'USD':'symbol':'1.0-0' }}</span>
+          <span class="overview-label">Avg Lifetime Value</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Segment Distribution -->
+    <div class="segment-distribution">
+      <h4>📊 Segment Distribution</h4>
+      <div class="segment-bars">
+        <div *ngFor="let stat of segmentStats" 
+             class="segment-bar-item"
+             [class.active]="selectedSegment === stat.segment"
+             (click)="setSegmentFilter(stat.segment)">
+          <div class="segment-info">
+            <span class="segment-name">{{ stat.segment }}</span>
+            <span class="segment-count">{{ stat.count }}</span>
+          </div>
+          <div class="segment-bar">
+            <div class="segment-bar-fill" 
+                 [style.width]="(stat.count / totalCustomers * 100) + '%'"
+                 [style.backgroundColor]="stat.color">
+            </div>
+          </div>
+          <span class="segment-percent">{{ (stat.count / totalCustomers * 100) | number:'1.0-0' }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Segment Filter -->
+    <div class="filter-section">
+      <span class="filter-label">Filter by segment:</span>
+      <div class="filter-buttons">
+        <button [class.active]="selectedSegment === 'all'" (click)="setSegmentFilter('all')">
+          All ({{ totalCustomers }})
+        </button>
+        <button *ngFor="let segment of uniqueSegments" 
+                [class.active]="selectedSegment === segment"
+                [style.--segment-color]="getSegmentColor(segment)"
+                (click)="setSegmentFilter(segment)">
+          {{ segment }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Customer Table -->
+    <div class="customer-table-container">
+      <table class="customer-table">
+        <thead>
+          <tr>
+            <th>Customer ID</th>
+            <th>Segment</th>
+            <th>R Score</th>
+            <th>F Score</th>
+            <th>M Score</th>
+            <th>Recency (days)</th>
+            <th>Purchases</th>
+            <th>Total Spent</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let customer of filteredCustomers">
+            <td class="customer-id">#{{ customer.customerId }}</td>
+            <td>
+              <span class="segment-badge" [style.backgroundColor]="getSegmentColor(customer.segment)">
+                {{ customer.segment }}
+              </span>
+            </td>
+            <td>
+              <div class="score-cell">
+                <div class="score-bar">
+                  <div class="score-fill r-score" [style.width]="getScoreWidth(customer.rScore)"></div>
+                </div>
+                <span>{{ customer.rScore }}</span>
+              </div>
+            </td>
+            <td>
+              <div class="score-cell">
+                <div class="score-bar">
+                  <div class="score-fill f-score" [style.width]="getScoreWidth(customer.fScore)"></div>
+                </div>
+                <span>{{ customer.fScore }}</span>
+              </div>
+            </td>
+            <td>
+              <div class="score-cell">
+                <div class="score-bar">
+                  <div class="score-fill m-score" [style.width]="getScoreWidth(customer.mScore)"></div>
+                </div>
+                <span>{{ customer.mScore }}</span>
+              </div>
+            </td>
+            <td>{{ customer.recency }}</td>
+            <td>{{ customer.frequency }}</td>
+            <td>{{ customer.monetary | currency:'USD':'symbol':'1.0-0' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RFM Legend -->
+    <div class="rfm-legend">
+      <details>
+        <summary>📚 Understanding RFM Scores</summary>
+        <div class="legend-content">
+          <div class="legend-item">
+            <strong>R (Recency):</strong> How recently the customer made a purchase. Score 5 = most recent.
+          </div>
+          <div class="legend-item">
+            <strong>F (Frequency):</strong> How often the customer makes purchases. Score 5 = most frequent.
+          </div>
+          <div class="legend-item">
+            <strong>M (Monetary):</strong> How much the customer spends. Score 5 = highest spender.
+          </div>
+          <div class="segment-guide">
+            <h5>Customer Segments:</h5>
+            <ul>
+              <li><span class="dot champions"></span> <strong>Champions:</strong> Best customers, buy recently & often</li>
+              <li><span class="dot loyal"></span> <strong>Loyal:</strong> Consistent buyers, high engagement</li>
+              <li><span class="dot at-risk"></span> <strong>At Risk:</strong> Made purchases but haven't returned</li>
+              <li><span class="dot lost"></span> <strong>Lost:</strong> Haven't purchased in a long time</li>
+            </ul>
+          </div>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>

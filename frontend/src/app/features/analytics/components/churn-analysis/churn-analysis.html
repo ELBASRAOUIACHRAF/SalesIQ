@@ -1,0 +1,156 @@
+<section class="churn-container">
+  <!-- Header -->
+  <header class="churn-header">
+    <div class="header-content">
+      <h3>📉 Churn Rate Analysis</h3>
+      <p class="subtitle">Track customer attrition and retention metrics</p>
+    </div>
+  </header>
+
+  <!-- Date Selection -->
+  <div class="form-section">
+    <div class="input-row">
+      <div class="input-group">
+        <label for="startDate">📅 Start Date</label>
+        <input 
+          type="date" 
+          id="startDate"
+          [(ngModel)]="startDate"
+          [max]="endDate"
+        />
+      </div>
+      
+      <div class="input-group">
+        <label for="endDate">📅 End Date</label>
+        <input 
+          type="date" 
+          id="endDate"
+          [(ngModel)]="endDate"
+          [min]="startDate"
+        />
+      </div>
+
+      <div class="button-group">
+        <button 
+          class="analyze-button"
+          (click)="onAnalyzeClick()"
+          [disabled]="isLoading"
+        >
+          <span *ngIf="!isLoading">🔍 Analyze</span>
+          <span *ngIf="isLoading">⏳ Loading...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-state">
+    <p>⚠️ {{ errorMessage }}</p>
+    <button class="retry-button" (click)="onAnalyzeClick()">🔄 Retry</button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Analyzing churn metrics...</p>
+  </div>
+
+  <!-- Results -->
+  <div *ngIf="!isLoading && !errorMessage && hasAnalyzed" class="results-section">
+    
+    <!-- Main Churn Indicator -->
+    <div class="churn-indicator" [class]="churnSeverity">
+      <div class="churn-value-container">
+        <div class="churn-icon">
+          <span *ngIf="churnSeverity === 'low'">✅</span>
+          <span *ngIf="churnSeverity === 'medium'">⚠️</span>
+          <span *ngIf="churnSeverity === 'high'">🔶</span>
+          <span *ngIf="churnSeverity === 'critical'">🔴</span>
+        </div>
+        <div class="churn-main-value">
+          <span class="value">{{ churnData.churnRate | number:'1.1-1' }}%</span>
+          <span class="label">Churn Rate</span>
+        </div>
+      </div>
+      <div class="churn-bar">
+        <div class="churn-bar-fill" [style.width]="churnBarWidth"></div>
+      </div>
+      <div class="severity-label">
+        <span *ngIf="churnSeverity === 'low'">Excellent - Low churn</span>
+        <span *ngIf="churnSeverity === 'medium'">Moderate - Some attention needed</span>
+        <span *ngIf="churnSeverity === 'high'">High - Action required</span>
+        <span *ngIf="churnSeverity === 'critical'">Critical - Immediate attention!</span>
+      </div>
+    </div>
+
+    <!-- Metrics Grid -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-icon">👥</div>
+        <div class="metric-content">
+          <span class="metric-value">{{ churnData.usersAtStart | number }}</span>
+          <span class="metric-label">Users at Start</span>
+        </div>
+      </div>
+
+      <div class="metric-card warning">
+        <div class="metric-icon">📤</div>
+        <div class="metric-content">
+          <span class="metric-value">{{ churnData.usersLost | number }}</span>
+          <span class="metric-label">Users Lost</span>
+        </div>
+      </div>
+
+      <div class="metric-card success">
+        <div class="metric-icon">✨</div>
+        <div class="metric-content">
+          <span class="metric-value">{{ churnData.activeUsers | number }}</span>
+          <span class="metric-label">Active Users</span>
+        </div>
+      </div>
+
+      <div class="metric-card info">
+        <div class="metric-icon">📊</div>
+        <div class="metric-content">
+          <span class="metric-value">{{ churnData.totalUsersAtEnd | number }}</span>
+          <span class="metric-label">Users at End</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Retention Rate -->
+    <div class="retention-section">
+      <div class="retention-card">
+        <div class="retention-header">
+          <span class="retention-icon">💚</span>
+          <span class="retention-title">Retention Rate</span>
+        </div>
+        <div class="retention-value">{{ retentionRate | number:'1.1-1' }}%</div>
+        <div class="retention-bar">
+          <div class="retention-fill" [style.width]="retentionRate + '%'"></div>
+        </div>
+        <p class="retention-hint">
+          <span *ngIf="retentionRate >= 90">🎉 Excellent customer retention!</span>
+          <span *ngIf="retentionRate >= 70 && retentionRate < 90">👍 Good retention, room for improvement</span>
+          <span *ngIf="retentionRate < 70">⚠️ Consider implementing retention strategies</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Explanation -->
+    <div class="explanation">
+      <details>
+        <summary>📚 Understanding Churn Metrics</summary>
+        <div class="explanation-content">
+          <ul>
+            <li><strong>Churn Rate:</strong> Percentage of customers who stopped purchasing during this period</li>
+            <li><strong>Retention Rate:</strong> Percentage of customers who continued purchasing (100% - Churn Rate)</li>
+            <li><strong>Users Lost:</strong> Total number of customers who churned</li>
+            <li><strong>Active Users:</strong> Customers who made at least one purchase in the period</li>
+          </ul>
+          <p><em>Formula: Churn Rate = (Users Lost / Users at Start) × 100</em></p>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>

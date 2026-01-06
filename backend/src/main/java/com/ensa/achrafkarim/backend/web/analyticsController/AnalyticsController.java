@@ -11,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -22,6 +24,28 @@ public class AnalyticsController {
 
     private final AdvancedAnalyticsService advancedAnalyticsService;
     private final SaleService saleService;
+
+    /**
+     * Helper method to parse date strings flexibly
+     * Accepts both "2024-01-01" and "2024-01-01T00:00:00" formats
+     */
+    private LocalDateTime parseDate(String dateStr, boolean endOfDay) {
+        if (dateStr == null || dateStr.isEmpty()) {
+            return endOfDay ? LocalDateTime.now() : LocalDateTime.now().minusDays(30);
+        }
+        
+        try {
+            // Try parsing as LocalDateTime first
+            if (dateStr.contains("T")) {
+                return LocalDateTime.parse(dateStr);
+            }
+            // Parse as LocalDate and convert to LocalDateTime
+            LocalDate date = LocalDate.parse(dateStr);
+            return endOfDay ? date.atTime(LocalTime.MAX) : date.atStartOfDay();
+        } catch (Exception e) {
+            return endOfDay ? LocalDateTime.now() : LocalDateTime.now().minusDays(30);
+        }
+    }
 
     @GetMapping("/forecastSales")
     public ResponseEntity<SalesForecastDto> getForecast(
@@ -349,13 +373,35 @@ public class AnalyticsController {
         }
     }
 
+    /**
+     * RFM Analysis Endpoint
+     * Segments customers based on Recency, Frequency, and Monetary value
+     *
+     * @return List of RFM segments with customer data
+     */
+    @GetMapping("/rfm-analysis")
+    public ResponseEntity<List<RFMSegmentDto>> getRFMAnalysis() {
+        try {
+            List<RFMSegmentDto> result = advancedAnalyticsService.performRFMAnalysis();
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("RFM analysis error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
     @GetMapping("/anomaly-detection")
     public ResponseEntity<List<AnomalyDetectionDto>> detectAnomalies(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+            @RequestParam String startDate,
+            @RequestParam String endDate
     ) {
         try {
-            List<AnomalyDetectionDto> result = advancedAnalyticsService.detectSalesAnomalies(startDate, endDate);
+            LocalDateTime start = parseDate(startDate, false);
+            LocalDateTime end = parseDate(endDate, true);
+            List<AnomalyDetectionDto> result = advancedAnalyticsService.detectSalesAnomalies(start, end);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             System.err.println("Anomaly detection error: " + e.getMessage());
@@ -369,14 +415,18 @@ public class AnalyticsController {
 
     @GetMapping("/compare-periods")
     public ResponseEntity<PeriodComparisonDto> comparePeriods(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime period1Start,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime period1End,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime period2Start,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime period2End
+            @RequestParam String period1Start,
+            @RequestParam String period1End,
+            @RequestParam String period2Start,
+            @RequestParam String period2End
     ) {
         try {
+            LocalDateTime p1Start = parseDate(period1Start, false);
+            LocalDateTime p1End = parseDate(period1End, true);
+            LocalDateTime p2Start = parseDate(period2Start, false);
+            LocalDateTime p2End = parseDate(period2End, true);
             PeriodComparisonDto result = advancedAnalyticsService.comparePeriods(
-                    period1Start, period1End, period2Start, period2End
+                    p1Start, p1End, p2Start, p2End
             );
             return ResponseEntity.ok(result);
         } catch (Exception e) {
@@ -390,11 +440,13 @@ public class AnalyticsController {
 
     @GetMapping("/executive-dashboard")
     public ResponseEntity<ExecutiveDashboardDto> getExecutiveDashboard(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+            @RequestParam String startDate,
+            @RequestParam String endDate
     ) {
         try {
-            ExecutiveDashboardDto result = advancedAnalyticsService.generateExecutiveDashboard(startDate, endDate);
+            LocalDateTime start = parseDate(startDate, false);
+            LocalDateTime end = parseDate(endDate, true);
+            ExecutiveDashboardDto result = advancedAnalyticsService.generateExecutiveDashboard(start, end);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             System.err.println("Executive dashboard generation error: " + e.getMessage());
@@ -464,6 +516,64 @@ public class AnalyticsController {
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             System.err.println("Variance analysis error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
+    @GetMapping("/category-performance")
+    public ResponseEntity<List<CategoryPerformanceDto>> getCategoryPerformance(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate
+    ) {
+        try {
+            LocalDateTime start = parseDate(startDate, false);
+            LocalDateTime end = parseDate(endDate, true);
+            List<CategoryPerformanceDto> result = advancedAnalyticsService.analyzeCategoryPerformance(start, end);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Category performance analysis error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
+    /**
+     * Reviews Sentiment Analysis Endpoint
+     * Analyzes sentiment of customer reviews across all products
+     * Returns: List with positive, neutral, negative counts per product
+     */
+    @GetMapping("/reviews-sentiment")
+    public ResponseEntity<List<ReviewsSentimentAnalysisDto>> getReviewsSentiment() {
+        try {
+            List<ReviewsSentimentAnalysisDto> result = advancedAnalyticsService.analyzeSentiment();
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Reviews sentiment analysis error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
+    /**
+     * Extract Review Topics for a Product
+     * Uses NLP to identify recurring themes in product reviews
+     */
+    @GetMapping("/review-topics/{productId}")
+    public ResponseEntity<List<TopicDto>> getReviewTopics(
+            @PathVariable Long productId
+    ) {
+        try {
+            List<TopicDto> result = advancedAnalyticsService.extractReviewTopics(productId);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Review topics extraction error: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)

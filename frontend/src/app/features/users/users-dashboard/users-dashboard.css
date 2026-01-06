@@ -101,3 +101,35 @@
 	}
 }
 
+/* Analytics Section Styles */
+.analytics-section {
+	margin-bottom: 2rem;
+	width: 100%;
+}
+
+.section-title {
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: #1f2937;
+	margin-bottom: 1rem;
+	padding-bottom: 0.5rem;
+	border-bottom: 2px solid #e5e7eb;
+}
+
+.analytics-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 1.5rem;
+	width: 100%;
+}
+
+.analytics-grid.two-cols {
+	grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+}
+
+@media (max-width: 900px) {
+	.analytics-grid.two-cols {
+		grid-template-columns: 1fr;
+	}
+}
+

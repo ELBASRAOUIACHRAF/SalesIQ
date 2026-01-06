@@ -33,24 +33,17 @@ export class TopBarComponent implements OnInit, AfterViewInit {
   /** Show/hide profile bar and notifications */
   @Input() showProfileBar = true;
 
-  /** User profile data */
-  @Input() userName = 'John Doe';
-  @Input() userEmail = 'john.doe@example.com';
-  @Input() userRole = 'Administrator';
+  /** User ID for profile API call */
+  @Input() userId = 1;
+  
+  /** Notification count to display */
   @Input() notificationCount = 3;
 
   compactTabs = false;
   profileMenuOpen = signal(false);
 
-  get userInitials(): string {
-    const names = this.userName.split(' ');
-    if (names.length >= 2) {
-      return (names[0][0] + names[1][0]).toUpperCase();
-    }
-    return this.userName.substring(0, 2).toUpperCase();
-  }
-
   @Output() tabChange = new EventEmitter<string>();
+  @Output() buttonClick = new EventEmitter<void>();
 
   ngOnInit() {
     this.updateCompact();

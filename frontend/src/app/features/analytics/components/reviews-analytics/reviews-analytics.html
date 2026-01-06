@@ -1,0 +1,273 @@
+<div class="reviews-analytics-container">
+  <!-- Header -->
+  <div class="section-header">
+    <div class="header-content">
+      <h3>
+        <span class="header-icon">💬</span>
+        Reviews Sentiment Analysis
+      </h3>
+      <p class="section-subtitle">Analyze customer feedback and sentiment across products</p>
+    </div>
+    <div class="view-toggle">
+      <button 
+        [class.active]="viewMode === 'overview'" 
+        (click)="viewMode = 'overview'"
+        class="toggle-btn">
+        <span class="btn-icon">📊</span> Overview
+      </button>
+      <button 
+        [class.active]="viewMode === 'details'" 
+        (click)="viewMode = 'details'"
+        class="toggle-btn">
+        <span class="btn-icon">🔍</span> Topic Analysis
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoadingSentiment" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Analyzing reviews sentiment...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="sentimentError && !isLoadingSentiment" class="error-container">
+    <span class="error-icon">⚠️</span>
+    <p>{{ sentimentError }}</p>
+    <button (click)="loadInitialData()" class="retry-btn">Retry</button>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!isLoadingSentiment && !sentimentError" class="content-wrapper">
+    
+    <!-- Overview Mode -->
+    <div *ngIf="viewMode === 'overview'" class="overview-mode">
+      
+      <!-- Summary Stats Cards -->
+      <div class="summary-stats">
+        <div class="stat-card total-reviews">
+          <div class="stat-icon">📝</div>
+          <div class="stat-content">
+            <span class="stat-value">{{ formatNumber(totalReviews) }}</span>
+            <span class="stat-label">Total Reviews</span>
+          </div>
+        </div>
+        
+        <div class="stat-card positive">
+          <div class="stat-icon">😊</div>
+          <div class="stat-content">
+            <span class="stat-value">{{ formatNumber(totalPositive) }}</span>
+            <span class="stat-label">Positive ({{ formatPercentage(positivePercentage) }})</span>
+          </div>
+          <div class="stat-bar">
+            <div class="stat-bar-fill positive-fill" [style.width.%]="positivePercentage"></div>
+          </div>
+        </div>
+        
+        <div class="stat-card neutral">
+          <div class="stat-icon">😐</div>
+          <div class="stat-content">
+            <span class="stat-value">{{ formatNumber(totalNeutral) }}</span>
+            <span class="stat-label">Neutral ({{ formatPercentage(neutralPercentage) }})</span>
+          </div>
+          <div class="stat-bar">
+            <div class="stat-bar-fill neutral-fill" [style.width.%]="neutralPercentage"></div>
+          </div>
+        </div>
+        
+        <div class="stat-card negative">
+          <div class="stat-icon">😞</div>
+          <div class="stat-content">
+            <span class="stat-value">{{ formatNumber(totalNegative) }}</span>
+            <span class="stat-label">Negative ({{ formatPercentage(negativePercentage) }})</span>
+          </div>
+          <div class="stat-bar">
+            <div class="stat-bar-fill negative-fill" [style.width.%]="negativePercentage"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Overall Sentiment Gauge -->
+      <div class="sentiment-gauge-container">
+        <div class="gauge-header">
+          <h4>Overall Sentiment Score</h4>
+          <span class="gauge-info">Products with reviews: {{ productsWithReviews }}</span>
+        </div>
+        <div class="sentiment-gauge">
+          <div class="gauge-background">
+            <div class="gauge-fill" 
+                 [style.width.%]="(overallSentimentScore + 100) / 2"
+                 [class.positive-gauge]="overallSentimentScore > 20"
+                 [class.neutral-gauge]="overallSentimentScore >= -20 && overallSentimentScore <= 20"
+                 [class.negative-gauge]="overallSentimentScore < -20">
+            </div>
+          </div>
+          <div class="gauge-labels">
+            <span>Negative</span>
+            <span class="gauge-score" 
+                  [class.score-positive]="overallSentimentScore > 20"
+                  [class.score-neutral]="overallSentimentScore >= -20 && overallSentimentScore <= 20"
+                  [class.score-negative]="overallSentimentScore < -20">
+              {{ overallSentimentScore > 0 ? '+' : '' }}{{ overallSentimentScore.toFixed(1) }}
+            </span>
+            <span>Positive</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sentiment Distribution Chart -->
+      <div class="distribution-chart">
+        <h4>Sentiment Distribution by Product</h4>
+        <div class="chart-controls">
+          <button [class.active]="sortBy === 'reviews'" (click)="setSortBy('reviews')">
+            By Reviews {{ sortBy === 'reviews' ? (sortDirection === 'desc' ? '↓' : '↑') : '' }}
+          </button>
+          <button [class.active]="sortBy === 'positive'" (click)="setSortBy('positive')">
+            By Positive {{ sortBy === 'positive' ? (sortDirection === 'desc' ? '↓' : '↑') : '' }}
+          </button>
+          <button [class.active]="sortBy === 'negative'" (click)="setSortBy('negative')">
+            By Negative {{ sortBy === 'negative' ? (sortDirection === 'desc' ? '↓' : '↑') : '' }}
+          </button>
+          <button [class.active]="sortBy === 'sentiment'" (click)="setSortBy('sentiment')">
+            By Score {{ sortBy === 'sentiment' ? (sortDirection === 'desc' ? '↓' : '↑') : '' }}
+          </button>
+        </div>
+        
+        <div class="stacked-bars" *ngIf="sentimentData.length > 0">
+          <div class="bar-row" *ngFor="let item of sentimentData; let i = index">
+            <div class="bar-label" [title]="getProductName(item.productId)">
+              {{ getProductName(item.productId) | slice:0:25 }}{{ getProductName(item.productId).length > 25 ? '...' : '' }}
+            </div>
+            <div class="stacked-bar">
+              <div class="bar-segment positive-bar" 
+                   [style.width.%]="item.totalReviews > 0 ? (item.positiveCount / item.totalReviews) * 100 : 0"
+                   [title]="'Positive: ' + item.positiveCount">
+              </div>
+              <div class="bar-segment neutral-bar" 
+                   [style.width.%]="item.totalReviews > 0 ? (item.neutralCount / item.totalReviews) * 100 : 0"
+                   [title]="'Neutral: ' + item.neutralCount">
+              </div>
+              <div class="bar-segment negative-bar" 
+                   [style.width.%]="item.totalReviews > 0 ? (item.negativeCount / item.totalReviews) * 100 : 0"
+                   [title]="'Negative: ' + item.negativeCount">
+              </div>
+            </div>
+            <div class="bar-stats">
+              <span class="sentiment-badge" [ngClass]="getSentimentClass(item.overallSentiment)">
+                {{ getSentimentIcon(item.overallSentiment) }} {{ item.overallSentiment }}
+              </span>
+              <span class="review-count">{{ item.totalReviews }} reviews</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="sentimentData.length === 0" class="no-data">
+          <span class="no-data-icon">📭</span>
+          <p>No review data available</p>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="chart-legend">
+        <div class="legend-item">
+          <span class="legend-color positive-legend"></span>
+          <span>Positive</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-color neutral-legend"></span>
+          <span>Neutral</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-color negative-legend"></span>
+          <span>Negative</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Topic Analysis Mode -->
+    <div *ngIf="viewMode === 'details'" class="details-mode">
+      
+      <!-- Product Selector -->
+      <div class="product-selector">
+        <label for="productSelect">Select a product to analyze review topics:</label>
+        <select id="productSelect" 
+                [(ngModel)]="selectedProductId" 
+                (change)="onProductSelect()"
+                class="product-dropdown">
+          <option [ngValue]="null">-- Choose a product --</option>
+          <option *ngFor="let product of products" [ngValue]="product.id">
+            {{ product.name }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Topics Loading -->
+      <div *ngIf="isLoadingTopics" class="loading-container small">
+        <div class="loading-spinner small"></div>
+        <p>Extracting topics from reviews...</p>
+      </div>
+
+      <!-- Topics Error -->
+      <div *ngIf="topicsError && !isLoadingTopics" class="error-container small">
+        <span class="error-icon">⚠️</span>
+        <p>{{ topicsError }}</p>
+        <button (click)="loadTopics()" class="retry-btn">Retry</button>
+      </div>
+
+      <!-- Selected Product Info -->
+      <div *ngIf="selectedProductId && getSelectedProduct()" class="selected-product-info">
+        <h4>{{ getSelectedProduct()?.name }}</h4>
+        <p class="product-meta">
+          <span *ngIf="getSelectedProduct()?.brand">Brand: {{ getSelectedProduct()?.brand }}</span>
+        </p>
+      </div>
+
+      <!-- Topics Display -->
+      <div *ngIf="!isLoadingTopics && !topicsError && topics.length > 0" class="topics-container">
+        <h4>Discovered Topics</h4>
+        <div class="topics-grid">
+          <div class="topic-card" *ngFor="let topic of topics" [ngClass]="getTopicSentimentClass(topic.avgSentiment)">
+            <div class="topic-header">
+              <span class="topic-id">Topic {{ topic.topicId + 1 }}</span>
+              <span class="topic-name">{{ topic.topicName }}</span>
+            </div>
+            <div class="topic-keywords">
+              <span class="keyword" *ngFor="let keyword of topic.keywords">{{ keyword }}</span>
+            </div>
+            <div class="topic-stats">
+              <div class="topic-stat">
+                <span class="stat-label">Reviews</span>
+                <span class="stat-value">{{ topic.reviewCount }}</span>
+              </div>
+              <div class="topic-stat">
+                <span class="stat-label">Weight</span>
+                <span class="stat-value">{{ (topic.weight * 100).toFixed(1) }}%</span>
+              </div>
+              <div class="topic-stat">
+                <span class="stat-label">Sentiment</span>
+                <span class="stat-value sentiment-label">{{ topic.sentimentLabel }}</span>
+              </div>
+            </div>
+            <div class="topic-sentiment-bar">
+              <div class="sentiment-indicator" 
+                   [style.left.%]="(topic.avgSentiment + 1) * 50">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- No Topics -->
+      <div *ngIf="!isLoadingTopics && !topicsError && selectedProductId && topics.length === 0" class="no-data">
+        <span class="no-data-icon">🔍</span>
+        <p>No topics found for this product. The product may not have enough reviews for topic extraction.</p>
+      </div>
+
+      <!-- No Selection -->
+      <div *ngIf="!selectedProductId && !isLoadingTopics" class="no-selection">
+        <span class="no-selection-icon">👆</span>
+        <p>Select a product above to analyze review topics</p>
+      </div>
+    </div>
+  </div>
+</div>

@@ -2,14 +2,14 @@
 @if (productDetails) {
 <div class="product-info-container">
     <div class="header-section">
-      <a href="#" class="brand-link">Visit the {{ productDetails?.mark }} Store</a>
-      <h1 class="product-title">{{ productDetails?.name }}</h1>
+      <a href="#" class="brand-link">Visit the {{ productDetails.mark }} Store</a>
+      <h1 class="product-title">{{ productDetails.name }}</h1>
       
       <div class="rating-summary">
         <div class="stars">
           <mat-icon *ngFor="let s of [1,2,3,4,5]" [class.active]="s <= productDetails.rating">star</mat-icon>
         </div>
-        <a href="#reviews" class="review-link">{{ productDetails?.reviewsCount | number }} ratings</a>
+        <a href="#reviews" class="review-link">{{ productDetails.reviewsCount | number }} ratings</a>
       </div>
     </div>
   

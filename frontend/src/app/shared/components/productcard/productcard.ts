@@ -1,5 +1,6 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Subject, takeUntil, catchError, of, finalize } from 'rxjs';
 import { Product } from '../../../core/models/product.model';
 import { ProductService } from '../../../core/services/product.service';
 import { FilterState } from '../product-filter-sidebar/product-filter-sidebar';
@@ -14,14 +15,23 @@ import { BasketService } from '../../../core/services/basket.service';
   templateUrl: './productcard.html',
   styleUrl: './productcard.css',
 })
-export class Productcard implements OnInit, OnChanges {
+export class Productcard implements OnInit, OnChanges, OnDestroy {
   @Input() filters: FilterState | null = null;
+  @Output() filteredCountChange = new EventEmitter<number>();
+  
+  private destroy$ = new Subject<void>();
   
   allProducts: Product[] = [];
   filteredProducts: Product[] = [];
   currentPage = 1;
-  pageSize = 15;
+  pageSize = 12;
   isLoading = false;
+  loadError = false;
+  errorMessage = '';
+  
+  // Track added items for animation
+  addedToCart: Set<number> = new Set();
+  addingToCart: Set<number> = new Set();
 
   constructor(
     private basketService: BasketService,
@@ -33,12 +43,33 @@ export class Productcard implements OnInit, OnChanges {
     this.loadInitialProducts();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   loadInitialProducts(): void {
-    this.productService.getProducts().subscribe((products) => {
-      this.allProducts = products;
-      this.applyFilters();
-      this.cdr.detectChanges(); // Forcer la détection de changement
-    });
+    this.isLoading = true;
+    this.loadError = false;
+
+    this.productService.getProducts()
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError(error => {
+          console.error('Failed to load products:', error);
+          this.loadError = true;
+          this.errorMessage = 'Failed to load products. Please try again.';
+          return of([]);
+        }),
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe(products => {
+        this.allProducts = products;
+        this.applyFilters();
+      });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -51,102 +82,121 @@ export class Productcard implements OnInit, OnChanges {
   applyFilters(): void {
     const categoryIds = this.filters?.categories?.map(c => c.id) ?? [];
 
-    // Si aucune catégorie n'est sélectionnée, on travaille avec tous les produits
     if (categoryIds.length === 0) {
-      
       this.processLocalFiltering(this.allProducts);
-      this.cdr.detectChanges(); // Forcer la mise à jour de l'UI
+      this.cdr.detectChanges();
       return;
     }
 
-    // Si des catégories sont sélectionnées, on récupère les produits correspondants
-    
     this.isLoading = true;
-    this.cdr.detectChanges(); // Afficher le loader immédiatement
+    this.loadError = false;
+    this.cdr.detectChanges();
     
-    this.productService.getProductsByMultipleCategories(categoryIds).subscribe({
-      next: (productsFromBackend) => {
-        this.isLoading = false;
+    this.productService.getProductsByMultipleCategories(categoryIds)
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError(error => {
+          console.error('Filter error:', error);
+          this.loadError = true;
+          this.errorMessage = 'Failed to filter products.';
+          return of([]);
+        }),
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe(productsFromBackend => {
         this.processLocalFiltering(productsFromBackend);
-        this.cdr.detectChanges(); // Forcer la mise à jour de l'UI
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.filteredProducts = [];
-        this.cdr.detectChanges(); // Forcer la mise à jour même en cas d'erreur
-      }
-    });
+      });
   }
 
   private processLocalFiltering(baseProducts: Product[]): void {
     if (!this.filters) {
       this.filteredProducts = baseProducts;
-      this.cdr.markForCheck(); // Marquer pour vérification
-      return;
-    }
+    } else {
+      this.filteredProducts = baseProducts.filter(product => {
+        // Filter by brand
+        if (this.filters!.brands.length > 0) {
+          if (!product.brand || !this.filters!.brands.includes(product.brand)) {
+            return false;
+          }
+        }
 
-    this.filteredProducts = baseProducts.filter(product => {
-      // Filtre par marque
-      if (this.filters!.brands.length > 0) {
-        if (!product.brand || !this.filters!.brands.includes(product.brand)) {
+        // Filter by price
+        if (product.price < this.filters!.priceMin || product.price > this.filters!.priceMax) {
           return false;
         }
-      }
 
-      // Filtre par prix
-      if (product.price < this.filters!.priceMin || product.price > this.filters!.priceMax) {
-        return false;
-      }
+        // Filter by minimum rating
+        if (this.filters!.minRating > 0 && product.rating < this.filters!.minRating) {
+          return false;
+        }
 
-      // Filtre par note minimale
-      if (this.filters!.minRating > 0 && product.rating < this.filters!.minRating) {
-        return false;
-      }
+        return true;
+      });
+    }
 
-      return true;
-    });
-
-    this.cdr.markForCheck(); // Marquer pour vérification
+    this.filteredCountChange.emit(this.filteredProducts.length);
+    this.cdr.markForCheck();
   }
 
-  // --- MÉTHODES POUR LES ÉTOILES ---
+  // Star rating helpers
   fullStars(rating: number): number {
-    // Retourne la partie entière (ex: 4.5 -> 4)
     return Math.floor(rating);
   }
 
   hasHalfStar(rating: number): boolean {
-    // Si le reste est entre 0.25 et 0.75, on affiche une demi-étoile
     const decimal = rating % 1;
     return decimal >= 0.25 && decimal < 0.75;
   }
 
-  
-  onAddToCart(product: Product) {
-    
-    this.basketService.addToBasket(
-      1, 
-      product.id, 
-      1
-    ).subscribe({
-      next: (success) => {
-        if (success) {
-          // Optionnel : Afficher un message de succès (SnackBar)
-          console.log('Produit ajouté au panier !', product.stock);
-          this.basketService.updateCartCount(1);
-        }
-      },
-      error: (err) => {
-        console.error('Erreur lors de l\'ajout au panier', err);
-      }
-    });
+  emptyStars(rating: number): number {
+    return 5 - this.fullStars(rating) - (this.hasHalfStar(rating) ? 1 : 0);
   }
 
+  // Cart actions
+  onAddToCart(product: Product): void {
+    if (this.addingToCart.has(product.id)) return;
+    
+    this.addingToCart.add(product.id);
+    this.cdr.detectChanges();
+    
+    this.basketService.addToBasket(1, product.id, 1)
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError(error => {
+          console.error('Add to cart error:', error);
+          return of(false);
+        }),
+        finalize(() => {
+          this.addingToCart.delete(product.id);
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe(success => {
+        if (success) {
+          this.addedToCart.add(product.id);
+          this.basketService.updateCartCount(1);
+          
+          // Clear the "added" state after 2 seconds
+          setTimeout(() => {
+            this.addedToCart.delete(product.id);
+            this.cdr.detectChanges();
+          }, 2000);
+        }
+      });
+  }
 
+  isAddingToCart(productId: number): boolean {
+    return this.addingToCart.has(productId);
+  }
 
+  wasAddedToCart(productId: number): boolean {
+    return this.addedToCart.has(productId);
+  }
 
-
-  // --- Pagination ---
+  // Pagination
   get totalPages(): number {
     return Math.ceil(this.filteredProducts.length / this.pageSize) || 1;
   }
@@ -156,16 +206,37 @@ export class Productcard implements OnInit, OnChanges {
     return this.filteredProducts.slice(start, start + this.pageSize);
   }
 
+  get visiblePages(): number[] {
+    const pages: number[] = [];
+    const total = this.totalPages;
+    const current = this.currentPage;
+    
+    let start = Math.max(1, current - 2);
+    let end = Math.min(total, current + 2);
+    
+    if (end - start < 4) {
+      if (start === 1) end = Math.min(total, 5);
+      else start = Math.max(1, total - 4);
+    }
+    
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
   goToPage(page: number): void {
     if (page < 1 || page > this.totalPages) return;
     this.currentPage = page;
+    // Scroll to top of product grid
+    window.scrollTo({ top: 200, behavior: 'smooth' });
   }
 
-  onAddToWishlist(product: any) {
-    // Inverse l'état local pour l'exemple
-    // product.isInWishlist = !product.isInWishlist;
-    
-    console.log('Produit ajouté aux favoris:', product.name);
-    // Ici, appelez votre service API pour sauvegarder le choix
+  onAddToWishlist(product: Product): void {
+    console.log('Added to wishlist:', product.name);
+  }
+
+  trackByProductId(index: number, product: Product): number {
+    return product.id;
   }
 }

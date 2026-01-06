@@ -1,4 +1,4 @@
-package com.ensa.achrafkarim.backend.csv.dto;
+package com.ensa.achrafkarim.backend.dto.csv;
 
 import com.opencsv.bean.CsvBindByName;
 import lombok.Data;
