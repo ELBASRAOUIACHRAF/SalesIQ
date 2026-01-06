@@ -8,6 +8,31 @@
         [dateText]="'Sentiment Analysis'"
         [buttonLabel]="''"
       ></app-top-bar>
+      
+      <!-- Import/Export Actions -->
+      <div class="action-bar">
+        <div class="action-group">
+          <span class="group-label">Reviews:</span>
+          <button class="action-btn import-btn" (click)="triggerImport()">
+            <span class="icon">📥</span> Import
+          </button>
+          <button class="action-btn export-btn" (click)="onExportReviews()">
+            <span class="icon">📤</span> Export
+          </button>
+        </div>
+        <input 
+          #fileInput 
+          type="file" 
+          accept=".csv" 
+          style="display: none;" 
+          (change)="onFileSelected($event)"
+        />
+      </div>
+      
+      <!-- Import Status Message -->
+      <div *ngIf="importMessage" class="import-message" [class.success]="importSuccess" [class.error]="!importSuccess">
+        {{ importMessage }}
+      </div>
     </div>
 
     <!-- Loading State -->

@@ -182,6 +182,22 @@ export class AnalyticsService {
     );
   }
 
+  /**
+   * Average Basket Value - Calculate average order value within a date range
+   * 
+   * @param startDate ISO datetime string
+   * @param endDate ISO datetime string
+   * @returns Observable<number> - Average basket value
+   */
+  getAverageBasketValue(startDate: string, endDate: string): Observable<number> {
+    return this.http.get<number>(
+      `${this.API_URL}/average-basket-value`,
+      { params: { startDate, endDate } }
+    ).pipe(
+      map(res => res ?? 0)
+    );
+  }
+
   // ========================================
   // CHURN & RETENTION ANALYTICS
   // ========================================

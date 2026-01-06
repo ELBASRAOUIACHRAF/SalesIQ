@@ -219,6 +219,31 @@ public class AnalyticsController {
         }
     }
 
+    /**
+     * Average Basket Value Endpoint
+     * Calculates the average value of customer baskets/orders within a date range
+     *
+     * @param startDate Start of the period (ISO datetime)
+     * @param endDate End of the period (ISO datetime)
+     * @return Average basket value as a double
+     */
+    @GetMapping("/average-basket-value")
+    public ResponseEntity<Double> getAverageBasketValue(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+    ) {
+        try {
+            double result = advancedAnalyticsService.calculateAverageBasketValue(startDate, endDate);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("Average basket value error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
     @GetMapping("/api/v1/analytics/marketBasket")
     public List<AssociationRuleDto> getMarketBasketRules(
             @RequestParam double minSupport,

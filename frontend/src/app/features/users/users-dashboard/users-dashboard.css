@@ -111,9 +111,15 @@
 	font-size: 1.25rem;
 	font-weight: 600;
 	color: #1f2937;
-	margin-bottom: 1rem;
+	margin-bottom: 0.5rem;
 	padding-bottom: 0.5rem;
 	border-bottom: 2px solid #e5e7eb;
+}
+
+.section-description {
+	font-size: 0.9rem;
+	color: #6b7280;
+	margin: 0 0 1rem 0;
 }
 
 .analytics-grid {
@@ -130,6 +136,96 @@
 @media (max-width: 900px) {
 	.analytics-grid.two-cols {
 		grid-template-columns: 1fr;
+	}
+}
+
+/* Action Bar - Import/Export */
+.action-bar {
+	display: flex;
+	gap: 1rem;
+	margin-top: 1rem;
+	padding: 1rem 1.25rem;
+	background: #ffffff;
+	border-radius: 12px;
+	border: 1px solid #e5e7eb;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	flex-wrap: wrap;
+}
+
+.action-btn {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 0.6rem 1rem;
+	border-radius: 8px;
+	font-size: 0.85rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	border: none;
+}
+
+.action-btn .icon {
+	font-size: 1rem;
+}
+
+.action-btn.import-btn {
+	background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+	color: white;
+}
+
+.action-btn.import-btn:hover {
+	background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.action-btn.export-btn {
+	background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+	color: white;
+}
+
+.action-btn.export-btn:hover {
+	background: linear-gradient(135deg, #059669 0%, #047857 100%);
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+/* Import Status Message */
+.import-message {
+	margin-top: 12px;
+	padding: 12px 16px;
+	border-radius: 8px;
+	font-size: 0.9rem;
+	font-weight: 500;
+	animation: fadeIn 0.3s ease;
+}
+
+.import-message.success {
+	background: rgba(16, 185, 129, 0.1);
+	border: 1px solid rgba(16, 185, 129, 0.3);
+	color: #059669;
+}
+
+.import-message.error {
+	background: rgba(239, 68, 68, 0.1);
+	border: 1px solid rgba(239, 68, 68, 0.3);
+	color: #dc2626;
+}
+
+@keyframes fadeIn {
+	from { opacity: 0; transform: translateY(-10px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+	.action-bar {
+		flex-direction: column;
+	}
+	
+	.action-btn {
+		width: 100%;
+		justify-content: center;
 	}
 }
 

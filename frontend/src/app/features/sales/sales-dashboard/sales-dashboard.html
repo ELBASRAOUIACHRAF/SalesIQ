@@ -4,10 +4,54 @@
       <app-top-bar
         [title]="'Sales Analytics'"
         [tabs]="['Overview','Forecast','Analysis']"
-        [activeTab]="'Overview'"
+        [activeTab]="activeTab"
         [dateText]="'Sales Performance Insights'"
         [buttonLabel]="''"
+        (tabChange)="onTabChange($event)"
       ></app-top-bar>
+      
+      <!-- Import/Export Actions -->
+      <div class="action-bar">
+        <div class="action-group">
+          <span class="group-label">Sales:</span>
+          <button class="action-btn import-btn" (click)="triggerImport('sales')">
+            <span class="icon">📥</span> Import
+          </button>
+          <button class="action-btn export-btn" (click)="onExport('sales')">
+            <span class="icon">📤</span> Export
+          </button>
+        </div>
+        <div class="action-group">
+          <span class="group-label">Sold Products:</span>
+          <button class="action-btn import-btn" (click)="triggerImport('sold-products')">
+            <span class="icon">📥</span> Import
+          </button>
+          <button class="action-btn export-btn" (click)="onExport('sold-products')">
+            <span class="icon">📤</span> Export
+          </button>
+        </div>
+        <div class="action-group">
+          <span class="group-label">Baskets:</span>
+          <button class="action-btn import-btn" (click)="triggerImport('baskets')">
+            <span class="icon">📥</span> Import
+          </button>
+          <button class="action-btn export-btn" (click)="onExport('baskets')">
+            <span class="icon">📤</span> Export
+          </button>
+        </div>
+        <input 
+          #fileInput 
+          type="file" 
+          accept=".csv" 
+          style="display: none;" 
+          (change)="onFileSelected($event)"
+        />
+      </div>
+      
+      <!-- Import Status Message -->
+      <div *ngIf="importMessage" class="import-message" [class.success]="importSuccess" [class.error]="!importSuccess">
+        {{ importMessage }}
+      </div>
     </div>
 
     <!-- Loading State -->
@@ -29,51 +73,70 @@
       ></app-kpi-card>
     </div>
 
-    <!-- Sales Trend -->
-    <section class="analytics-section">
-      <h2 class="section-title">📈 Sales Trend Analysis</h2>
-      <p class="section-description">Analyze sales patterns over time with different granularities</p>
-      <div class="component-wrapper">
-        <app-sales-trend-chart></app-sales-trend-chart>
-      </div>
-    </section>
+    <!-- OVERVIEW TAB -->
+    <ng-container *ngIf="activeTab === 'Overview'">
+      <!-- Sales Trend -->
+      <section class="analytics-section">
+        <h2 class="section-title">📈 Sales Trend Analysis</h2>
+        <p class="section-description">Analyze sales patterns over time with different granularities</p>
+        <div class="component-wrapper">
+          <app-sales-trend-chart></app-sales-trend-chart>
+        </div>
+      </section>
 
-    <!-- Seasonality Analysis -->
-    <section class="analytics-section">
-      <h2 class="section-title">🌡️ Seasonality Analysis</h2>
-      <p class="section-description">Decompose sales data into trend, seasonal, and residual components</p>
-      <div class="component-wrapper">
-        <app-seasonality-chart></app-seasonality-chart>
-      </div>
-    </section>
+      <!-- Seasonality Analysis -->
+      <section class="analytics-section">
+        <h2 class="section-title">🌡️ Seasonality Analysis</h2>
+        <p class="section-description">Decompose sales data into trend, seasonal, and residual components</p>
+        <div class="component-wrapper">
+          <app-seasonality-chart></app-seasonality-chart>
+        </div>
+      </section>
+    </ng-container>
 
-    <!-- Forecasting & Comparison -->
-    <section class="analytics-section">
-      <h2 class="section-title">🔮 Forecasting & Period Comparison</h2>
-      <p class="section-description">Predict future sales and compare performance across periods</p>
-      <div class="analytics-grid two-col">
-        <app-sales-forecast></app-sales-forecast>
-        <app-period-comparison></app-period-comparison>
-      </div>
-    </section>
+    <!-- FORECAST TAB -->
+    <ng-container *ngIf="activeTab === 'Forecast'">
+      <!-- Forecasting & Comparison -->
+      <section class="analytics-section">
+        <h2 class="section-title">🔮 Forecasting & Period Comparison</h2>
+        <p class="section-description">Predict future sales and compare performance across periods</p>
+        <div class="analytics-grid two-col">
+          <app-sales-forecast></app-sales-forecast>
+          <app-period-comparison></app-period-comparison>
+        </div>
+      </section>
 
-    <!-- Growth Rate Analysis -->
-    <section class="analytics-section">
-      <h2 class="section-title">📊 Growth Rate Analysis</h2>
-      <p class="section-description">Calculate and visualize sales growth between periods</p>
-      <div class="component-wrapper">
-        <app-growth-rate-card></app-growth-rate-card>
-      </div>
-    </section>
+      <!-- Growth Rate Analysis -->
+      <section class="analytics-section">
+        <h2 class="section-title">📊 Growth Rate Analysis</h2>
+        <p class="section-description">Calculate and visualize sales growth between periods</p>
+        <div class="component-wrapper">
+          <app-growth-rate-card></app-growth-rate-card>
+        </div>
+      </section>
+    </ng-container>
 
-    <!-- Anomaly Detection -->
-    <section class="analytics-section">
-      <h2 class="section-title">⚠️ Anomaly Detection</h2>
-      <p class="section-description">Identify unusual spikes or drops in sales patterns</p>
-      <div class="component-wrapper">
-        <app-anomaly-detection></app-anomaly-detection>
-      </div>
-    </section>
+    <!-- ANALYSIS TAB -->
+    <ng-container *ngIf="activeTab === 'Analysis'">
+      <!-- Cohort & Purchase Frequency -->
+      <section class="analytics-section">
+        <h2 class="section-title">👥 Customer Purchase Behavior</h2>
+        <p class="section-description">Analyze cohort behavior and purchase frequency patterns</p>
+        <div class="analytics-grid two-col">
+          <app-cohort-card></app-cohort-card>
+          <app-purchase-frequency></app-purchase-frequency>
+        </div>
+      </section>
+
+      <!-- Anomaly Detection -->
+      <section class="analytics-section">
+        <h2 class="section-title">⚠️ Anomaly Detection</h2>
+        <p class="section-description">Identify unusual spikes or drops in sales patterns</p>
+        <div class="component-wrapper">
+          <app-anomaly-detection></app-anomaly-detection>
+        </div>
+      </section>
+    </ng-container>
 
   </div>
 </div>

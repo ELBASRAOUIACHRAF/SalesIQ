@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil, forkJoin } from 'rxjs';
 import { KpiCardComponent } from '../../../shared/components/kpi-card/kpi-card';
 import { TopBarComponent } from '../../analytics/components/top-bar/top-bar';
+import { CsvService } from '../../../core/services/csv.service';
 
 // Sales Analytics Components
 import { SalesTrendChartComponent } from '../../analytics/components/sales-trend-chart/sales-trend-chart';
@@ -12,6 +13,8 @@ import { PeriodComparisonComponent } from '../../analytics/components/period-com
 import { AnomalyDetectionComponent } from '../../analytics/components/anomaly-detection/anomaly-detection';
 import { GrowthRateCardComponent } from '../../analytics/components/growth-rate-card/growth-rate-card';
 import { SeasonalityAnalysisComponent } from '../../analytics/components/seasonality-chart/seasonality-chart';
+import { CohortCardComponent } from '../../analytics/cohort-card/cohort-card';
+import { PurchaseFrequencyComponent } from '../../users/components/purchase-frequency/purchase-frequency.component';
 
 // Services
 import { AnalyticsService } from '../../../core/services/analytics.service';
@@ -31,15 +34,26 @@ import { SaleService } from '../../../core/services/sale.service';
     PeriodComparisonComponent,
     AnomalyDetectionComponent,
     GrowthRateCardComponent,
-    SeasonalityAnalysisComponent
+    SeasonalityAnalysisComponent,
+    CohortCardComponent,
+    PurchaseFrequencyComponent
   ],
   templateUrl: './sales-dashboard.html',
   styleUrls: ['./sales-dashboard.css'],
 })
 export class SalesDashboard implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   
   private destroy$ = new Subject<void>();
   isLoading = true;
+  activeTab = 'Overview';
+
+  // CSV Import/Export state
+  importMessage = '';
+  importSuccess = false;
+  isExporting = false;
+  isImporting = false;
+  currentImportType: 'sales' | 'sold-products' | 'baskets' = 'sales';
 
   // KPI Data
   totalSales = 0;
@@ -55,6 +69,7 @@ export class SalesDashboard implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private analyticsService: AnalyticsService,
     private saleService: SaleService,
+    private csvService: CsvService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -193,6 +208,87 @@ export class SalesDashboard implements OnInit, OnDestroy, AfterViewInit {
     if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
     if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
     return value.toString();
+  }
+
+  // ============ CSV Import/Export Methods ============
+
+  onExport(type: 'sales' | 'sold-products' | 'baskets'): void {
+    if (this.isExporting) return;
+    
+    this.isExporting = true;
+    this.importMessage = '';
+
+    const exportFn = type === 'sales' 
+      ? this.csvService.exportSales() 
+      : type === 'sold-products'
+        ? this.csvService.exportSoldProducts()
+        : this.csvService.exportBaskets();
+
+    exportFn.subscribe({
+      next: (blob) => {
+        this.csvService.downloadBlob(blob, `${type}.csv`);
+        this.isExporting = false;
+      },
+      error: (err) => {
+        console.error('Export error:', err);
+        this.importMessage = `Failed to export ${type}. Is the backend running?`;
+        this.importSuccess = false;
+        this.isExporting = false;
+        setTimeout(() => this.importMessage = '', 5000);
+      }
+    });
+  }
+
+  triggerImport(type: 'sales' | 'sold-products' | 'baskets'): void {
+    this.currentImportType = type;
+    this.fileInput.nativeElement.click();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    
+    if (!file) return;
+    
+    if (!file.name.endsWith('.csv')) {
+      this.importMessage = 'Please select a CSV file';
+      this.importSuccess = false;
+      setTimeout(() => this.importMessage = '', 3000);
+      return;
+    }
+
+    this.isImporting = true;
+    this.importMessage = `Importing ${this.currentImportType}...`;
+    this.importSuccess = true;
+
+    const importFn = this.currentImportType === 'sales'
+      ? this.csvService.importSales(file)
+      : this.currentImportType === 'sold-products'
+        ? this.csvService.importSoldProducts(file)
+        : this.csvService.importBaskets(file);
+
+    importFn.subscribe({
+      next: (response) => {
+        this.importMessage = response.message || `Successfully imported ${response.count} ${this.currentImportType}`;
+        this.importSuccess = response.success;
+        this.isImporting = false;
+        input.value = '';
+        this.loadKPIs(); // Refresh data
+        setTimeout(() => this.importMessage = '', 5000);
+      },
+      error: (err) => {
+        console.error('Import error:', err);
+        this.importMessage = `Failed to import ${this.currentImportType}. Check file format.`;
+        this.importSuccess = false;
+        this.isImporting = false;
+        input.value = '';
+        setTimeout(() => this.importMessage = '', 5000);
+      }
+    });
+  }
+
+  onTabChange(tab: string): void {
+    this.activeTab = tab;
   }
 }
 

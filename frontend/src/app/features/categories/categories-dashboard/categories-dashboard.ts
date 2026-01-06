@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, AfterViewInit, NgZone } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, AfterViewInit, NgZone, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil, catchError, of, finalize, forkJoin } from 'rxjs';
@@ -6,6 +6,7 @@ import { KpiCardComponent } from '../../../shared/components/kpi-card/kpi-card';
 import { TopBarComponent } from '../../analytics/components/top-bar/top-bar';
 import { CategoryPerformanceComponent } from '../../analytics/components/category-performance/category-performance';
 import { ApiService, CategoryDetailsDto, CategoryPerformanceDto } from '../../../core/services/app.service';
+import { CsvService } from '../../../core/services/csv.service';
 
 interface CategoryKpi {
   title: string;
@@ -36,10 +37,19 @@ interface CategoryWithPerformance extends CategoryDetailsDto {
   styleUrls: ['./categories-dashboard.css'],
 })
 export class CategoriesDashboard implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  
   private destroy$ = new Subject<void>();
+
+  // CSV Import/Export state
+  importMessage = '';
+  importSuccess = false;
+  isExporting = false;
+  isImporting = false;
 
   constructor(
     private apiService: ApiService,
+    private csvService: CsvService,
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone
   ) {}
@@ -231,6 +241,70 @@ export class CategoriesDashboard implements OnInit, OnDestroy, AfterViewInit {
   getRevenuePercentage(revenue: number): number {
     const maxRevenue = Math.max(...this.categories.map(c => c.revenue || 0), 1);
     return (revenue / maxRevenue) * 100;
+  }
+
+  // ============ CSV Import/Export Methods ============
+
+  onExportCategories(): void {
+    if (this.isExporting) return;
+    
+    this.isExporting = true;
+    this.importMessage = '';
+
+    this.csvService.exportCategories().subscribe({
+      next: (blob) => {
+        this.csvService.downloadBlob(blob, 'categories.csv');
+        this.isExporting = false;
+      },
+      error: (err) => {
+        console.error('Export error:', err);
+        this.importMessage = 'Failed to export categories. Is the backend running?';
+        this.importSuccess = false;
+        this.isExporting = false;
+        setTimeout(() => this.importMessage = '', 5000);
+      }
+    });
+  }
+
+  triggerImport(): void {
+    this.fileInput.nativeElement.click();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    
+    if (!file) return;
+    
+    if (!file.name.endsWith('.csv')) {
+      this.importMessage = 'Please select a CSV file';
+      this.importSuccess = false;
+      setTimeout(() => this.importMessage = '', 3000);
+      return;
+    }
+
+    this.isImporting = true;
+    this.importMessage = 'Importing categories...';
+    this.importSuccess = true;
+
+    this.csvService.importCategories(file).subscribe({
+      next: (response) => {
+        this.importMessage = response.message || `Successfully imported ${response.count} categories`;
+        this.importSuccess = response.success;
+        this.isImporting = false;
+        input.value = '';
+        this.loadData(); // Refresh data
+        setTimeout(() => this.importMessage = '', 5000);
+      },
+      error: (err) => {
+        console.error('Import error:', err);
+        this.importMessage = 'Failed to import categories. Check file format.';
+        this.importSuccess = false;
+        this.isImporting = false;
+        input.value = '';
+        setTimeout(() => this.importMessage = '', 5000);
+      }
+    });
   }
 }
 
