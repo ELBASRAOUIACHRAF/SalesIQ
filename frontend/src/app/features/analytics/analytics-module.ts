@@ -10,6 +10,7 @@ import { ReviewsDashboard } from '../reviews/reviews-dashboard/reviews-dashboard
 import { SalesDashboard } from '../sales/sales-dashboard/sales-dashboard';
 import { UsersDashboard } from '../users/users-dashboard/users-dashboard';
 import { AnalyticsReports } from './components/analytics-reports/analytics-reports';
+import { AnalyticsChatbot } from './components/analytics-chatbot/analytics-chatbot';
 
 
 @NgModule({
@@ -20,6 +21,7 @@ import { AnalyticsReports } from './components/analytics-reports/analytics-repor
     AnalyticsDashboard,
     AnalyticsLayout,
     AnalyticsReports,
+    AnalyticsChatbot,
     RouterModule.forChild([
       {
         path: '',
@@ -31,7 +33,8 @@ import { AnalyticsReports } from './components/analytics-reports/analytics-repor
           { path: 'reviews', component: ReviewsDashboard },
           { path: 'sales', component: SalesDashboard },
           { path: 'users', component: UsersDashboard },
-          { path: 'reports', component: AnalyticsReports }
+          { path: 'reports', component: AnalyticsReports },
+          { path: 'ai-assistant', component: AnalyticsChatbot }
         ]
       }
     ])

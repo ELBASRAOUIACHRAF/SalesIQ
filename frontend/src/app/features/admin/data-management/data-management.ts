@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CsvService } from '../../../core/services/csv.service';
@@ -28,7 +28,9 @@ export class DataManagement implements OnInit {
   exportingEntity: string | null = null;
 
   constructor(
-    private csvService: CsvService
+    private csvService: CsvService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
   ) {}
 
   ngOnInit(): void {
@@ -104,17 +106,25 @@ export class DataManagement implements OnInit {
     ];
   }
 
+  private stopExporting(): void {
+    this.ngZone.run(() => {
+      this.exportingEntity = null;
+      this.cdr.detectChanges();
+    });
+  }
+
   // Export Functions
   exportUsers(): void {
     this.exportingEntity = 'Users';
     this.csvService.exportUsers().subscribe({
-      next: () => {
+      next: (blob) => {
+        this.csvService.downloadBlob(blob, 'users.csv');
         console.log('Users exported successfully');
-        this.exportingEntity = null;
+        this.stopExporting();
       },
       error: (err) => {
         console.error('Failed to export users:', err);
-        this.exportingEntity = null;
+        this.stopExporting();
       }
     });
   }
@@ -122,13 +132,14 @@ export class DataManagement implements OnInit {
   exportProducts(): void {
     this.exportingEntity = 'Products';
     this.csvService.exportProducts().subscribe({
-      next: () => {
+      next: (blob) => {
+        this.csvService.downloadBlob(blob, 'products.csv');
         console.log('Products exported successfully');
-        this.exportingEntity = null;
+        this.stopExporting();
       },
       error: (err) => {
         console.error('Failed to export products:', err);
-        this.exportingEntity = null;
+        this.stopExporting();
       }
     });
   }
@@ -136,13 +147,14 @@ export class DataManagement implements OnInit {
   exportCategories(): void {
     this.exportingEntity = 'Categories';
     this.csvService.exportCategories().subscribe({
-      next: () => {
+      next: (blob) => {
+        this.csvService.downloadBlob(blob, 'categories.csv');
         console.log('Categories exported successfully');
-        this.exportingEntity = null;
+        this.stopExporting();
       },
       error: (err) => {
         console.error('Failed to export categories:', err);
-        this.exportingEntity = null;
+        this.stopExporting();
       }
     });
   }
@@ -150,13 +162,14 @@ export class DataManagement implements OnInit {
   exportSales(): void {
     this.exportingEntity = 'Sales';
     this.csvService.exportSales().subscribe({
-      next: () => {
+      next: (blob) => {
+        this.csvService.downloadBlob(blob, 'sales.csv');
         console.log('Sales exported successfully');
-        this.exportingEntity = null;
+        this.stopExporting();
       },
       error: (err) => {
         console.error('Failed to export sales:', err);
-        this.exportingEntity = null;
+        this.stopExporting();
       }
     });
   }
@@ -164,13 +177,14 @@ export class DataManagement implements OnInit {
   exportReviews(): void {
     this.exportingEntity = 'Reviews';
     this.csvService.exportReviews().subscribe({
-      next: () => {
+      next: (blob) => {
+        this.csvService.downloadBlob(blob, 'reviews.csv');
         console.log('Reviews exported successfully');
-        this.exportingEntity = null;
+        this.stopExporting();
       },
       error: (err) => {
         console.error('Failed to export reviews:', err);
-        this.exportingEntity = null;
+        this.stopExporting();
       }
     });
   }
@@ -178,13 +192,14 @@ export class DataManagement implements OnInit {
   exportSoldProducts(): void {
     this.exportingEntity = 'Sold Products';
     this.csvService.exportSoldProducts().subscribe({
-      next: () => {
+      next: (blob) => {
+        this.csvService.downloadBlob(blob, 'sold_products.csv');
         console.log('Sold products exported successfully');
-        this.exportingEntity = null;
+        this.stopExporting();
       },
       error: (err) => {
         console.error('Failed to export sold products:', err);
-        this.exportingEntity = null;
+        this.stopExporting();
       }
     });
   }
@@ -192,13 +207,14 @@ export class DataManagement implements OnInit {
   exportBaskets(): void {
     this.exportingEntity = 'Baskets';
     this.csvService.exportBaskets().subscribe({
-      next: () => {
+      next: (blob) => {
+        this.csvService.downloadBlob(blob, 'baskets.csv');
         console.log('Baskets exported successfully');
-        this.exportingEntity = null;
+        this.stopExporting();
       },
       error: (err) => {
         console.error('Failed to export baskets:', err);
-        this.exportingEntity = null;
+        this.stopExporting();
       }
     });
   }
@@ -206,13 +222,14 @@ export class DataManagement implements OnInit {
   exportSearchHistory(): void {
     this.exportingEntity = 'Search History';
     this.csvService.exportSearchHistory().subscribe({
-      next: () => {
+      next: (blob) => {
+        this.csvService.downloadBlob(blob, 'search_history.csv');
         console.log('Search history exported successfully');
-        this.exportingEntity = null;
+        this.stopExporting();
       },
       error: (err) => {
         console.error('Failed to export search history:', err);
-        this.exportingEntity = null;
+        this.stopExporting();
       }
     });
   }

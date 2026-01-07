@@ -9,7 +9,7 @@ public class UserCsvDto {
     @CsvBindByName(column = "id")
     private Long id;
 
-    @CsvBindByName(column = "username", required = true)
+    @CsvBindByName(column = "username")
     private String username;
 
     @CsvBindByName(column = "first_name")
@@ -18,7 +18,7 @@ public class UserCsvDto {
     @CsvBindByName(column = "last_name")
     private String lastName;
 
-    @CsvBindByName(column = "email", required = true)
+    @CsvBindByName(column = "email")
     private String email;
 
     @CsvBindByName(column = "password")

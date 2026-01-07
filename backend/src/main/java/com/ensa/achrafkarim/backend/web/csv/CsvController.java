@@ -2,6 +2,7 @@ package com.ensa.achrafkarim.backend.web.csv;
 
 import com.ensa.achrafkarim.backend.service.csv.*;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/csv")
 @AllArgsConstructor
@@ -159,6 +161,7 @@ public class CsvController {
                     .contentType(MediaType.parseMediaType("text/csv"))
                     .body(csvBytes);
         } catch (Exception e) {
+            log.error("Error exporting users CSV: ", e);
             return ResponseEntity.internalServerError().build();
         }
     }

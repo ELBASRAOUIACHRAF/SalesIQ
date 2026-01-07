@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Product } from '../models/product.model';
 
 export interface CategoryDto {
   id: number;
@@ -44,7 +46,20 @@ export class ApiService {
   }
 
   getCategoriesDetails(): Observable<CategoryDetailsDto[]> {
-    return this.http.get<CategoryDetailsDto[]>(`${this.BASE_URL}/categoriesDetails`);
+    return this.http.get<CategoryDto[]>(`${this.BASE_URL}/categories`).pipe(
+      map(categories => categories.map(cat => ({
+        ...cat,
+        productCount: 0 // Will be merged with performance data
+      } as CategoryDetailsDto)))
+    );
+  }
+
+  getProducts(): Observable<Product[]> {
+    return this.http.get<Product[]>(`${this.BASE_URL}/products/getAll`);
+  }
+
+  getProductsByCategory(categoryId: number): Observable<Product[]> {
+    return this.http.get<Product[]>(`${this.BASE_URL}/products/categoryproducts/${categoryId}`);
   }
 
   getCategoryCount(): Observable<number> {

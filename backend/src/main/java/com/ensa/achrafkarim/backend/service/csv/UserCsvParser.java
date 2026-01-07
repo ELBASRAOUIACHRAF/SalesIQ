@@ -6,6 +6,7 @@ import com.ensa.achrafkarim.backend.enums.Segment;
 import com.ensa.achrafkarim.backend.repository.UsersRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.ensa.achrafkarim.backend.dto.csv.UserCsvDto;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class UserCsvParser extends AbstractCsvParser<UserCsvDto, Users> {
@@ -26,10 +28,16 @@ public class UserCsvParser extends AbstractCsvParser<UserCsvDto, Users> {
     }
 
     @Override
+    @Transactional
     protected List<UserCsvDto> getAllDtos() {
-        return usersRepository.findAll().stream()
+        log.info("Getting all users from database...");
+        List<Users> users = usersRepository.findAll();
+        log.info("Found {} users, converting to DTOs...", users.size());
+        List<UserCsvDto> dtos = users.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
+        log.info("Converted {} DTOs", dtos.size());
+        return dtos;
     }
 
     @Override
@@ -96,6 +104,20 @@ public class UserCsvParser extends AbstractCsvParser<UserCsvDto, Users> {
         }
 
         return dto;
+    }
+
+    @Override
+    @Transactional
+    public byte[] exportCsv() throws Exception {
+        log.info("Starting exportCsv for users...");
+        try {
+            byte[] result = super.exportCsv();
+            log.info("exportCsv successful, {} bytes", result.length);
+            return result;
+        } catch (Exception e) {
+            log.error("exportCsv failed: ", e);
+            throw e;
+        }
     }
 
     @Override

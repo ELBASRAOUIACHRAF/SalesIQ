@@ -25,7 +25,6 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -50,7 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/categories/**").permitAll()        // Pour /categories
 
 
-                        .requestMatchers("/api/v1/analytics/similarProducts/**").permitAll()
+                        .requestMatchers("/api/v1/analytics/**").permitAll()  // Analytics endpoints
                         .requestMatchers("/basket/**").permitAll()
                         .requestMatchers("/products/**").permitAll()      // Catalogue public
                         .requestMatchers("/categoriesDetails/**").permitAll()
@@ -58,6 +57,9 @@ public class SecurityConfig {
                         .requestMatchers("/reviews/**").permitAll()       // Lecture avis publique
                         .requestMatchers("/sales/**").permitAll()         // Commandes (géré par controller)
                         .requestMatchers("/SoldProduct/**").permitAll()   // Produits vendus (géré par controller)
+                        .requestMatchers("/users/**").permitAll()         // Users endpoints
+                        .requestMatchers("/api/csv/**").permitAll()       // CSV import/export
+                        .requestMatchers("/getUsersList").permitAll()     // Users list endpoint
 
                         .anyRequest().authenticated()
                 )
@@ -70,7 +72,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // Autoriser l'origine de votre Frontend Angular
-        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        configuration.setAllowedOrigins(List.of("http://localhost:4200", "http://localhost:4201"));
         // Autoriser toutes les méthodes HTTP
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         // Autoriser les headers (surtout Authorization pour le token)

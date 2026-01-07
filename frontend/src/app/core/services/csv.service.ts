@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, timeout, catchError, throwError } from 'rxjs';
 
 export interface CsvImportResponse {
   success: boolean;
@@ -13,15 +13,28 @@ export interface CsvImportResponse {
 })
 export class CsvService {
   private readonly API_URL = 'http://localhost:8080/api/csv';
+  private readonly EXPORT_TIMEOUT = 30000; // 30 seconds timeout
 
   constructor(private http: HttpClient) {}
+
+  private withTimeout<T>(obs: Observable<T>): Observable<T> {
+    return obs.pipe(
+      timeout(this.EXPORT_TIMEOUT),
+      catchError(err => {
+        if (err.name === 'TimeoutError') {
+          return throwError(() => new Error('Export timed out. Please try again.'));
+        }
+        return throwError(() => err);
+      })
+    );
+  }
 
   // ============ USERS ============
   
   exportUsers(): Observable<Blob> {
-    return this.http.get(`${this.API_URL}/users/export`, {
+    return this.withTimeout(this.http.get(`${this.API_URL}/users/export`, {
       responseType: 'blob'
-    });
+    }));
   }
 
   importUsers(file: File): Observable<CsvImportResponse> {
@@ -33,9 +46,9 @@ export class CsvService {
   // ============ PRODUCTS ============
   
   exportProducts(): Observable<Blob> {
-    return this.http.get(`${this.API_URL}/products/export`, {
+    return this.withTimeout(this.http.get(`${this.API_URL}/products/export`, {
       responseType: 'blob'
-    });
+    }));
   }
 
   importProducts(file: File): Observable<CsvImportResponse> {
@@ -47,9 +60,9 @@ export class CsvService {
   // ============ CATEGORIES ============
   
   exportCategories(): Observable<Blob> {
-    return this.http.get(`${this.API_URL}/categories/export`, {
+    return this.withTimeout(this.http.get(`${this.API_URL}/categories/export`, {
       responseType: 'blob'
-    });
+    }));
   }
 
   importCategories(file: File): Observable<CsvImportResponse> {
@@ -61,9 +74,9 @@ export class CsvService {
   // ============ SALES ============
   
   exportSales(): Observable<Blob> {
-    return this.http.get(`${this.API_URL}/sales/export`, {
+    return this.withTimeout(this.http.get(`${this.API_URL}/sales/export`, {
       responseType: 'blob'
-    });
+    }));
   }
 
   importSales(file: File): Observable<CsvImportResponse> {
@@ -75,9 +88,9 @@ export class CsvService {
   // ============ REVIEWS ============
   
   exportReviews(): Observable<Blob> {
-    return this.http.get(`${this.API_URL}/reviews/export`, {
+    return this.withTimeout(this.http.get(`${this.API_URL}/reviews/export`, {
       responseType: 'blob'
-    });
+    }));
   }
 
   importReviews(file: File): Observable<CsvImportResponse> {
@@ -89,9 +102,9 @@ export class CsvService {
   // ============ SOLD PRODUCTS ============
   
   exportSoldProducts(): Observable<Blob> {
-    return this.http.get(`${this.API_URL}/sold-products/export`, {
+    return this.withTimeout(this.http.get(`${this.API_URL}/sold-products/export`, {
       responseType: 'blob'
-    });
+    }));
   }
 
   importSoldProducts(file: File): Observable<CsvImportResponse> {
@@ -103,9 +116,9 @@ export class CsvService {
   // ============ BASKETS ============
   
   exportBaskets(): Observable<Blob> {
-    return this.http.get(`${this.API_URL}/baskets/export`, {
+    return this.withTimeout(this.http.get(`${this.API_URL}/baskets/export`, {
       responseType: 'blob'
-    });
+    }));
   }
 
   importBaskets(file: File): Observable<CsvImportResponse> {
@@ -117,9 +130,9 @@ export class CsvService {
   // ============ SEARCH HISTORY ============
   
   exportSearchHistory(): Observable<Blob> {
-    return this.http.get(`${this.API_URL}/search-history/export`, {
+    return this.withTimeout(this.http.get(`${this.API_URL}/search-history/export`, {
       responseType: 'blob'
-    });
+    }));
   }
 
   importSearchHistory(file: File): Observable<CsvImportResponse> {

@@ -61,7 +61,7 @@ export class UsersManagement implements OnInit, OnDestroy {
   loadUsers(): void {
     this.loading = true;
     // Use getUsersList endpoint
-    this.http.get<Users[]>(`${this.apiUrl}getUsersList`)
+    this.http.get<Users[]>(`${this.apiUrl}users/getUsersList`)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (users) => {
@@ -169,7 +169,7 @@ export class UsersManagement implements OnInit, OnDestroy {
 
   saveUser(): void {
     if (this.modalMode === 'add') {
-      // Create new user using /addUser endpoint
+      // Create new user using /users/addUser endpoint
       const userData = {
         username: this.formData.username,
         email: this.formData.email,
@@ -183,7 +183,7 @@ export class UsersManagement implements OnInit, OnDestroy {
         postalCode: this.formData.postalCode || '',
         active: this.formData.active !== false
       };
-      this.http.post<Users>(`${this.apiUrl}addUser`, userData)
+      this.http.post<Users>(`${this.apiUrl}users/addUser`, userData)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
@@ -197,7 +197,7 @@ export class UsersManagement implements OnInit, OnDestroy {
           }
         });
     } else if (this.modalMode === 'edit' && this.selectedUser) {
-      // Update existing user using /updateUser endpoint
+      // Update existing user using /users/updateUser endpoint
       const updateData = {
         id: this.selectedUser.id,
         username: this.formData.username,
@@ -211,7 +211,7 @@ export class UsersManagement implements OnInit, OnDestroy {
         country: this.formData.country,
         postalCode: this.formData.postalCode
       };
-      this.http.put<Users>(`${this.apiUrl}updateUser`, updateData)
+      this.http.put<Users>(`${this.apiUrl}users/updateUser`, updateData)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
@@ -229,7 +229,7 @@ export class UsersManagement implements OnInit, OnDestroy {
 
   deleteUser(user: Users): void {
     if (confirm(`Are you sure you want to delete user "${user.username}"?\n\nThis action cannot be undone.`)) {
-      this.http.delete(`${this.apiUrl}deleteUser/${user.id}`)
+      this.http.delete(`${this.apiUrl}users/deleteUser/${user.id}`)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {

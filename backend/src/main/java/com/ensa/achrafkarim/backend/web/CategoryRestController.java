@@ -19,33 +19,26 @@ public class CategoryRestController {
 
     private CategoryService categoryService;
 
-    //@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    @PreAuthorize("permitAll()")
     @GetMapping("/categoriesDetails")
     public List<CategoryDetailsDto> getCategoriesDetails(){
         return categoryService.listCategoriesDetails();
     }
 
-    //@PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    @PreAuthorize("permitAll()")
     @GetMapping("/category/{categoryId}")
     public CategoryDto getCategories(@PathVariable Long categoryId) {
         return categoryService.getCategory(categoryId);
     }
 
-    @PreAuthorize("permitAll()")
     @GetMapping("/category/count")
     public Long getCategoriesCount() {
         return categoryService.getTotalCategoriesCount();
     }
 
-    @PreAuthorize("permitAll()")
     @GetMapping("/categories")
     public List<CategoryDto> getCategoriesList() {
         return categoryService.listCategories();
     }
 
-    @PreAuthorize("permitAll()")
     @GetMapping("/categoriespage")
     public Page<CategoryDto> getCategoriesPage(@RequestParam(defaultValue = "0") int page,
                                                @RequestParam(defaultValue = "10") int size) {

@@ -86,28 +86,31 @@ export class CategoriesDashboard implements OnInit, OnDestroy, AfterViewInit {
 
     forkJoin({
       categories: this.apiService.getCategoriesDetails().pipe(catchError(() => of([]))),
-      performance: this.apiService.getCategoryPerformance().pipe(catchError(() => of([])))
+      performance: this.apiService.getCategoryPerformance().pipe(catchError(() => of([]))),
+      products: this.apiService.getProducts().pipe(catchError(() => of([])))
     })
     .pipe(
       takeUntil(this.destroy$),
       finalize(() => this.loading = false)
     )
     .subscribe({
-      next: ({ categories, performance }) => {
+      next: ({ categories, performance, products }) => {
         this.categoryPerformance = performance;
         
-        // Merge category details with performance data
+        // Merge category details with performance data and product counts
         this.categories = categories.map(cat => {
           const perf = performance.find(p => p.categoryId === cat.id);
+          const productCount = products.filter(p => p.categoryId === cat.id).length;
           return {
             ...cat,
             revenue: perf?.totalRevenue || 0,
             quantitySold: perf?.totalQuantitySold || 0,
-            salesCount: perf?.totalSales || 0
+            salesCount: perf?.totalSales || 0,
+            productCount
           };
         });
 
-        this.calculateKpis();
+        this.calculateKpis(products.length);
         
         // Force change detection and trigger resize for components
         this.ngZone.run(() => {
@@ -125,12 +128,14 @@ export class CategoriesDashboard implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  private calculateKpis(): void {
+  private calculateKpis(totalProducts: number): void {
     const cats = this.categories;
     const totalCategories = cats.length;
     const activeCategories = cats.filter(c => c.isActive).length;
-    const totalProducts = cats.reduce((sum, c) => sum + (c.productCount || 0), 0);
-    const avgProductsPerCategory = totalCategories > 0 ? Math.round(totalProducts / totalCategories) : 0;
+    const totalProductsFromCats = cats.reduce((sum, c) => sum + (c.productCount || 0), 0);
+    // trust direct count from products list if provided, else fallback to sum of per-category counts
+    const totalProd = totalProducts ?? totalProductsFromCats;
+    const avgProductsPerCategory = totalCategories > 0 ? Math.round(totalProd / totalCategories) : 0;
     const totalRevenue = cats.reduce((sum, c) => sum + (c.revenue || 0), 0);
     const topCategory = cats.reduce((max, c) => (c.revenue || 0) > (max?.revenue || 0) ? c : max, cats[0]);
 
@@ -153,10 +158,10 @@ export class CategoriesDashboard implements OnInit, OnDestroy, AfterViewInit {
       },
       {
         title: 'Total Products',
-        value: totalProducts,
+        value: totalProd,
         subtitle: 'Across categories',
         change: 5.2,
-        sparkline: generateSparkline(totalProducts),
+        sparkline: generateSparkline(totalProd),
         accentColor: '#8b5cf6'
       },
       {
