@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AssociationRuleDto {
-    private ProductDto productA; // Antecedent
-    private ProductDto productB; // Consequent
+    private ProductDto productA;
+    private ProductDto productB;
     private double support;
     private double confidence;
 }

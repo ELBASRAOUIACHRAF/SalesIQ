@@ -23,7 +23,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p JOIN p.soldProducts sp GROUP BY p ORDER BY SUM(sp.quantity) ASC ")
     List<Product> getLeastSellingProducts(Pageable pageable);
     // Query for getting products with 0 sales
-    // we used coalesce to check also for products that their sold product table is not existent (null)
     @Query("SELECT p FROM Product p LEFT JOIN p.soldProducts sp GROUP BY p HAVING COALESCE(SUM(sp.quantity), 0) = 0")
     List<Product> getProductsWithNoSales();
     // Query for getting product revenue

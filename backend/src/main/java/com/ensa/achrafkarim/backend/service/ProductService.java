@@ -10,7 +10,6 @@ import java.util.List;
 
 public interface ProductService {
 
-    // CRUD
     ProductDto createProduct(ProductDto productDto, Long categoryId);
     ProductDto updateProduct(ProductDto productDto);
     void deleteProduct(Long id);
@@ -18,7 +17,6 @@ public interface ProductService {
     List<ProductDto> listProducts();
     ProductDetailsDto getProductDetails(Long productId);
 
-    // Filtering & Search
     List<ProductDto> filterProducts(String name, Long categoryId, Double minPrice, Double maxPrice);
     List<ProductDto> getProductsByCategory(Long categoryId);
 
@@ -26,7 +24,6 @@ public interface ProductService {
 
     List<ProductDto> getProductsSortedByPrice(boolean ascending);
 
-    // Stock management
     ProductDto increaseStock(Long productId, int quantity);
     ProductDto decreaseStock(Long productId, int quantity);
     boolean isProductInStock(Long productId);
@@ -34,21 +31,18 @@ public interface ProductService {
     boolean isLowStock(Long productId);
     List<ProductDto> getLowStockProducts();
 
-    // Analytics
     List<ProductDto> getBestSellingProducts(int limit);
     List<ProductDto> getLeastSellingProducts(int limit);
     List<ProductDto> getProductsWithNoSales();
     double getProductRevenue(Long productId);
     List<ProductDto> getTopProfitProducts(int limit); // Didicace l youness lacienne mol l idea
 
-    // Availability
     List<ProductDto> getAvailableProducts();
     List<ProductDto> getUnavailableProducts();
     ProductDto markProductAsUnavailable(ProductDto productDto);
     ProductDto markProductAsAvailable(ProductDto productDto);
 
     int countProductsInCategory(Long categoryId);
-    // Images
     ProductDto addImageToProduct(Long productId, MultipartFile file) throws IOException;
     ProductDto removeImageFromProduct(Long productId, String imageUrl);
 

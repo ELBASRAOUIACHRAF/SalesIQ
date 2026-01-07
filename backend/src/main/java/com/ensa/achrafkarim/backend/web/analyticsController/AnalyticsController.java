@@ -36,11 +36,9 @@ public class AnalyticsController {
         }
 
         try {
-            // Try parsing as LocalDateTime first
             if (dateStr.contains("T")) {
                 return LocalDateTime.parse(dateStr);
             }
-            // Parse as LocalDate and convert to LocalDateTime
             LocalDate date = LocalDate.parse(dateStr);
             return endOfDay ? date.atTime(LocalTime.MAX) : date.atStartOfDay();
         } catch (Exception e) {
@@ -272,7 +270,6 @@ public class AnalyticsController {
         return ResponseEntity.ok(lifecycle);
     }
 
-    // turnover controller
     @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/inventory-turnover/{id}")
     public ResponseEntity<Double> getInventoryTurnoverRatio(

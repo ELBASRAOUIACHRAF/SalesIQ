@@ -18,20 +18,16 @@ public class FileStorageServiceImpl implements FileStorageService {
     private String uploadDir;
     @Override
     public String saveImage(MultipartFile file) throws IOException {
-        // Créer le répertoire s'il n'existe pas
         Path uploadPath = Paths.get(uploadDir);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
 
-        // Générer un nom unique
         String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
         Path filePath = uploadPath.resolve(fileName);
 
-        // Sauvegarde du fichier sur le serveur
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-        // Retourner l'URL publique
         return "/images/" + fileName;
     }
 }

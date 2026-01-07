@@ -117,11 +117,6 @@ public class UsersRestController {
         return usersService.searchUsersByUsername(username);
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
-//    @PutMapping("/updateLastLogin/{userId}")
-//    public void updateLastLogin(@PathVariable Long userId) {
-//        usersService.updateLastLogin(userId);
-//    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/addRoleToUser/{userId}")
@@ -135,16 +130,5 @@ public class UsersRestController {
         return usersService.activateOrDeactivateUser(userId, status);
     }
 
-//    @PreAuthorize("hasRole('ADMIN')")
-//    @PutMapping("/updateHoursLoggedIn/{userId}")
-//    public void updateHoursLoggedIn(@PathVariable Long userId) {
-//        usersService.updateHoursLoggedIn(userId);
-//    }
-
-//    @PreAuthorize("hasRole('ADMIN')")
-//    @GetMapping("/daySinceLastLogIn/{userId}")
-//    public long getDaysSinceLastLogIn(@PathVariable Long userId) {
-//        return usersService.getDaysSinceLastLogin(userId);
-//    }
 
 }

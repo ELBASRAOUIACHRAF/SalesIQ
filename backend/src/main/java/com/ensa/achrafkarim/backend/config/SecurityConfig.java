@@ -30,9 +30,6 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-//    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
-//        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -46,20 +43,20 @@ public class SecurityConfig {
                         .requestMatchers("/search/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
 
-                        .requestMatchers("/categories/**").permitAll()        // Pour /categories
+                        .requestMatchers("/categories/**").permitAll()
 
 
-                        .requestMatchers("/api/v1/analytics/**").permitAll()  // Analytics endpoints
+                        .requestMatchers("/api/v1/analytics/**").permitAll()
                         .requestMatchers("/basket/**").permitAll()
-                        .requestMatchers("/products/**").permitAll()      // Catalogue public
+                        .requestMatchers("/products/**").permitAll()
                         .requestMatchers("/categoriesDetails/**").permitAll()
                         .requestMatchers("/category/**").permitAll()
-                        .requestMatchers("/reviews/**").permitAll()       // Lecture avis publique
-                        .requestMatchers("/sales/**").permitAll()         // Commandes (géré par controller)
-                        .requestMatchers("/SoldProduct/**").permitAll()   // Produits vendus (géré par controller)
-                        .requestMatchers("/users/**").permitAll()         // Users endpoints
-                        .requestMatchers("/api/csv/**").permitAll()       // CSV import/export
-                        .requestMatchers("/getUsersList").permitAll()     // Users list endpoint
+                        .requestMatchers("/reviews/**").permitAll()
+                        .requestMatchers("/sales/**").permitAll()
+                        .requestMatchers("/SoldProduct/**").permitAll()
+                        .requestMatchers("/users/**").permitAll()
+                        .requestMatchers("/api/csv/**").permitAll()
+                        .requestMatchers("/getUsersList").permitAll()
 
                         .anyRequest().authenticated()
                 )
@@ -71,13 +68,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Autoriser l'origine de votre Frontend Angular
         configuration.setAllowedOrigins(List.of("http://localhost:4200", "http://localhost:4201"));
-        // Autoriser toutes les méthodes HTTP
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        // Autoriser les headers (surtout Authorization pour le token)
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Access-Control-Allow-Origin"));
-        // Autoriser l'envoi des identifiants (si besoin de cookies plus tard, sinon optionnel pour JWT pur)
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
