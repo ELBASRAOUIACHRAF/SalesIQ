@@ -1,0 +1,197 @@
+<section class="executive-container">
+  <!-- Header -->
+  <header class="executive-header">
+    <div class="header-content">
+      <h3>👔 Executive Dashboard</h3>
+      <p class="subtitle">High-level business intelligence at a glance</p>
+    </div>
+    <button class="refresh-btn" (click)="loadDashboard()" [disabled]="isLoading">
+      🔄 Refresh
+    </button>
+  </header>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading executive insights...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-state">
+    <p>⚠️ {{ errorMessage }}</p>
+    <button class="retry-button" (click)="loadDashboard()">🔄 Retry</button>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!isLoading && !errorMessage && dashboard" class="dashboard-content">
+
+    <!-- Health Score Section -->
+    <div class="health-score-section">
+      <div class="health-score-card" [class]="getHealthScoreClass(dashboard.healthScore)">
+        <div class="score-ring">
+          <svg viewBox="0 0 100 100" class="score-svg">
+            <circle cx="50" cy="50" r="45" class="score-bg" />
+            <circle cx="50" cy="50" r="45" class="score-progress"
+                    [style.strokeDasharray]="(healthScorePercentage * 2.83) + ' 283'" />
+          </svg>
+          <div class="score-center">
+            <span class="score-value">{{ dashboard.healthScore | number:'1.0-0' }}</span>
+            <span class="score-label">Health Score</span>
+          </div>
+        </div>
+        <div class="health-status">
+          <span class="status-badge" [class]="getHealthScoreClass(dashboard.healthScore)">
+            {{ getHealthLabel(dashboard.healthScore) }}
+          </span>
+          <p class="status-description">Overall business performance indicator based on key metrics</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Grid -->
+    <div class="kpi-grid">
+      <div class="kpi-card revenue">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-content">
+          <span class="kpi-label">Total Revenue</span>
+          <span class="kpi-value">{{ dashboard.kpis.totalRevenue | currency:'USD':'symbol':'1.0-0' }}</span>
+          <div class="kpi-change positive">
+            📈 from this period
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-card orders">
+        <div class="kpi-icon">📦</div>
+        <div class="kpi-content">
+          <span class="kpi-label">Total Orders</span>
+          <span class="kpi-value">{{ dashboard.kpis.totalOrders | number }}</span>
+          <div class="kpi-change positive">
+            📈 from this period
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-card customers">
+        <div class="kpi-icon">👥</div>
+        <div class="kpi-content">
+          <span class="kpi-label">Total Customers</span>
+          <span class="kpi-value">{{ dashboard.kpis.totalCustomers | number }}</span>
+          <div class="kpi-change positive">
+            📈 from this period
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-card aov">
+        <div class="kpi-icon">🎯</div>
+        <div class="kpi-content">
+          <span class="kpi-label">Avg Order Value</span>
+          <span class="kpi-value">{{ dashboard.kpis.averageOrderValue | currency:'USD':'symbol':'1.0-0' }}</span>
+          <div class="kpi-change positive">
+            📈 from this period
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secondary Metrics -->
+    <div class="secondary-grid">
+      <div class="secondary-card">
+        <div class="card-header">
+          <span class="card-title">📊 Conversion Rate</span>
+          <span class="card-value">{{ dashboard.kpis.conversionRate | number:'1.1-1' }}%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill conversion" [ngStyle]="getProgressBarStyle(dashboard.kpis.conversionRate)"></div>
+        </div>
+      </div>
+
+      <div class="secondary-card">
+        <div class="card-header">
+          <span class="card-title">🔄 Retention Rate</span>
+          <span class="card-value">{{ dashboard.customerMetrics.retentionRate | number:'1.1-1' }}%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill repeat" [ngStyle]="getProgressBarStyle(dashboard.customerMetrics.retentionRate)"></div>
+        </div>
+      </div>
+
+      <div class="secondary-card">
+        <div class="card-header">
+          <span class="card-title">📈 Avg Rating</span>
+          <span class="card-value">{{ dashboard.kpis.averageRating | number:'1.1-1' }}</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill margin" [ngStyle]="getProgressBarStyle(dashboard.kpis.averageRating * 20)"></div>
+        </div>
+      </div>
+
+      <div class="secondary-card">
+        <div class="card-header">
+          <span class="card-title">⚠️ Churn Risk</span>
+          <span class="card-value">{{ dashboard.customerMetrics.churnRate | number:'1.1-1' }}%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill churn" [ngStyle]="getProgressBarStyle(dashboard.customerMetrics.churnRate)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Performers -->
+    <div class="performers-section">
+      <div class="top-products">
+        <h4>🏆 Top Products</h4>
+        <div class="performer-list">
+          <div *ngFor="let product of dashboard.topProducts; let i = index" class="performer-item">
+            <span class="rank">{{ i + 1 }}</span>
+            <span class="name">{{ product.productName }}</span>
+            <span class="value">{{ product.revenue | currency:'USD':'symbol':'1.0-0' }}</span>
+          </div>
+          <div *ngIf="!dashboard.topProducts.length" class="no-data-inline">
+            No product data available
+          </div>
+        </div>
+      </div>
+
+      <div class="top-customers">
+        <h4>👑 Top Customers</h4>
+        <div class="performer-list">
+          <div *ngFor="let customer of dashboard.topCustomers; let i = index" class="performer-item">
+            <span class="rank">{{ i + 1 }}</span>
+            <span class="name">{{ customer.username }}</span>
+            <span class="value">{{ customer.totalSpent | currency:'USD':'symbol':'1.0-0' }}</span>
+          </div>
+          <div *ngIf="!dashboard.topCustomers.length" class="no-data-inline">
+            No customer data available
+          </div>
+        </div>
+      </div>
+
+      <div class="top-categories">
+        <h4>📂 Top Categories</h4>
+        <div class="performer-list">
+          <div *ngFor="let category of dashboard.topCategories; let i = index" class="performer-item">
+            <span class="rank">{{ i + 1 }}</span>
+            <span class="name">{{ category.categoryName }}</span>
+            <span class="value">{{ category.revenue | currency:'USD':'symbol':'1.0-0' }}</span>
+          </div>
+          <div *ngIf="!dashboard.topCategories.length" class="no-data-inline">
+            No category data available
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts Section -->
+    <div class="insights-section" *ngIf="dashboard.alerts.length">
+      <h4>💡 Alerts</h4>
+      <div class="insights-grid">
+        <div *ngFor="let alert of dashboard.alerts" class="insight-card">
+          <span class="insight-icon">⚠️</span>
+          <p class="insight-text">{{ alert }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

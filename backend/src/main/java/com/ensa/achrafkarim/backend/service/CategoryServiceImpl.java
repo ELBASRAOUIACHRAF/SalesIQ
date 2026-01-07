@@ -118,7 +118,7 @@ public class CategoryServiceImpl implements CategoryService {
             Long productsCount = Long.valueOf(
                     productService.getProductsByCategory(categoryDto.getId()).size()
             );
-            CategoryDetailsDto dto = new CategoryDetailsDto(categoryDto.getId(),categoryDto.getName(), categoryDto.getDescription(), categoryDto.isActive(), productsCount );
+            CategoryDetailsDto dto = new CategoryDetailsDto(categoryDto.getId(),categoryDto.getName(), categoryDto.getDescription(), categoryDto.getIsActive(), productsCount );
             detailsDtos.add(dto);
         }
         return detailsDtos;

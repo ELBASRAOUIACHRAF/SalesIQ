@@ -1,0 +1,178 @@
+<section class="stockout-container">
+  <!-- Header -->
+  <header class="stockout-header">
+    <div class="header-content">
+      <h3>📦 Stockout Predictions</h3>
+      <p class="subtitle">AI-powered inventory risk analysis</p>
+    </div>
+    <button class="refresh-btn" (click)="loadPredictions()" [disabled]="isLoading">
+      🔄 Refresh
+    </button>
+  </header>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Analyzing inventory levels...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-state">
+    <p>⚠️ {{ errorMessage }}</p>
+    <button class="retry-button" (click)="loadPredictions()">🔄 Retry</button>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading && !errorMessage" class="content-section">
+
+    <!-- Alert Banner for Critical -->
+    <div *ngIf="criticalCount > 0" class="alert-banner critical">
+      <span class="alert-icon">🚨</span>
+      <span class="alert-text">
+        <strong>{{ criticalCount }} product{{ criticalCount > 1 ? 's' : '' }}</strong> at critical stockout risk! Immediate action required.
+      </span>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+      <div class="summary-card critical" (click)="riskFilter = 'CRITICAL'; onFilterChange()">
+        <div class="card-icon">🚨</div>
+        <div class="card-content">
+          <span class="card-value">{{ criticalCount }}</span>
+          <span class="card-label">Critical Risk</span>
+        </div>
+      </div>
+
+      <div class="summary-card high" (click)="riskFilter = 'HIGH'; onFilterChange()">
+        <div class="card-icon">⚠️</div>
+        <div class="card-content">
+          <span class="card-value">{{ highCount }}</span>
+          <span class="card-label">High Risk</span>
+        </div>
+      </div>
+
+      <div class="summary-card medium" (click)="riskFilter = 'MEDIUM'; onFilterChange()">
+        <div class="card-icon">⏳</div>
+        <div class="card-content">
+          <span class="card-value">{{ mediumCount }}</span>
+          <span class="card-label">Medium Risk</span>
+        </div>
+      </div>
+
+      <div class="summary-card low" (click)="riskFilter = 'LOW'; onFilterChange()">
+        <div class="card-icon">✅</div>
+        <div class="card-content">
+          <span class="card-value">{{ lowCount }}</span>
+          <span class="card-label">Low Risk</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-bar">
+      <div class="search-wrapper">
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm" 
+          (input)="onFilterChange()"
+          placeholder="🔍 Search products..."
+          class="search-input"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label>Risk Level</label>
+        <select [(ngModel)]="riskFilter" (change)="onFilterChange()" class="filter-select">
+          <option value="ALL">All Levels</option>
+          <option value="CRITICAL">Critical</option>
+          <option value="HIGH">High</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="LOW">Low</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Sort By</label>
+        <select [(ngModel)]="sortBy" (change)="onFilterChange()" class="filter-select">
+          <option value="daysUntilStockout">Days Until Stockout</option>
+          <option value="riskScore">Risk Score</option>
+          <option value="currentStock">Current Stock</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Products List -->
+    <div class="predictions-list">
+      <div *ngFor="let item of filteredPredictions" 
+           class="prediction-card"
+           [class]="getRiskClass(item.riskLevel)">
+        
+        <div class="risk-indicator">
+          <span class="risk-icon">{{ getRiskIcon(item.riskLevel) }}</span>
+          <span class="days-badge" [class]="getRiskClass(item.riskLevel)">
+            {{ getDaysLabel(item.daysUntilStockout) }}
+          </span>
+        </div>
+
+        <div class="product-info">
+          <h4 class="product-name">{{ item.productName }}</h4>
+          
+          <!-- Stock Level Bar -->
+          <div class="stock-bar-container">
+            <div class="stock-bar-header">
+              <span>Stock Level</span>
+              <span>{{ item.currentStock }} units</span>
+            </div>
+            <div class="stock-bar">
+              <div class="stock-fill" 
+                   [class]="getRiskClass(item.riskLevel)"
+                   [style.width.%]="Math.min(100, item.stockoutProbability)">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="metrics-section">
+          <div class="metric">
+            <span class="metric-label">Daily Avg Sales</span>
+            <span class="metric-value">{{ item.avgDailySales | number:'1.1-1' }}</span>
+          </div>
+
+          <div class="metric">
+            <span class="metric-label">Stockout Probability</span>
+            <span class="metric-value risk-score" [class]="getRiskClass(item.riskLevel)">
+              {{ item.stockoutProbability | number:'1.0-0' }}%
+            </span>
+          </div>
+
+          <div class="metric">
+            <span class="metric-label">Recommended Restock</span>
+            <span class="metric-value">{{ item.recommendedRestock }}</span>
+          </div>
+        </div>
+
+        <div class="action-section">
+          <span class="risk-badge" [class]="getRiskClass(item.riskLevel)">
+            {{ item.riskLevel }}
+          </span>
+          <button class="reorder-btn" title="Add to reorder list">
+            📋 Reorder
+          </button>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="filteredPredictions.length === 0" class="empty-state">
+        <p>📦 No products match your criteria</p>
+        <button class="clear-filters" (click)="riskFilter = 'ALL'; searchTerm = ''; onFilterChange()">
+          Clear Filters
+        </button>
+      </div>
+    </div>
+
+    <!-- Results Count -->
+    <div class="results-count" *ngIf="filteredPredictions.length > 0">
+      Showing {{ filteredPredictions.length }} of {{ predictions.length }} products
+    </div>
+  </div>
+</section>

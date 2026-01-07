@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Subject, takeUntil } from 'rxjs';
 import { KpiCardComponent } from '../../../shared/components/kpi-card/kpi-card';
-import { ChartKpiCardComponent } from '../../analytics/components/chart-kpi-card/chart-kpi-card';
 import { KpiPieChartComponent } from '../../analytics/components/kpi-pie-chart/kpi-pie-chart';
-import { KpiBarChartComponent } from '../../analytics/components/kpi-bar-chart/kpi-bar-chart';
-import { BigCardComponent } from '../../analytics/components/big-kpi-card/big-kpi-card';
 import { TopBarComponent } from '../../analytics/components/top-bar/top-bar';
+import { ReviewsAnalyticsComponent } from '../../analytics/components/reviews-analytics/reviews-analytics';
+import { AnalyticsService } from '../../../core/services/analytics.service';
+import { CsvService } from '../../../core/services/csv.service';
+import { ReviewsSentimentAnalysisDto } from '../../../core/models/reviewsSentiment.model';
 
 @Component({
   selector: 'app-reviews-dashboard',
@@ -14,43 +16,208 @@ import { TopBarComponent } from '../../analytics/components/top-bar/top-bar';
     CommonModule,
     TopBarComponent,
     KpiCardComponent,
-    ChartKpiCardComponent,
-    BigCardComponent,
-    KpiBarChartComponent,
-    KpiPieChartComponent
+    KpiPieChartComponent,
+    ReviewsAnalyticsComponent
   ],
   templateUrl: './reviews-dashboard.html',
   styleUrls: ['./reviews-dashboard.css'],
 })
-export class ReviewsDashboard implements OnInit {
-  ngOnInit(): void {}
+export class ReviewsDashboard implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  
+  private destroy$ = new Subject<void>();
+  isLoading = true;
+  
+  // CSV Import/Export state
+  importMessage = '';
+  importSuccess = false;
+  isExporting = false;
+  isImporting = false;
+  
+  // Sentiment data from API
+  sentimentData: ReviewsSentimentAnalysisDto[] = [];
+  
+  // Computed KPIs
+  totalReviews = 0;
+  positiveReviews = 0;
+  neutralReviews = 0;
+  negativeReviews = 0;
+  positivePercentage = 0;
+  averageSentimentScore = 0;
 
-  kpis = [
-    { title: 'Total Reviews', value: 12345, subtitle: 'All time', change: 12.8, sparkline: [10000, 10500, 11000, 11500, 12000, 12200, 12345], accentColor: '#6366f1' },
-    { title: 'Average Rating', value: 4.6, subtitle: 'Out of 5', change: 0.2, sparkline: [4.4, 4.5, 4.5, 4.6, 4.6, 4.6, 4.6], accentColor: '#f59e0b' },
-    { title: 'New Reviews', value: 234, subtitle: 'This week', change: 18.5, sparkline: [180, 190, 200, 210, 220, 230, 234], accentColor: '#10b981' },
-    { title: 'Response Rate', value: 87.5, subtitle: '% answered', change: 5.2, sparkline: [80, 82, 84, 85, 86, 87, 87.5], accentColor: '#8b5cf6' },
-  ];
+  constructor(
+    private analyticsService: AnalyticsService,
+    private csvService: CsvService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
+  ) {}
 
-  chartCards = [
-    { title: 'Review Trends', value: 12345, subtitle: 'Total reviews', color: '#6366f1', data: [10000, 10500, 11000, 11500, 12000, 12200, 12345] },
-    { title: 'Rating Distribution', value: 4.6, subtitle: 'Average', color: '#f59e0b', data: [4.4, 4.5, 4.5, 4.6, 4.6, 4.6, 4.6] }
-  ];
+  ngOnInit(): void {
+    this.loadData();
+  }
 
-  barCards = [
-    { title: 'Reviews by Day', value: 234, subtitle: 'This week', color: '#6366f1', bars: [30, 35, 32, 38, 40, 35, 24] },
-    { title: 'Rating Trends', value: 4.6, subtitle: 'Average', color: '#f59e0b', bars: [4.2, 4.3, 4.4, 4.5, 4.6, 4.6, 4.6] }
-  ];
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 100);
+  }
 
-  pieData = [
-    { label: '5 Stars', value: 45, color: '#10b981' },
-    { label: '4 Stars', value: 30, color: '#6366f1' },
-    { label: '3 Stars', value: 15, color: '#f59e0b' },
-    { label: '1-2 Stars', value: 10, color: '#ef4444' }
-  ];
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadData(): void {
+    this.isLoading = true;
+    
+    this.analyticsService.getReviewsSentiment()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.sentimentData = data || [];
+          this.calculateKPIs();
+          this.isLoading = false;
+          this.cdr.detectChanges();
+          setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+        },
+        error: (err) => {
+          console.error('Reviews dashboard error:', err);
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        }
+      });
+  }
+
+  calculateKPIs(): void {
+    this.totalReviews = this.sentimentData.reduce((sum, s) => sum + s.totalReviews, 0);
+    this.positiveReviews = this.sentimentData.reduce((sum, s) => sum + s.positiveCount, 0);
+    this.neutralReviews = this.sentimentData.reduce((sum, s) => sum + s.neutralCount, 0);
+    this.negativeReviews = this.sentimentData.reduce((sum, s) => sum + s.negativeCount, 0);
+    
+    this.positivePercentage = this.totalReviews > 0 
+      ? (this.positiveReviews / this.totalReviews) * 100 
+      : 0;
+    
+    this.averageSentimentScore = this.totalReviews > 0
+      ? ((this.positiveReviews - this.negativeReviews) / this.totalReviews) * 100
+      : 0;
+  }
+
+  get kpis() {
+    return [
+      { 
+        title: 'Total Reviews', 
+        value: this.totalReviews, 
+        subtitle: 'All products', 
+        change: 0, 
+        sparkline: [0], 
+        accentColor: '#6366f1' 
+      },
+      { 
+        title: 'Positive Reviews', 
+        value: this.positiveReviews, 
+        subtitle: `${this.positivePercentage.toFixed(1)}% of total`, 
+        change: 0, 
+        sparkline: [0], 
+        accentColor: '#10b981' 
+      },
+      { 
+        title: 'Neutral Reviews', 
+        value: this.neutralReviews, 
+        subtitle: `${this.totalReviews > 0 ? ((this.neutralReviews / this.totalReviews) * 100).toFixed(1) : 0}% of total`, 
+        change: 0, 
+        sparkline: [0], 
+        accentColor: '#f59e0b' 
+      },
+      { 
+        title: 'Negative Reviews', 
+        value: this.negativeReviews, 
+        subtitle: `${this.totalReviews > 0 ? ((this.negativeReviews / this.totalReviews) * 100).toFixed(1) : 0}% of total`, 
+        change: 0, 
+        sparkline: [0], 
+        accentColor: '#ef4444' 
+      },
+    ];
+  }
+
+  get pieData() {
+    return [
+      { label: 'Positive', value: this.positiveReviews, color: '#10b981' },
+      { label: 'Neutral', value: this.neutralReviews, color: '#f59e0b' },
+      { label: 'Negative', value: this.negativeReviews, color: '#ef4444' }
+    ];
+  }
 
   get pieTotal(): number {
-    return this.pieData.reduce((sum, p) => sum + (p.value || 0), 0);
+    return this.totalReviews;
+  }
+
+  get productsWithReviews(): number {
+    return this.sentimentData.filter(s => s.totalReviews > 0).length;
+  }
+
+  // ============ CSV Import/Export Methods ============
+
+  onExportReviews(): void {
+    if (this.isExporting) return;
+    
+    this.isExporting = true;
+    this.importMessage = '';
+
+    this.csvService.exportReviews().subscribe({
+      next: (blob) => {
+        this.csvService.downloadBlob(blob, 'reviews.csv');
+        this.isExporting = false;
+      },
+      error: (err) => {
+        console.error('Export error:', err);
+        this.importMessage = 'Failed to export reviews. Is the backend running?';
+        this.importSuccess = false;
+        this.isExporting = false;
+        setTimeout(() => this.importMessage = '', 5000);
+      }
+    });
+  }
+
+  triggerImport(): void {
+    this.fileInput.nativeElement.click();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    
+    if (!file) return;
+    
+    if (!file.name.endsWith('.csv')) {
+      this.importMessage = 'Please select a CSV file';
+      this.importSuccess = false;
+      setTimeout(() => this.importMessage = '', 3000);
+      return;
+    }
+
+    this.isImporting = true;
+    this.importMessage = 'Importing reviews...';
+    this.importSuccess = true;
+
+    this.csvService.importReviews(file).subscribe({
+      next: (response) => {
+        this.importMessage = response.message || `Successfully imported ${response.count} reviews`;
+        this.importSuccess = response.success;
+        this.isImporting = false;
+        input.value = '';
+        this.loadData(); // Refresh data
+        setTimeout(() => this.importMessage = '', 5000);
+      },
+      error: (err) => {
+        console.error('Import error:', err);
+        this.importMessage = 'Failed to import reviews. Check file format.';
+        this.importSuccess = false;
+        this.isImporting = false;
+        input.value = '';
+        setTimeout(() => this.importMessage = '', 5000);
+      }
+    });
   }
 }
 

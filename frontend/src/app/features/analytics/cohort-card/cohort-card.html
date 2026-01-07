@@ -1,38 +1,51 @@
-<p>cohort-card works!</p>
-<div class="card" *ngIf="!loading && cohortData; else loadingOrError">
-  <h3>Cohort Analysis</h3>
-
-  <div class="kpi-container">
-    <div class="kpi">
-      <p class="value">{{ cohortData.totalUsers }}</p>
-      <p class="label">Total Users</p>
-    </div>
-    <div class="kpi">
-      <p class="value">{{ cohortData.totalCohorts }}</p>
-      <p class="label">Cohorts</p>
-    </div>
-    <div class="kpi">
-      <p class="value">{{ cohortData.activeUsers }}</p>
-      <p class="label">Active Users</p>
-    </div>
-    <div class="kpi">
-      <p class="value">{{ cohortData.avgUsersPerCohort | number:'1.0-2' }}</p>
-      <p class="label">Avg Users/Cohort</p>
+<div class="cohort-container">
+  <div class="cohort-header">
+    <div class="header-content">
+      <h3>👥 Cohort Analysis</h3>
+      <p class="subtitle">Group customers by registration date and analyze behavior</p>
     </div>
   </div>
 
-  <div style="display:block">
-    <app-chart-kpi-card
-      [title]="'Users per Cohort'"
-      [value]="cohortData.totalUsers"
-      [data]="cohortSeries"
-      [xAxisLabels]="barChartLabels"
-      [showAxes]="true"
-    ></app-chart-kpi-card>
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <span>Loading cohort data...</span>
   </div>
+
+  <!-- Content -->
+  <ng-container *ngIf="!loading && cohortData">
+    <div class="kpi-grid">
+      <div class="kpi-item">
+        <div class="kpi-value">{{ cohortData.totalUsers }}</div>
+        <div class="kpi-label">Total Users</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-value">{{ cohortData.totalCohorts }}</div>
+        <div class="kpi-label">Cohorts</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-value">{{ cohortData.activeUsers }}</div>
+        <div class="kpi-label">Active Users</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-value">{{ cohortData.avgUsersPerCohort | number:'1.0-0' }}</div>
+        <div class="kpi-label">Avg Users/Cohort</div>
+      </div>
+    </div>
+
+    <div class="chart-section">
+      <div class="chart-wrapper">
+        <app-chart-kpi-card
+          [title]="'Users per Cohort'"
+          [value]="cohortData.totalUsers"
+          [data]="cohortSeries"
+          [xAxisLabels]="barChartLabels"
+          [showAxes]="true"
+        ></app-chart-kpi-card>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-state">{{ error }}</div>
 </div>
-
-<ng-template #loadingOrError>
-  <div *ngIf="loading">Loading...</div>
-  <div *ngIf="error" class="error">{{ error }}</div>
-</ng-template>

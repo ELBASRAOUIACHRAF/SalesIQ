@@ -1,0 +1,3 @@
+id,username,first_name,last_name,email,password,phone_number,role,hours_logged_in,active,bio,country,city,postal_code,segment
+,john_doe,John,Doe,john@test.com,pass123,+1234567890,USER,0,true,Hello,USA,New York,10001,REGULAR
+,jane_admin,Jane,Smith,jane@test.com,pass456,+0987654321,ADMIN,50,true,Admin here,Morocco,Casablanca,20000,PREMIUM

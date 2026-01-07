@@ -2,7 +2,9 @@ package com.ensa.achrafkarim.backend.repository;
 
 import com.ensa.achrafkarim.backend.dto.analyticsDto.MonthlySalesDto;
 import com.ensa.achrafkarim.backend.entities.Sale;
+import com.ensa.achrafkarim.backend.entities.Users;
 import com.ensa.achrafkarim.backend.enums.PaymentMethod;
+import com.ensa.achrafkarim.backend.enums.Segment;
 import com.ensa.achrafkarim.backend.enums.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,6 +18,8 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     List<Sale> findByUsersId(Long id);
     List<Sale> findAllByStatus(Status status);
     List<Sale> findByDateOfSaleBetween(LocalDateTime start, LocalDateTime end);
+
+    void deleteAllByUsersId(Long usersId);
 
     List<Sale> findAllByPaymentMethod(PaymentMethod paymentMethod);
 
@@ -65,4 +69,193 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     );
 
     Optional<Sale> findByIdAndUsersId(Long id, Long userId);
+    @Query("""
+    SELECT
+        u.id,
+        MAX(s.dateOfSale),
+        COUNT(s.id),
+        SUM(COALESCE(sp.quantity * sp.unitPrice, 0))
+    FROM Sale s
+    JOIN s.users u
+    JOIN s.soldProducts sp
+    WHERE s.status = com.ensa.achrafkarim.backend.enums.Status.COMPLETED
+    GROUP BY u.id
+""")
+    List<Object[]> computeRFMRaw();
+
+    @Query("SELECT COUNT(DISTINCT s.users.id) FROM Sale s WHERE s.dateOfSale < :startDate")
+    Long countUsersBeforeDate(@Param("startDate") LocalDateTime startDate);
+
+    @Query("SELECT COUNT(DISTINCT s.users.id) FROM Sale s WHERE s.dateOfSale < :startDate " +
+            "AND s.users.id NOT IN (SELECT DISTINCT s2.users.id FROM Sale s2 " +
+            "WHERE s2.dateOfSale BETWEEN :startDate AND :endDate)")
+    Long countChurnedUsers(@Param("startDate") LocalDateTime startDate,
+                           @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT COUNT(DISTINCT s.users.id) FROM Sale s " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate")
+    Long countActiveUsersDuringPeriod(@Param("startDate") LocalDateTime startDate,
+                                      @Param("endDate") LocalDateTime endDate);
+
+
+    @Query("SELECT COUNT(DISTINCT s.users.id) FROM Sale s WHERE s.dateOfSale <= :endDate")
+    Long countUsersByEndDate(@Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT COUNT(DISTINCT s.users.id) FROM Sale s " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate " +
+            "AND s.users.id NOT IN (SELECT DISTINCT s2.users.id FROM Sale s2 WHERE s2.dateOfSale < :startDate)")
+    Long countNewUsersDuringPeriod(@Param("startDate") LocalDateTime startDate,
+                                   @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT COUNT(DISTINCT s.users.id), " +
+            "COUNT(s.id), " +
+            "SUM(sp.quantity * sp.unitPrice), " +
+            "SUM(sp.quantity) " +
+            "FROM Sale s " +
+            "JOIN s.soldProducts sp " +
+            "WHERE s.users.segment = :segment")
+    Object[] analyzeSegmentBehavior(@Param("segment") Segment segment);
+
+    @Query("SELECT s.users.id, " +
+            "DATEDIFF(DAY, MAX(s.dateOfSale), CURRENT_DATE), " +
+            "COUNT(s.id), " +
+            "SUM(sp.quantity * sp.unitPrice) " +
+            "FROM Sale s " +
+            "JOIN s.soldProducts sp " +
+            "GROUP BY s.users.id")
+    List<Object[]> findUserPurchaseMetrics();
+
+    @Query("SELECT SUM(sp.quantity * sp.unitPrice), " +
+            "COUNT(DISTINCT s.id), " +
+            "COUNT(DISTINCT s.users.id), " +
+            "SUM(sp.quantity) " +
+            "FROM Sale s " +
+            "JOIN s.soldProducts sp " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate")
+    Object[] calculateRevenueMetrics(@Param("startDate") LocalDateTime startDate,
+                                     @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT COUNT(DISTINCT s.users.id) FROM Sale s " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate " +
+            "AND s.users.id NOT IN (SELECT DISTINCT s2.users.id FROM Sale s2 WHERE s2.dateOfSale < :startDate)")
+    Long countNewCustomers(@Param("startDate") LocalDateTime startDate,
+                           @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT COUNT(DISTINCT s.users.id) FROM Sale s " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate " +
+            "AND s.users.id IN (SELECT DISTINCT s2.users.id FROM Sale s2 WHERE s2.dateOfSale < :startDate)")
+    Long countReturningCustomers(@Param("startDate") LocalDateTime startDate,
+                                 @Param("endDate") LocalDateTime endDate);
+
+
+    @Query("SELECT CAST(s.dateOfSale AS LocalDate), SUM(sp.quantity * sp.unitPrice) " +
+            "FROM Sale s " +
+            "JOIN s.soldProducts sp " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate " +
+            "GROUP BY CAST(s.dateOfSale AS LocalDate) " +
+            "ORDER BY CAST(s.dateOfSale AS LocalDate)")
+    List<Object[]> findDailySalesInPeriod(@Param("startDate") LocalDateTime startDate,
+                                          @Param("endDate") LocalDateTime endDate);
+
+
+    @Query("SELECT SUM(sp.quantity * sp.unitPrice), " +
+            "COUNT(DISTINCT s.id), " +
+            "COUNT(DISTINCT s.users.id), " +
+            "SUM(sp.quantity) " +
+            "FROM Sale s " +
+            "JOIN s.soldProducts sp " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate")
+    Object[] calculatePeriodMetrics(@Param("startDate") LocalDateTime startDate,
+                                    @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT sp.product.id, sp.product.name, sp.product.category.name, " +
+            "SUM(sp.quantity * sp.unitPrice), SUM(sp.quantity) " +
+            "FROM SoldProduct sp " +
+            "JOIN sp.sale s " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate " +
+            "GROUP BY sp.product.id, sp.product.name, sp.product.category.name " +
+            "ORDER BY SUM(sp.quantity * sp.unitPrice) DESC")
+    List<Object[]> findTopProducts(@Param("startDate") LocalDateTime startDate,
+                                   @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT p.category.id, p.category.name, " +
+            "SUM(sp.quantity * sp.unitPrice), SUM(sp.quantity) " +
+            "FROM SoldProduct sp " +
+            "JOIN sp.product p " +
+            "JOIN sp.sale s " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate " +
+            "GROUP BY p.category.id, p.category.name " +
+            "ORDER BY SUM(sp.quantity * sp.unitPrice) DESC")
+    List<Object[]> findTopCategories(@Param("startDate") LocalDateTime startDate,
+                                     @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT s.users.id, s.users.username, s.users.email, " +
+            "SUM(sp.quantity * sp.unitPrice), COUNT(DISTINCT s.id) " +
+            "FROM Sale s " +
+            "JOIN s.soldProducts sp " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate " +
+            "GROUP BY s.users.id, s.users.username, s.users.email " +
+            "ORDER BY SUM(sp.quantity * sp.unitPrice) DESC")
+    List<Object[]> findTopCustomers(@Param("startDate") LocalDateTime startDate,
+                                    @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT AVG(dailyRevenue), MAX(dailyRevenue), MIN(dailyRevenue) FROM " +
+            "(SELECT SUM(sp.quantity * sp.unitPrice) as dailyRevenue " +
+            "FROM Sale s JOIN s.soldProducts sp " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate " +
+            "GROUP BY CAST(s.dateOfSale AS LocalDate))")
+    Object[] calculateRevenueStats(@Param("startDate") LocalDateTime startDate,
+                                   @Param("endDate") LocalDateTime endDate);
+
+
+
+    @Query("SELECT SUM(sp.quantity * sp.unitPrice), " +
+            "COUNT(DISTINCT s.id), " +
+            "COUNT(DISTINCT s.users.id) " +
+            "FROM Sale s " +
+            "JOIN s.soldProducts sp " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate")
+    Object[] findFinancialMetrics(@Param("startDate") LocalDateTime startDate,
+                                  @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT COUNT(DISTINCT s.id) FROM Sale s " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate " +
+            "AND s.status = 'COMPLETED'")
+    Long countCompletedOrders(@Param("startDate") LocalDateTime startDate,
+                              @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT COUNT(DISTINCT s.id) FROM Sale s " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate")
+    Long countTotalOrders(@Param("startDate") LocalDateTime startDate,
+                          @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT CAST(s.dateOfSale AS LocalDate), " +
+            "SUM(sp.quantity * sp.unitPrice), " +
+            "COUNT(DISTINCT s.users.id) " +
+            "FROM Sale s " +
+            "JOIN s.soldProducts sp " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate " +
+            "GROUP BY CAST(s.dateOfSale AS LocalDate) " +
+            "ORDER BY CAST(s.dateOfSale AS LocalDate)")
+    List<Object[]> findDailyMetrics(@Param("startDate") LocalDateTime startDate,
+                                    @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT YEAR(s.dateOfSale), MONTH(s.dateOfSale), SUM(sp.quantity * sp.unitPrice) " +
+            "FROM Sale s " +
+            "JOIN s.soldProducts sp " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate " +
+            "GROUP BY YEAR(s.dateOfSale), MONTH(s.dateOfSale) " +
+            "ORDER BY YEAR(s.dateOfSale), MONTH(s.dateOfSale)")
+    List<Object[]> findMonthlyRevenue(@Param("startDate") LocalDateTime startDate,
+                                      @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT p.category.id, p.category.name, SUM(sp.quantity * sp.unitPrice) " +
+            "FROM SoldProduct sp " +
+            "JOIN sp.product p " +
+            "JOIN sp.sale s " +
+            "WHERE s.dateOfSale BETWEEN :startDate AND :endDate " +
+            "AND p.category IS NOT NULL " +
+            "GROUP BY p.category.id, p.category.name")
+    List<Object[]> findCategoryRevenue(@Param("startDate") LocalDateTime startDate,
+                                       @Param("endDate") LocalDateTime endDate);
 }

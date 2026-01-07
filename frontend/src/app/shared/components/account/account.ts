@@ -38,6 +38,7 @@ export class Account implements OnInit {
   // userId = 3;
 
   profileModel!: ProfileModel;
+  profileLoadError = false;
 
   loadUsersProfile(){
     this.usersService.getUsersProfile().subscribe((data) => {

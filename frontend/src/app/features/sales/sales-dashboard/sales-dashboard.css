@@ -22,65 +22,199 @@
 	overflow-x: hidden;
 }
 
-.forecast-row {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-	gap: 1.25rem;
-}
-
-.kpi-cards {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-	gap: 1.25rem;
-	margin-bottom: 1.5rem;
-	width: 100%;
-	max-width: 100%;
-	overflow-x: hidden;
-}
-
-.bar-kpi-cards {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-	gap: 1.25rem;
-	margin-bottom: 1.5rem;
-	width: 100%;
-	max-width: 100%;
-	overflow-x: hidden;
-}
-
-.chart-kpi-cards {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-	gap: 1.25rem;
-	margin-bottom: 1.5rem;
-	width: 100%;
-	max-width: 100%;
-	overflow-x: hidden;
-}
-
-.pies-row {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-	gap: 1.25rem;
-	margin-bottom: 1.5rem;
-	width: 100%;
-	max-width: 100%;
-	overflow-x: hidden;
-}
-
-.big-card-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-	gap: 1.5rem;
-	margin-top: 1rem;
-	width: 100%;
-	max-width: 100%;
-	overflow-x: hidden;
-}
-
 .dashboard-header {
 	display: block;
 	margin-bottom: 0.5rem;
+}
+
+/* Action Bar for CSV Import/Export */
+.action-bar {
+	display: flex;
+	gap: 1.5rem;
+	margin-top: 1rem;
+	padding: 1rem 1.25rem;
+	background: #ffffff;
+	border-radius: 12px;
+	border: 1px solid #e5e7eb;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	flex-wrap: wrap;
+}
+
+.action-group {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.group-label {
+	font-size: 0.85rem;
+	font-weight: 600;
+	color: #374151;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.action-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.75rem 1.5rem;
+	border: none;
+	border-radius: 8px;
+	font-weight: 600;
+	font-size: 0.95rem;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	min-width: 120px;
+	justify-content: center;
+}
+
+.action-btn .icon {
+	font-size: 1rem;
+}
+
+.action-btn.import-btn {
+	background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+	color: white;
+}
+
+.action-btn.import-btn:hover {
+	background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.action-btn.export-btn {
+	background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+	color: white;
+}
+
+.action-btn.export-btn:hover {
+	background: linear-gradient(135deg, #059669 0%, #047857 100%);
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+/* Import Status Message */
+.import-message {
+	margin-top: 0.75rem;
+	padding: 0.75rem 1rem;
+	border-radius: 8px;
+	font-size: 0.9rem;
+	font-weight: 500;
+	animation: slideIn 0.3s ease;
+}
+
+.import-message.success {
+	background: rgba(16, 185, 129, 0.15);
+	color: #10b981;
+	border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.import-message.error {
+	background: rgba(239, 68, 68, 0.15);
+	color: #ef4444;
+	border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+@keyframes slideIn {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Loading State */
+.loading-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 60px 20px;
+	color: #6b7280;
+}
+
+.loading-spinner {
+	width: 48px;
+	height: 48px;
+	border: 4px solid #e5e7eb;
+	border-top-color: #3b82f6;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+	margin-bottom: 16px;
+}
+
+@keyframes spin {
+	to { transform: rotate(360deg); }
+}
+
+/* KPI Cards */
+.kpi-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 1.25rem;
+	margin-bottom: 1rem;
+	width: 100%;
+}
+
+/* Analytics Section */
+.analytics-section {
+	margin-bottom: 1.5rem;
+	width: 100%;
+}
+
+.section-title {
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: #1f2937;
+	margin: 0 0 0.5rem 0;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.section-description {
+	font-size: 0.9rem;
+	color: #6b7280;
+	margin: 0 0 1rem 0;
+}
+
+/* Component Wrapper */
+.component-wrapper {
+	width: 100%;
+}
+
+/* Analytics Grid */
+.analytics-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 1.5rem;
+	width: 100%;
+}
+
+.analytics-grid.two-col {
+	grid-template-columns: 1fr 1fr;
+	align-items: stretch;
+}
+
+.analytics-grid.two-col > * {
+	min-height: 650px;
+	height: 100%;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+	.analytics-grid.two-col {
+		grid-template-columns: 1fr;
+	}
+	
+	.analytics-grid.two-col > * {
+		min-height: auto;
+	}
 }
 
 @media (max-width: 768px) {
@@ -97,26 +231,12 @@
 		grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 		gap: 0.875rem;
 	}
-	
-	.bar-kpi-cards, .chart-kpi-cards {
-		grid-template-columns: 1fr;
-	}
-	
-	.big-card-grid {
-		grid-template-columns: 1fr;
-	}
-}
 
-/* Step 5: Style for the Sales Trend section */
-.sales-trend-row {
-	margin-top: 1.5rem;
-	width: 100%;
-	max-width: 100%;
-}
+	.section-title {
+		font-size: 1.1rem;
+	}
 
-/* Growth Rate Calculator section */
-.growth-rate-row {
-	margin-top: 1.5rem;
-	width: 100%;
-	max-width: 100%;
+	.section-description {
+		font-size: 0.85rem;
+	}
 }

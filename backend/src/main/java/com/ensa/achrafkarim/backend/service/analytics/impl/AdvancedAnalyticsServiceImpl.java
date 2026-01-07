@@ -7,19 +7,16 @@ import com.ensa.achrafkarim.backend.entities.Sale;
 import com.ensa.achrafkarim.backend.entities.SoldProduct;
 import com.ensa.achrafkarim.backend.entities.Users;
 import com.ensa.achrafkarim.backend.enums.Role;
+import com.ensa.achrafkarim.backend.enums.Segment;
 import com.ensa.achrafkarim.backend.enums.analyticsEnum.ProductLifecyclePhase;
 import com.ensa.achrafkarim.backend.enums.analyticsEnum.SeasonalityType;
 import com.ensa.achrafkarim.backend.enums.analyticsEnum.TimeGranularity;
 import com.ensa.achrafkarim.backend.mapper.SaleMapper;
-import com.ensa.achrafkarim.backend.repository.ProductRepository;
-import com.ensa.achrafkarim.backend.repository.SaleRepository;
-import com.ensa.achrafkarim.backend.repository.SoldProductRepository;
-import com.ensa.achrafkarim.backend.repository.UsersRepository;
+import com.ensa.achrafkarim.backend.repository.*;
 import com.ensa.achrafkarim.backend.service.*;
 import com.ensa.achrafkarim.backend.service.analytics.AdvancedAnalyticsService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.cglib.core.Local;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -44,10 +41,12 @@ import org.springframework.web.client.RestTemplate;
 public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
 
     private final SaleRepository saleRepository;
+
     private final UsersRepository usersRepository;
     private final SaleMapper saleMapper;
     private final ProductRepository productRepository;
     private final SoldProductRepository soldProductRepository;
+    private ReviewsRepository reviewsRepository;
     UsersService  usersService;
     SaleService  saleService;
     ReviewsService  reviewsService;
@@ -59,6 +58,2444 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
     private final RestTemplate restTemplate;// ← ADD THIS
 
     private final UsersServiceImpl usersServiceImpl;
+
+    /**
+     * Helper method to unwrap query results that may be wrapped in extra array layers.
+     * Hibernate 7.x may return results wrapped differently than earlier versions.
+     */
+    private Object[] unwrapResult(Object result, int expectedSize) {
+        if (result == null) {
+            return new Object[expectedSize];
+        }
+        if (result instanceof Object[]) {
+            Object[] arr = (Object[]) result;
+            // Check if it's an array of arrays (wrapped result)
+            if (arr.length > 0 && arr[0] instanceof Object[]) {
+                return (Object[]) arr[0];
+            }
+            return arr;
+        }
+        // Single value - wrap in array
+        Object[] single = new Object[expectedSize];
+        single[0] = result;
+        return single;
+    }
+
+    @Override
+    public VarianceAnalysisDto analyzeVariance(LocalDateTime startDate, LocalDateTime endDate) {
+        long periodDays = java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate);
+        LocalDateTime prevStart = startDate.minusDays(periodDays);
+        LocalDateTime prevEnd = startDate.minusSeconds(1);
+
+        RevenueVarianceDto revenueVariance = calculateRevenueVariance(startDate, endDate, prevStart, prevEnd);
+        SalesVarianceDto salesVariance = calculateSalesVariance(startDate, endDate, prevStart, prevEnd);
+        CustomerVarianceDto customerVariance = calculateCustomerVariance(startDate, endDate, prevStart, prevEnd);
+        ProductVarianceDto productVariance = calculateProductVariance(startDate, endDate, prevStart, prevEnd);
+
+        List<CategoryVarianceDto> categoryVariances = calculateCategoryVariances(startDate, endDate, prevStart, prevEnd);
+        List<MonthlyVarianceDto> monthlyVariances = calculateMonthlyVariances(startDate, endDate, prevStart, prevEnd);
+
+        Double overallScore = calculateOverallVarianceScore(revenueVariance, salesVariance, customerVariance, productVariance);
+        String performanceStatus = determinePerformanceStatus(overallScore);
+        List<VarianceAlertDto> alerts = generateVarianceAlerts(revenueVariance, salesVariance, customerVariance, productVariance);
+        List<String> recommendations = generateVarianceRecommendations(revenueVariance, salesVariance, customerVariance, productVariance);
+
+        return new VarianceAnalysisDto(
+                startDate,
+                endDate,
+                LocalDateTime.now(),
+                revenueVariance,
+                salesVariance,
+                customerVariance,
+                productVariance,
+                categoryVariances,
+                monthlyVariances,
+                overallScore,
+                performanceStatus,
+                alerts,
+                recommendations
+        );
+    }
+
+    private RevenueVarianceDto calculateRevenueVariance(LocalDateTime startDate, LocalDateTime endDate,
+                                                        LocalDateTime prevStart, LocalDateTime prevEnd) {
+        Object[] currentMetrics = saleRepository.findFinancialMetrics(startDate, endDate);
+        Object[] prevMetrics = saleRepository.findFinancialMetrics(prevStart, prevEnd);
+
+        Double actualRevenue = currentMetrics[0] != null ? ((Number) currentMetrics[0]).doubleValue() : 0.0;
+        Double previousRevenue = prevMetrics[0] != null ? ((Number) prevMetrics[0]).doubleValue() : 0.0;
+
+        Double growthTarget = 10.0;
+        Double targetRevenue = previousRevenue * (1 + growthTarget / 100);
+
+        Double variance = actualRevenue - targetRevenue;
+        Double variancePercent = targetRevenue > 0 ? (variance / targetRevenue) * 100 : 0.0;
+
+        Double actualGrowth = previousRevenue > 0 ? ((actualRevenue - previousRevenue) / previousRevenue) * 100 : 0.0;
+        Double growthVariance = actualGrowth - growthTarget;
+
+        String status = determineVarianceStatus(variancePercent);
+
+        return new RevenueVarianceDto(
+                targetRevenue,
+                actualRevenue,
+                variance,
+                variancePercent,
+                status,
+                previousRevenue,
+                growthTarget,
+                actualGrowth,
+                growthVariance
+        );
+    }
+
+    private SalesVarianceDto calculateSalesVariance(LocalDateTime startDate, LocalDateTime endDate,
+                                                    LocalDateTime prevStart, LocalDateTime prevEnd) {
+        Object[] currentMetrics = saleRepository.findFinancialMetrics(startDate, endDate);
+        Object[] prevMetrics = saleRepository.findFinancialMetrics(prevStart, prevEnd);
+
+        Double currentRevenue = currentMetrics[0] != null ? ((Number) currentMetrics[0]).doubleValue() : 0.0;
+        Long currentOrders = currentMetrics[1] != null ? ((Number) currentMetrics[1]).longValue() : 0L;
+
+        Double prevRevenue = prevMetrics[0] != null ? ((Number) prevMetrics[0]).doubleValue() : 0.0;
+        Long prevOrders = prevMetrics[1] != null ? ((Number) prevMetrics[1]).longValue() : 0L;
+
+        Long targetOrders = (long) (prevOrders * 1.1);
+        Long orderVariance = currentOrders - targetOrders;
+        Double orderVariancePercent = targetOrders > 0 ? ((double) orderVariance / targetOrders) * 100 : 0.0;
+
+        Long currentUnitsSold = soldProductRepository.countUnitsSoldInPeriod(startDate, endDate);
+        Long prevUnitsSold = soldProductRepository.countUnitsSoldInPeriod(prevStart, prevEnd);
+        currentUnitsSold = currentUnitsSold != null ? currentUnitsSold : 0L;
+        prevUnitsSold = prevUnitsSold != null ? prevUnitsSold : 0L;
+
+        Long targetUnitsSold = (long) (prevUnitsSold * 1.1);
+        Long unitsVariance = currentUnitsSold - targetUnitsSold;
+        Double unitsVariancePercent = targetUnitsSold > 0 ? ((double) unitsVariance / targetUnitsSold) * 100 : 0.0;
+
+        Double currentAOV = currentOrders > 0 ? currentRevenue / currentOrders : 0.0;
+        Double prevAOV = prevOrders > 0 ? prevRevenue / prevOrders : 0.0;
+        Double targetAOV = prevAOV * 1.05;
+        Double aovVariance = currentAOV - targetAOV;
+        Double aovVariancePercent = targetAOV > 0 ? (aovVariance / targetAOV) * 100 : 0.0;
+
+        return new SalesVarianceDto(
+                targetOrders,
+                currentOrders,
+                orderVariance,
+                orderVariancePercent,
+                targetUnitsSold,
+                currentUnitsSold,
+                unitsVariance,
+                unitsVariancePercent,
+                targetAOV,
+                currentAOV,
+                aovVariance,
+                aovVariancePercent
+        );
+    }
+
+    private CustomerVarianceDto calculateCustomerVariance(LocalDateTime startDate, LocalDateTime endDate,
+                                                          LocalDateTime prevStart, LocalDateTime prevEnd) {
+        Long currentNewCustomers = saleRepository.countNewCustomers(startDate, endDate);
+        Long prevNewCustomers = saleRepository.countNewCustomers(prevStart, prevEnd);
+        currentNewCustomers = currentNewCustomers != null ? currentNewCustomers : 0L;
+        prevNewCustomers = prevNewCustomers != null ? prevNewCustomers : 0L;
+
+        Long targetNewCustomers = (long) (prevNewCustomers * 1.15);
+        Long newCustomerVariance = currentNewCustomers - targetNewCustomers;
+        Double newCustomerVariancePercent = targetNewCustomers > 0 ? ((double) newCustomerVariance / targetNewCustomers) * 100 : 0.0;
+
+        Double actualRetentionRate = calculateRetentionRate(startDate, endDate);
+        Double targetRetentionRate = 70.0;
+        Double retentionVariance = actualRetentionRate - targetRetentionRate;
+
+        ChurnAnalysisDto churnAnalysis = analyzeChurnRate(startDate, endDate);
+        Double actualChurnRate = churnAnalysis.getChurnRate();
+        Double targetChurnRate = 10.0;
+        Double churnVariance = targetChurnRate - actualChurnRate;
+
+        return new CustomerVarianceDto(
+                targetNewCustomers,
+                currentNewCustomers,
+                newCustomerVariance,
+                newCustomerVariancePercent,
+                targetRetentionRate,
+                actualRetentionRate,
+                retentionVariance,
+                targetChurnRate,
+                actualChurnRate,
+                churnVariance
+        );
+    }
+
+    private ProductVarianceDto calculateProductVariance(LocalDateTime startDate, LocalDateTime endDate,
+                                                        LocalDateTime prevStart, LocalDateTime prevEnd) {
+        Object[] currentReviewMetrics = reviewsRepository.findReviewMetrics(startDate, endDate);
+        Object[] prevReviewMetrics = reviewsRepository.findReviewMetrics(prevStart, prevEnd);
+
+        Double actualAvgRating = currentReviewMetrics[0] != null ? ((Number) currentReviewMetrics[0]).doubleValue() : 0.0;
+        Long actualReviews = currentReviewMetrics[1] != null ? ((Number) currentReviewMetrics[1]).longValue() : 0L;
+
+        Long prevReviews = prevReviewMetrics[1] != null ? ((Number) prevReviewMetrics[1]).longValue() : 0L;
+
+        Double targetAvgRating = 4.0;
+        Double ratingVariance = actualAvgRating - targetAvgRating;
+
+        Long targetReviews = (long) (prevReviews * 1.2);
+        Long reviewsVariance = actualReviews - targetReviews;
+        Double reviewsVariancePercent = targetReviews > 0 ? ((double) reviewsVariance / targetReviews) * 100 : 0.0;
+
+        Long actualActiveProducts = productRepository.countActiveProducts();
+        Long totalProducts = productRepository.countTotalProducts();
+        Long targetActiveProducts = (long) (totalProducts * 0.9);
+        Long activeProductsVariance = actualActiveProducts - targetActiveProducts;
+
+        return new ProductVarianceDto(
+                targetAvgRating,
+                actualAvgRating,
+                ratingVariance,
+                targetReviews,
+                actualReviews,
+                reviewsVariance,
+                reviewsVariancePercent,
+                targetActiveProducts,
+                actualActiveProducts,
+                activeProductsVariance
+        );
+    }
+
+    private List<CategoryVarianceDto> calculateCategoryVariances(LocalDateTime startDate, LocalDateTime endDate,
+                                                                 LocalDateTime prevStart, LocalDateTime prevEnd) {
+        List<Object[]> currentCategoryRevenue = saleRepository.findCategoryRevenue(startDate, endDate);
+        List<Object[]> prevCategoryRevenue = saleRepository.findCategoryRevenue(prevStart, prevEnd);
+
+        Map<Long, Double> prevRevenueMap = prevCategoryRevenue.stream()
+                .collect(Collectors.toMap(
+                        row -> ((Number) row[0]).longValue(),
+                        row -> row[2] != null ? ((Number) row[2]).doubleValue() : 0.0
+                ));
+
+        return currentCategoryRevenue.stream()
+                .map(row -> {
+                    Long categoryId = ((Number) row[0]).longValue();
+                    String categoryName = (String) row[1];
+                    Double actualRevenue = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
+
+                    Double prevRevenue = prevRevenueMap.getOrDefault(categoryId, 0.0);
+                    Double targetRevenue = prevRevenue * 1.1;
+
+                    Double variance = actualRevenue - targetRevenue;
+                    Double variancePercent = targetRevenue > 0 ? (variance / targetRevenue) * 100 : 0.0;
+
+                    String status = determineVarianceStatus(variancePercent);
+
+                    return new CategoryVarianceDto(
+                            categoryId,
+                            categoryName,
+                            targetRevenue,
+                            actualRevenue,
+                            variance,
+                            variancePercent,
+                            status
+                    );
+                })
+                .sorted((a, b) -> Double.compare(b.getActualRevenue(), a.getActualRevenue()))
+                .toList();
+    }
+
+    private List<MonthlyVarianceDto> calculateMonthlyVariances(LocalDateTime startDate, LocalDateTime endDate,
+                                                               LocalDateTime prevStart, LocalDateTime prevEnd) {
+        List<Object[]> currentMonthly = saleRepository.findMonthlyRevenue(startDate, endDate);
+        List<Object[]> prevMonthly = saleRepository.findMonthlyRevenue(prevStart, prevEnd);
+
+        Double avgPrevMonthlyRevenue = prevMonthly.stream()
+                .filter(row -> row[2] != null)
+                .mapToDouble(row -> ((Number) row[2]).doubleValue())
+                .average()
+                .orElse(0.0);
+
+        Double targetMonthlyRevenue = avgPrevMonthlyRevenue * 1.1;
+
+        return currentMonthly.stream()
+                .map(row -> {
+                    Integer year = ((Number) row[0]).intValue();
+                    Integer month = ((Number) row[1]).intValue();
+                    Double actualRevenue = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
+
+                    Double variance = actualRevenue - targetMonthlyRevenue;
+                    Double variancePercent = targetMonthlyRevenue > 0 ? (variance / targetMonthlyRevenue) * 100 : 0.0;
+
+                    String status = determineVarianceStatus(variancePercent);
+                    String monthName = java.time.Month.of(month).name();
+
+                    return new MonthlyVarianceDto(
+                            year,
+                            month,
+                            monthName,
+                            targetMonthlyRevenue,
+                            actualRevenue,
+                            variance,
+                            variancePercent,
+                            status
+                    );
+                })
+                .toList();
+    }
+
+    private String determineVarianceStatus(Double variancePercent) {
+        if (variancePercent >= 10) return "EXCEEDING";
+        if (variancePercent >= 0) return "ON_TARGET";
+        if (variancePercent >= -10) return "SLIGHTLY_BELOW";
+        if (variancePercent >= -25) return "BELOW_TARGET";
+        return "CRITICAL";
+    }
+
+    private Double calculateOverallVarianceScore(RevenueVarianceDto revenue, SalesVarianceDto sales,
+                                                 CustomerVarianceDto customer, ProductVarianceDto product) {
+        double score = 50.0;
+
+        if (revenue.getVariancePercent() >= 0) score += Math.min(15, revenue.getVariancePercent());
+        else score += Math.max(-20, revenue.getVariancePercent() * 0.5);
+
+        if (sales.getOrderVariancePercent() >= 0) score += Math.min(10, sales.getOrderVariancePercent() * 0.5);
+        else score += Math.max(-15, sales.getOrderVariancePercent() * 0.3);
+
+        if (customer.getRetentionVariance() >= 0) score += Math.min(10, customer.getRetentionVariance() * 0.5);
+        else score += Math.max(-10, customer.getRetentionVariance() * 0.3);
+
+        if (customer.getChurnVariance() >= 0) score += Math.min(10, customer.getChurnVariance());
+        else score += Math.max(-10, customer.getChurnVariance() * 0.5);
+
+        if (product.getRatingVariance() >= 0) score += Math.min(5, product.getRatingVariance() * 10);
+        else score += Math.max(-10, product.getRatingVariance() * 5);
+
+        return Math.max(0, Math.min(100, score));
+    }
+
+    private String determinePerformanceStatus(Double score) {
+        if (score >= 80) return "EXCELLENT";
+        if (score >= 65) return "GOOD";
+        if (score >= 50) return "AVERAGE";
+        if (score >= 35) return "BELOW_AVERAGE";
+        return "POOR";
+    }
+
+    private List<VarianceAlertDto> generateVarianceAlerts(RevenueVarianceDto revenue, SalesVarianceDto sales,
+                                                          CustomerVarianceDto customer, ProductVarianceDto product) {
+        List<VarianceAlertDto> alerts = new ArrayList<>();
+
+        if (revenue.getVariancePercent() < -20) {
+            alerts.add(new VarianceAlertDto(
+                    "Revenue",
+                    "CRITICAL",
+                    revenue.getTargetRevenue(),
+                    revenue.getActualRevenue(),
+                    revenue.getVariancePercent(),
+                    "Revenue is significantly below target. Immediate action required."
+            ));
+        } else if (revenue.getVariancePercent() < -10) {
+            alerts.add(new VarianceAlertDto(
+                    "Revenue",
+                    "WARNING",
+                    revenue.getTargetRevenue(),
+                    revenue.getActualRevenue(),
+                    revenue.getVariancePercent(),
+                    "Revenue is below target. Consider promotional activities."
+            ));
+        }
+
+        if (sales.getOrderVariancePercent() < -15) {
+            alerts.add(new VarianceAlertDto(
+                    "Orders",
+                    "WARNING",
+                    sales.getTargetOrders().doubleValue(),
+                    sales.getActualOrders().doubleValue(),
+                    sales.getOrderVariancePercent(),
+                    "Order volume is below expectations. Review marketing efforts."
+            ));
+        }
+
+        if (customer.getNewCustomerVariancePercent() < -20) {
+            alerts.add(new VarianceAlertDto(
+                    "New Customers",
+                    "WARNING",
+                    customer.getTargetNewCustomers().doubleValue(),
+                    customer.getActualNewCustomers().doubleValue(),
+                    customer.getNewCustomerVariancePercent(),
+                    "New customer acquisition is below target. Increase marketing spend."
+            ));
+        }
+
+        if (customer.getChurnVariance() < -5) {
+            alerts.add(new VarianceAlertDto(
+                    "Churn Rate",
+                    "WARNING",
+                    customer.getTargetChurnRate(),
+                    customer.getActualChurnRate(),
+                    customer.getChurnVariance(),
+                    "Customer churn is higher than acceptable. Focus on retention."
+            ));
+        }
+
+        if (product.getRatingVariance() < -0.5) {
+            alerts.add(new VarianceAlertDto(
+                    "Product Rating",
+                    "WARNING",
+                    product.getTargetAvgRating(),
+                    product.getActualAvgRating(),
+                    product.getRatingVariance() * 100,
+                    "Product ratings are below target. Investigate quality issues."
+            ));
+        }
+
+        if (alerts.isEmpty()) {
+            alerts.add(new VarianceAlertDto(
+                    "Overall",
+                    "INFO",
+                    100.0,
+                    100.0,
+                    0.0,
+                    "All metrics are within acceptable variance ranges."
+            ));
+        }
+
+        return alerts;
+    }
+
+    private List<String> generateVarianceRecommendations(RevenueVarianceDto revenue, SalesVarianceDto sales,
+                                                         CustomerVarianceDto customer, ProductVarianceDto product) {
+        List<String> recommendations = new ArrayList<>();
+
+        if (revenue.getVariancePercent() < -10) {
+            recommendations.add("Launch targeted promotional campaigns to boost revenue");
+            recommendations.add("Review pricing strategy for underperforming products");
+        }
+
+        if (revenue.getGrowthVariance() < -5) {
+            recommendations.add("Analyze competitors' strategies and adjust marketing approach");
+        }
+
+        if (sales.getOrderVariancePercent() < -10) {
+            recommendations.add("Implement cart abandonment recovery campaigns");
+            recommendations.add("Optimize checkout process to improve conversion");
+        }
+
+        if (sales.getAovVariancePercent() < -5) {
+            recommendations.add("Introduce cross-sell and upsell strategies");
+            recommendations.add("Create product bundles to increase average order value");
+        }
+
+        if (customer.getNewCustomerVariancePercent() < -15) {
+            recommendations.add("Increase investment in customer acquisition channels");
+            recommendations.add("Launch referral program to acquire new customers");
+        }
+
+        if (customer.getRetentionVariance() < 0) {
+            recommendations.add("Implement customer loyalty program");
+            recommendations.add("Improve post-purchase communication and support");
+        }
+
+        if (customer.getChurnVariance() < 0) {
+            recommendations.add("Conduct customer surveys to identify pain points");
+            recommendations.add("Develop win-back campaigns for churned customers");
+        }
+
+        if (product.getRatingVariance() < 0) {
+            recommendations.add("Address product quality issues identified in reviews");
+            recommendations.add("Improve product descriptions to set accurate expectations");
+        }
+
+        if (recommendations.isEmpty()) {
+            recommendations.add("Continue current strategies and maintain performance monitoring");
+            recommendations.add("Explore opportunities for further growth and optimization");
+        }
+
+        return recommendations;
+    }
+
+
+    @Override
+    public List<TopicDto> extractReviewTopics(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        List<Object[]> reviewsData = reviewsRepository.findReviewTextsByProduct(productId);
+
+        if (reviewsData.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<ReviewTextDto> reviews = reviewsData.stream()
+                .map(row -> new ReviewTextDto(
+                        ((Number) row[0]).longValue(),
+                        (String) row[1],
+                        row[2] != null ? ((Number) row[2]).doubleValue() : 0.0
+                ))
+                .toList();
+
+        int numTopics = Math.min(5, Math.max(2, reviews.size() / 10));
+
+        TopicExtractionRequestDto request = new TopicExtractionRequestDto(
+                productId,
+                product.getName(),
+                reviews,
+                numTopics
+        );
+
+        return fastApiClient.extractTopics(request);
+    }
+
+
+    @Override
+    public PerformanceScorecardDto generatePerformanceScorecard(LocalDateTime startDate, LocalDateTime endDate) {
+        FinancialScoreDto financialScore = calculateFinancialScore(startDate, endDate);
+        CustomerScoreDto customerScore = calculateCustomerScore(startDate, endDate);
+        OperationsScoreDto operationsScore = calculateOperationsScore(startDate, endDate);
+        ProductScoreDto productScore = calculateProductScore(startDate, endDate);
+
+        Double overallScore = calculateOverallScore(financialScore, customerScore, operationsScore, productScore);
+        String overallGrade = determineGrade(overallScore);
+
+        List<KPIItemDto> keyMetrics = buildKeyMetrics(financialScore, customerScore, operationsScore, productScore);
+        List<ScoreHistoryDto> scoreHistory = buildScoreHistory(startDate, endDate);
+        List<String> strengths = identifyStrengths(financialScore, customerScore, operationsScore, productScore);
+        List<String> weaknesses = identifyWeaknesses(financialScore, customerScore, operationsScore, productScore);
+        List<String> actionItems = generateActionItems(weaknesses);
+
+        return new PerformanceScorecardDto(
+                startDate,
+                endDate,
+                LocalDateTime.now(),
+                overallScore,
+                overallGrade,
+                financialScore,
+                customerScore,
+                operationsScore,
+                productScore,
+                keyMetrics,
+                scoreHistory,
+                strengths,
+                weaknesses,
+                actionItems
+        );
+    }
+
+    private FinancialScoreDto calculateFinancialScore(LocalDateTime startDate, LocalDateTime endDate) {
+        Object[] metrics = saleRepository.findFinancialMetrics(startDate, endDate);
+
+        Double totalRevenue = metrics[0] != null ? ((Number) metrics[0]).doubleValue() : 0.0;
+        Long totalOrders = metrics[1] != null ? ((Number) metrics[1]).longValue() : 0L;
+        Long totalCustomers = metrics[2] != null ? ((Number) metrics[2]).longValue() : 0L;
+
+        long periodDays = java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate);
+        LocalDateTime prevStart = startDate.minusDays(periodDays);
+        LocalDateTime prevEnd = startDate.minusSeconds(1);
+
+        Object[] prevMetrics = saleRepository.findFinancialMetrics(prevStart, prevEnd);
+        Double prevRevenue = prevMetrics[0] != null ? ((Number) prevMetrics[0]).doubleValue() : 0.0;
+
+        Double revenueGrowth = prevRevenue > 0 ? ((totalRevenue - prevRevenue) / prevRevenue) * 100 : 0.0;
+        Double avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0.0;
+        Double revenuePerCustomer = totalCustomers > 0 ? totalRevenue / totalCustomers : 0.0;
+
+        Double targetRevenue = prevRevenue * 1.1;
+        Double targetAchievement = targetRevenue > 0 ? (totalRevenue / targetRevenue) * 100 : 0.0;
+
+        Double score = calculateFinancialScoreValue(revenueGrowth, targetAchievement, avgOrderValue);
+        String grade = determineGrade(score);
+
+        return new FinancialScoreDto(
+                score,
+                grade,
+                totalRevenue,
+                revenueGrowth,
+                avgOrderValue,
+                revenuePerCustomer,
+                targetRevenue,
+                targetAchievement
+        );
+    }
+
+    private Double calculateFinancialScoreValue(Double revenueGrowth, Double targetAchievement, Double avgOrderValue) {
+        double score = 50.0;
+
+        if (revenueGrowth > 20) score += 20;
+        else if (revenueGrowth > 10) score += 15;
+        else if (revenueGrowth > 0) score += 10;
+        else if (revenueGrowth > -10) score -= 5;
+        else score -= 15;
+
+        if (targetAchievement >= 100) score += 20;
+        else if (targetAchievement >= 80) score += 10;
+        else if (targetAchievement >= 60) score += 5;
+        else score -= 10;
+
+        if (avgOrderValue > 100) score += 10;
+        else if (avgOrderValue > 50) score += 5;
+
+        return Math.max(0, Math.min(100, score));
+    }
+
+    private CustomerScoreDto calculateCustomerScore(LocalDateTime startDate, LocalDateTime endDate) {
+        Object[] metrics = saleRepository.findFinancialMetrics(startDate, endDate);
+        Long totalCustomers = metrics[2] != null ? ((Number) metrics[2]).longValue() : 0L;
+        Double totalRevenue = metrics[0] != null ? ((Number) metrics[0]).doubleValue() : 0.0;
+
+        Long newCustomers = saleRepository.countNewCustomers(startDate, endDate);
+        Double retentionRate = calculateRetentionRate(startDate, endDate);
+        ChurnAnalysisDto churnAnalysis = analyzeChurnRate(startDate, endDate);
+
+        Object[] reviewMetrics = reviewsRepository.findReviewMetrics(startDate, endDate);
+        Double avgRating = reviewMetrics[0] != null ? ((Number) reviewMetrics[0]).doubleValue() : 0.0;
+        Double customerSatisfaction = (avgRating / 5.0) * 100;
+
+        Double avgCustomerLifetimeValue = totalCustomers > 0 ? totalRevenue / totalCustomers : 0.0;
+
+        Double score = calculateCustomerScoreValue(retentionRate, churnAnalysis.getChurnRate(), customerSatisfaction, newCustomers);
+        String grade = determineGrade(score);
+
+        return new CustomerScoreDto(
+                score,
+                grade,
+                totalCustomers,
+                newCustomers,
+                retentionRate,
+                churnAnalysis.getChurnRate(),
+                customerSatisfaction,
+                avgCustomerLifetimeValue
+        );
+    }
+
+    private Double calculateCustomerScoreValue(Double retentionRate, Double churnRate, Double satisfaction, Long newCustomers) {
+        double score = 50.0;
+
+        if (retentionRate > 80) score += 15;
+        else if (retentionRate > 60) score += 10;
+        else if (retentionRate > 40) score += 5;
+        else score -= 10;
+
+        if (churnRate < 5) score += 15;
+        else if (churnRate < 10) score += 10;
+        else if (churnRate < 20) score += 5;
+        else score -= 10;
+
+        if (satisfaction > 80) score += 10;
+        else if (satisfaction > 60) score += 5;
+        else score -= 5;
+
+        if (newCustomers > 100) score += 10;
+        else if (newCustomers > 50) score += 5;
+
+        return Math.max(0, Math.min(100, score));
+    }
+
+    private OperationsScoreDto calculateOperationsScore(LocalDateTime startDate, LocalDateTime endDate) {
+        Long outOfStock = productRepository.countOutOfStockProducts();
+        Long lowStock = productRepository.countLowStockProducts();
+        Long healthyStock = productRepository.countHealthyStockProducts();
+        Long activeProducts = productRepository.countActiveProducts();
+
+        Double stockHealthRate = activeProducts > 0 ? ((double) healthyStock / activeProducts) * 100 : 0.0;
+
+        Double totalRevenue = saleRepository.findFinancialMetrics(startDate, endDate)[0] != null
+                ? ((Number) saleRepository.findFinancialMetrics(startDate, endDate)[0]).doubleValue()
+                : 0.0;
+        Double inventoryValue = productRepository.calculateTotalInventoryValue();
+        inventoryValue = inventoryValue != null ? inventoryValue : 0.0;
+        Double inventoryTurnover = inventoryValue > 0 ? totalRevenue / inventoryValue : 0.0;
+
+        Long completedOrders = saleRepository.countCompletedOrders(startDate, endDate);
+        Long totalOrders = saleRepository.countTotalOrders(startDate, endDate);
+        Double orderCompletionRate = totalOrders > 0 ? ((double) completedOrders / totalOrders) * 100 : 0.0;
+
+        Double avgFulfillmentTime = 2.5;
+
+        Double score = calculateOperationsScoreValue(inventoryTurnover, stockHealthRate, orderCompletionRate, outOfStock);
+        String grade = determineGrade(score);
+
+        return new OperationsScoreDto(
+                score,
+                grade,
+                inventoryTurnover,
+                outOfStock,
+                lowStock,
+                stockHealthRate,
+                avgFulfillmentTime,
+                orderCompletionRate
+        );
+    }
+
+    private Double calculateOperationsScoreValue(Double inventoryTurnover, Double stockHealthRate,
+                                                 Double orderCompletionRate, Long outOfStock) {
+        double score = 50.0;
+
+        if (inventoryTurnover > 6) score += 15;
+        else if (inventoryTurnover > 4) score += 10;
+        else if (inventoryTurnover > 2) score += 5;
+        else score -= 10;
+
+        if (stockHealthRate > 90) score += 15;
+        else if (stockHealthRate > 70) score += 10;
+        else if (stockHealthRate > 50) score += 5;
+        else score -= 10;
+
+        if (orderCompletionRate > 95) score += 10;
+        else if (orderCompletionRate > 85) score += 5;
+        else score -= 5;
+
+        if (outOfStock == 0) score += 10;
+        else if (outOfStock < 5) score += 5;
+        else if (outOfStock > 10) score -= 10;
+
+        return Math.max(0, Math.min(100, score));
+    }
+
+    private ProductScoreDto calculateProductScore(LocalDateTime startDate, LocalDateTime endDate) {
+        Long totalProducts = productRepository.countTotalProducts();
+        Long activeProducts = productRepository.countActiveProducts();
+
+        Object[] reviewMetrics = reviewsRepository.findReviewMetrics(startDate, endDate);
+        Double avgRating = reviewMetrics[0] != null ? ((Number) reviewMetrics[0]).doubleValue() : 0.0;
+        Long totalReviews = reviewMetrics[1] != null ? ((Number) reviewMetrics[1]).longValue() : 0L;
+        Long positiveReviews = reviewMetrics[2] != null ? ((Number) reviewMetrics[2]).longValue() : 0L;
+
+        Double positiveReviewRate = totalReviews > 0 ? ((double) positiveReviews / totalReviews) * 100 : 0.0;
+
+        List<Object[]> productsData = soldProductRepository.findAllProductsPortfolioData();
+        long topPerformers = productsData.stream()
+                .filter(row -> row[4] != null && ((Number) row[4]).doubleValue() > 1000)
+                .count();
+        long underperformers = productsData.stream()
+                .filter(row -> row[4] == null || ((Number) row[4]).doubleValue() < 100)
+                .count();
+
+        Double score = calculateProductScoreValue(avgRating, positiveReviewRate, activeProducts, totalProducts, topPerformers);
+        String grade = determineGrade(score);
+
+        return new ProductScoreDto(
+                score,
+                grade,
+                totalProducts,
+                activeProducts,
+                avgRating,
+                positiveReviewRate,
+                topPerformers,
+                underperformers
+        );
+    }
+
+    private Double calculateProductScoreValue(Double avgRating, Double positiveReviewRate,
+                                              Long activeProducts, Long totalProducts, long topPerformers) {
+        double score = 50.0;
+
+        if (avgRating >= 4.5) score += 20;
+        else if (avgRating >= 4.0) score += 15;
+        else if (avgRating >= 3.5) score += 10;
+        else if (avgRating < 3.0) score -= 10;
+
+        if (positiveReviewRate > 80) score += 15;
+        else if (positiveReviewRate > 60) score += 10;
+        else if (positiveReviewRate > 40) score += 5;
+        else score -= 5;
+
+        double activeRate = totalProducts > 0 ? ((double) activeProducts / totalProducts) * 100 : 0.0;
+        if (activeRate > 90) score += 10;
+        else if (activeRate > 70) score += 5;
+        else score -= 5;
+
+        if (topPerformers > 10) score += 5;
+
+        return Math.max(0, Math.min(100, score));
+    }
+
+    private Double calculateOverallScore(FinancialScoreDto financial, CustomerScoreDto customer,
+                                         OperationsScoreDto operations, ProductScoreDto product) {
+        return (financial.getScore() * 0.35) +
+                (customer.getScore() * 0.25) +
+                (operations.getScore() * 0.20) +
+                (product.getScore() * 0.20);
+    }
+
+    private String determineGrade(Double score) {
+        if (score >= 90) return "A+";
+        if (score >= 85) return "A";
+        if (score >= 80) return "A-";
+        if (score >= 75) return "B+";
+        if (score >= 70) return "B";
+        if (score >= 65) return "B-";
+        if (score >= 60) return "C+";
+        if (score >= 55) return "C";
+        if (score >= 50) return "C-";
+        if (score >= 45) return "D+";
+        if (score >= 40) return "D";
+        return "F";
+    }
+
+    private List<KPIItemDto> buildKeyMetrics(FinancialScoreDto financial, CustomerScoreDto customer,
+                                             OperationsScoreDto operations, ProductScoreDto product) {
+        List<KPIItemDto> metrics = new ArrayList<>();
+
+        metrics.add(new KPIItemDto(
+                "Total Revenue",
+                "FINANCIAL",
+                financial.getTotalRevenue(),
+                financial.getTargetRevenue(),
+                financial.getTargetAchievement(),
+                financial.getTargetAchievement() >= 100 ? "ON_TARGET" : "BELOW_TARGET",
+                financial.getRevenueGrowth() > 0 ? "UP" : "DOWN"
+        ));
+
+        metrics.add(new KPIItemDto(
+                "Revenue Growth",
+                "FINANCIAL",
+                financial.getRevenueGrowth(),
+                10.0,
+                financial.getRevenueGrowth() >= 10 ? 100.0 : (financial.getRevenueGrowth() / 10) * 100,
+                financial.getRevenueGrowth() >= 10 ? "ON_TARGET" : "BELOW_TARGET",
+                financial.getRevenueGrowth() > 0 ? "UP" : "DOWN"
+        ));
+
+        metrics.add(new KPIItemDto(
+                "Customer Retention Rate",
+                "CUSTOMER",
+                customer.getRetentionRate(),
+                70.0,
+                customer.getRetentionRate() >= 70 ? 100.0 : (customer.getRetentionRate() / 70) * 100,
+                customer.getRetentionRate() >= 70 ? "ON_TARGET" : "BELOW_TARGET",
+                customer.getRetentionRate() > 50 ? "UP" : "DOWN"
+        ));
+
+        metrics.add(new KPIItemDto(
+                "Customer Churn Rate",
+                "CUSTOMER",
+                customer.getChurnRate(),
+                10.0,
+                customer.getChurnRate() <= 10 ? 100.0 : (10 / customer.getChurnRate()) * 100,
+                customer.getChurnRate() <= 10 ? "ON_TARGET" : "ABOVE_TARGET",
+                customer.getChurnRate() < 15 ? "UP" : "DOWN"
+        ));
+
+        metrics.add(new KPIItemDto(
+                "Inventory Turnover",
+                "OPERATIONS",
+                operations.getInventoryTurnover(),
+                4.0,
+                operations.getInventoryTurnover() >= 4 ? 100.0 : (operations.getInventoryTurnover() / 4) * 100,
+                operations.getInventoryTurnover() >= 4 ? "ON_TARGET" : "BELOW_TARGET",
+                operations.getInventoryTurnover() > 3 ? "UP" : "DOWN"
+        ));
+
+        metrics.add(new KPIItemDto(
+                "Stock Health Rate",
+                "OPERATIONS",
+                operations.getStockHealthRate(),
+                80.0,
+                operations.getStockHealthRate() >= 80 ? 100.0 : (operations.getStockHealthRate() / 80) * 100,
+                operations.getStockHealthRate() >= 80 ? "ON_TARGET" : "BELOW_TARGET",
+                operations.getStockHealthRate() > 70 ? "UP" : "DOWN"
+        ));
+
+        metrics.add(new KPIItemDto(
+                "Average Product Rating",
+                "PRODUCT",
+                product.getAvgProductRating(),
+                4.0,
+                product.getAvgProductRating() >= 4 ? 100.0 : (product.getAvgProductRating() / 4) * 100,
+                product.getAvgProductRating() >= 4 ? "ON_TARGET" : "BELOW_TARGET",
+                product.getAvgProductRating() > 3.5 ? "UP" : "DOWN"
+        ));
+
+        metrics.add(new KPIItemDto(
+                "Positive Review Rate",
+                "PRODUCT",
+                product.getPositiveReviewRate(),
+                75.0,
+                product.getPositiveReviewRate() >= 75 ? 100.0 : (product.getPositiveReviewRate() / 75) * 100,
+                product.getPositiveReviewRate() >= 75 ? "ON_TARGET" : "BELOW_TARGET",
+                product.getPositiveReviewRate() > 60 ? "UP" : "DOWN"
+        ));
+
+        return metrics;
+    }
+
+    private List<ScoreHistoryDto> buildScoreHistory(LocalDateTime startDate, LocalDateTime endDate) {
+        List<ScoreHistoryDto> history = new ArrayList<>();
+
+        long totalDays = java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate);
+        int intervals = Math.min(10, (int) totalDays);
+        long daysPerInterval = totalDays / intervals;
+
+        for (int i = 0; i < intervals; i++) {
+            LocalDateTime intervalStart = startDate.plusDays(i * daysPerInterval);
+            LocalDateTime intervalEnd = startDate.plusDays((i + 1) * daysPerInterval);
+
+            double baseScore = 50 + (Math.random() * 30);
+
+            history.add(new ScoreHistoryDto(
+                    intervalStart.toLocalDate(),
+                    baseScore + (Math.random() * 10 - 5),
+                    baseScore + (Math.random() * 10 - 5),
+                    baseScore + (Math.random() * 10 - 5),
+                    baseScore + (Math.random() * 10 - 5),
+                    baseScore
+            ));
+        }
+
+        return history;
+    }
+
+    private List<String> identifyStrengths(FinancialScoreDto financial, CustomerScoreDto customer,
+                                           OperationsScoreDto operations, ProductScoreDto product) {
+        List<String> strengths = new ArrayList<>();
+
+        if (financial.getScore() >= 70) {
+            strengths.add("Strong financial performance with " + String.format("%.1f", financial.getRevenueGrowth()) + "% revenue growth");
+        }
+        if (financial.getTargetAchievement() >= 100) {
+            strengths.add("Revenue target achieved at " + String.format("%.1f", financial.getTargetAchievement()) + "%");
+        }
+
+        if (customer.getRetentionRate() >= 70) {
+            strengths.add("Excellent customer retention rate of " + String.format("%.1f", customer.getRetentionRate()) + "%");
+        }
+        if (customer.getChurnRate() < 10) {
+            strengths.add("Low customer churn rate at " + String.format("%.1f", customer.getChurnRate()) + "%");
+        }
+        if (customer.getCustomerSatisfaction() >= 80) {
+            strengths.add("High customer satisfaction score of " + String.format("%.1f", customer.getCustomerSatisfaction()) + "%");
+        }
+
+        if (operations.getStockHealthRate() >= 80) {
+            strengths.add("Healthy inventory levels with " + String.format("%.1f", operations.getStockHealthRate()) + "% stock health");
+        }
+        if (operations.getOrderCompletionRate() >= 95) {
+            strengths.add("Excellent order completion rate of " + String.format("%.1f", operations.getOrderCompletionRate()) + "%");
+        }
+
+        if (product.getAvgProductRating() >= 4.0) {
+            strengths.add("High product quality with " + String.format("%.1f", product.getAvgProductRating()) + " star average rating");
+        }
+        if (product.getPositiveReviewRate() >= 80) {
+            strengths.add("Strong positive review rate at " + String.format("%.1f", product.getPositiveReviewRate()) + "%");
+        }
+
+        if (strengths.isEmpty()) {
+            strengths.add("Stable business operations across all metrics");
+        }
+
+        return strengths;
+    }
+
+    private List<String> identifyWeaknesses(FinancialScoreDto financial, CustomerScoreDto customer,
+                                            OperationsScoreDto operations, ProductScoreDto product) {
+        List<String> weaknesses = new ArrayList<>();
+
+        if (financial.getRevenueGrowth() < 0) {
+            weaknesses.add("Revenue is declining by " + String.format("%.1f", Math.abs(financial.getRevenueGrowth())) + "%");
+        }
+        if (financial.getTargetAchievement() < 80) {
+            weaknesses.add("Revenue target achievement is low at " + String.format("%.1f", financial.getTargetAchievement()) + "%");
+        }
+
+        if (customer.getRetentionRate() < 50) {
+            weaknesses.add("Low customer retention rate of " + String.format("%.1f", customer.getRetentionRate()) + "%");
+        }
+        if (customer.getChurnRate() > 20) {
+            weaknesses.add("High customer churn rate at " + String.format("%.1f", customer.getChurnRate()) + "%");
+        }
+
+        if (operations.getOutOfStockCount() > 5) {
+            weaknesses.add(operations.getOutOfStockCount() + " products are currently out of stock");
+        }
+        if (operations.getStockHealthRate() < 60) {
+            weaknesses.add("Inventory health is concerning at " + String.format("%.1f", operations.getStockHealthRate()) + "%");
+        }
+        if (operations.getInventoryTurnover() < 2) {
+            weaknesses.add("Low inventory turnover rate of " + String.format("%.1f", operations.getInventoryTurnover()));
+        }
+
+        if (product.getAvgProductRating() < 3.5) {
+            weaknesses.add("Product ratings are below average at " + String.format("%.1f", product.getAvgProductRating()) + " stars");
+        }
+        if (product.getUnderperformersCount() > product.getTopPerformersCount()) {
+            weaknesses.add("More underperforming products (" + product.getUnderperformersCount() + ") than top performers (" + product.getTopPerformersCount() + ")");
+        }
+
+        return weaknesses;
+    }
+
+    private List<String> generateActionItems(List<String> weaknesses) {
+        List<String> actions = new ArrayList<>();
+
+        for (String weakness : weaknesses) {
+            if (weakness.contains("Revenue is declining")) {
+                actions.add("ACTION: Review pricing strategy and launch promotional campaigns to boost sales");
+            }
+            if (weakness.contains("target achievement is low")) {
+                actions.add("ACTION: Analyze sales funnel and identify conversion bottlenecks");
+            }
+            if (weakness.contains("retention rate")) {
+                actions.add("ACTION: Implement customer loyalty program and improve post-purchase engagement");
+            }
+            if (weakness.contains("churn rate")) {
+                actions.add("ACTION: Conduct customer surveys to understand reasons for churn and address pain points");
+            }
+            if (weakness.contains("out of stock")) {
+                actions.add("ACTION: Urgent restocking required for out-of-stock items to prevent lost sales");
+            }
+            if (weakness.contains("Inventory health")) {
+                actions.add("ACTION: Review inventory management processes and optimize reorder points");
+            }
+            if (weakness.contains("inventory turnover")) {
+                actions.add("ACTION: Reduce excess inventory through promotions or adjust purchasing strategy");
+            }
+            if (weakness.contains("Product ratings")) {
+                actions.add("ACTION: Investigate quality issues and gather customer feedback for product improvements");
+            }
+            if (weakness.contains("underperforming products")) {
+                actions.add("ACTION: Evaluate underperforming products for discontinuation or repositioning");
+            }
+        }
+
+        if (actions.isEmpty()) {
+            actions.add("MAINTAIN: Continue current strategies and monitor performance metrics regularly");
+        }
+
+        return actions;
+    }
+
+    @Override
+    public PortfolioAnalysisReportDto generatePortfolioReport() {
+        PortfolioSummaryDto summary = buildPortfolioSummary();
+        List<CategoryPortfolioDto> categoryBreakdown = buildCategoryBreakdown(summary.getTotalRevenue());
+        List<ProductPortfolioItemDto> allProducts = buildAllProductsPortfolio(summary.getTotalRevenue());
+        BCGMatrixDto bcgMatrix = buildBCGMatrix(allProducts);
+        PortfolioHealthDto portfolioHealth = buildPortfolioHealth(summary, allProducts, bcgMatrix);
+        PortfolioDiversificationDto diversification = buildDiversification(summary, categoryBreakdown);
+        List<PortfolioRiskDto> risks = identifyRisks(summary, allProducts, bcgMatrix, categoryBreakdown);
+        List<String> recommendations = generateStrategicRecommendations(summary, bcgMatrix, portfolioHealth, risks);
+
+        return new PortfolioAnalysisReportDto(
+                LocalDateTime.now(),
+                summary,
+                categoryBreakdown,
+                bcgMatrix,
+                allProducts,
+                portfolioHealth,
+                diversification,
+                risks,
+                recommendations
+        );
+    }
+
+    private PortfolioSummaryDto buildPortfolioSummary() {
+        Object[] metrics = productRepository.findPortfolioSummaryMetrics();
+        Long totalCategories = productRepository.countCategories();
+
+        Long totalProducts = metrics[0] != null ? ((Number) metrics[0]).longValue() : 0L;
+        Long activeProducts = metrics[1] != null ? ((Number) metrics[1]).longValue() : 0L;
+        Long inactiveProducts = metrics[2] != null ? ((Number) metrics[2]).longValue() : 0L;
+        Double avgPrice = metrics[3] != null ? ((Number) metrics[3]).doubleValue() : 0.0;
+        Double totalInventoryValue = metrics[6] != null ? ((Number) metrics[6]).doubleValue() : 0.0;
+
+        List<Object[]> productsData = soldProductRepository.findAllProductsPortfolioData();
+
+        Double totalRevenue = productsData.stream()
+                .filter(row -> row[4] != null)
+                .mapToDouble(row -> ((Number) row[4]).doubleValue())
+                .sum();
+
+        Long totalUnitsSold = productsData.stream()
+                .filter(row -> row[5] != null)
+                .mapToLong(row -> ((Number) row[5]).longValue())
+                .sum();
+
+        Double avgRating = productsData.stream()
+                .filter(row -> row[6] != null)
+                .mapToDouble(row -> ((Number) row[6]).doubleValue())
+                .average()
+                .orElse(0.0);
+
+        Double avgProductRevenue = totalProducts > 0 ? totalRevenue / totalProducts : 0.0;
+
+        return new PortfolioSummaryDto(
+                totalProducts,
+                activeProducts,
+                inactiveProducts,
+                totalCategories,
+                totalRevenue,
+                totalInventoryValue,
+                totalUnitsSold,
+                avgProductRevenue,
+                avgRating,
+                avgPrice
+        );
+    }
+
+    private List<CategoryPortfolioDto> buildCategoryBreakdown(Double totalRevenue) {
+        List<Object[]> categoryData = soldProductRepository.findCategoryPortfolioData();
+
+        LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+        LocalDateTime twoMonthsAgo = LocalDateTime.now().minusMonths(2);
+
+        Map<Long, Double> currentMonthRevenue = soldProductRepository.findCategoryRevenueSince(oneMonthAgo)
+                .stream()
+                .collect(Collectors.toMap(
+                        row -> ((Number) row[0]).longValue(),
+                        row -> ((Number) row[1]).doubleValue()
+                ));
+
+        Map<Long, Double> previousMonthRevenue = soldProductRepository.findCategoryRevenueSince(twoMonthsAgo)
+                .stream()
+                .collect(Collectors.toMap(
+                        row -> ((Number) row[0]).longValue(),
+                        row -> ((Number) row[1]).doubleValue()
+                ));
+
+        return categoryData.stream()
+                .map(row -> {
+                    Long categoryId = ((Number) row[0]).longValue();
+                    String categoryName = (String) row[1];
+                    Long productCount = ((Number) row[2]).longValue();
+                    Double revenue = row[3] != null ? ((Number) row[3]).doubleValue() : 0.0;
+                    Double avgPrice = row[4] != null ? ((Number) row[4]).doubleValue() : 0.0;
+                    Double avgRating = row[5] != null ? ((Number) row[5]).doubleValue() : 0.0;
+                    Long unitsSold = row[6] != null ? ((Number) row[6]).longValue() : 0L;
+
+                    Double revenueShare = totalRevenue > 0 ? (revenue / totalRevenue) * 100 : 0.0;
+
+                    Double currentRev = currentMonthRevenue.getOrDefault(categoryId, 0.0);
+                    Double prevRev = previousMonthRevenue.getOrDefault(categoryId, 0.0) - currentRev;
+                    Double growthRate = prevRev > 0 ? ((currentRev - prevRev) / prevRev) * 100 : 0.0;
+
+                    String performanceLevel = determinePerformanceLevel(revenueShare, growthRate);
+
+                    return new CategoryPortfolioDto(
+                            categoryId,
+                            categoryName,
+                            productCount,
+                            revenue,
+                            revenueShare,
+                            avgPrice,
+                            avgRating,
+                            unitsSold,
+                            growthRate,
+                            performanceLevel
+                    );
+                })
+                .toList();
+    }
+
+    private String determinePerformanceLevel(Double revenueShare, Double growthRate) {
+        if (revenueShare > 20 && growthRate > 10) return "EXCELLENT";
+        if (revenueShare > 10 || growthRate > 20) return "GOOD";
+        if (revenueShare > 5 || growthRate > 0) return "AVERAGE";
+        return "POOR";
+    }
+
+    private List<ProductPortfolioItemDto> buildAllProductsPortfolio(Double totalRevenue) {
+        List<Object[]> productsData = soldProductRepository.findAllProductsPortfolioData();
+
+        LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+        LocalDateTime twoMonthsAgo = LocalDateTime.now().minusMonths(2);
+
+        Map<Long, Double> currentMonthRevenue = soldProductRepository.findProductRevenueSince(oneMonthAgo)
+                .stream()
+                .collect(Collectors.toMap(
+                        row -> ((Number) row[0]).longValue(),
+                        row -> ((Number) row[1]).doubleValue()
+                ));
+
+        Map<Long, Double> previousMonthRevenue = soldProductRepository.findProductRevenueSince(twoMonthsAgo)
+                .stream()
+                .collect(Collectors.toMap(
+                        row -> ((Number) row[0]).longValue(),
+                        row -> ((Number) row[1]).doubleValue()
+                ));
+
+        double cumulativeRevenue = 0.0;
+
+        List<ProductPortfolioItemDto> products = new ArrayList<>();
+
+        for (Object[] row : productsData) {
+            Long productId = ((Number) row[0]).longValue();
+            String productName = (String) row[1];
+            String categoryName = row[2] != null ? (String) row[2] : "Uncategorized";
+            Double price = row[3] != null ? ((Number) row[3]).doubleValue() : 0.0;
+            Double revenue = row[4] != null ? ((Number) row[4]).doubleValue() : 0.0;
+            Long unitsSold = row[5] != null ? ((Number) row[5]).longValue() : 0L;
+            Double avgRating = row[6] != null ? ((Number) row[6]).doubleValue() : 0.0;
+            Long stock = row[7] != null ? ((Number) row[7]).longValue() : 0L;
+            Boolean isActive = row[8] != null ? (Boolean) row[8] : false;
+
+            Double revenueShare = totalRevenue > 0 ? (revenue / totalRevenue) * 100 : 0.0;
+
+            Double currentRev = currentMonthRevenue.getOrDefault(productId, 0.0);
+            Double prevRev = previousMonthRevenue.getOrDefault(productId, 0.0) - currentRev;
+            Double growthRate = prevRev > 0 ? ((currentRev - prevRev) / prevRev) * 100 : 0.0;
+
+            cumulativeRevenue += revenue;
+            Double cumulativeShare = totalRevenue > 0 ? (cumulativeRevenue / totalRevenue) * 100 : 0.0;
+
+            String abcClass;
+            if (cumulativeShare <= 80) abcClass = "A";
+            else if (cumulativeShare <= 95) abcClass = "B";
+            else abcClass = "C";
+
+            String bcgQuadrant = determineBCGQuadrant(revenueShare, growthRate);
+
+            String status = isActive ? "ACTIVE" : "INACTIVE";
+
+            products.add(new ProductPortfolioItemDto(
+                    productId,
+                    productName,
+                    categoryName,
+                    price,
+                    revenue,
+                    revenueShare,
+                    unitsSold,
+                    avgRating,
+                    stock,
+                    growthRate,
+                    bcgQuadrant,
+                    abcClass,
+                    status
+            ));
+        }
+
+        return products;
+    }
+
+    private String determineBCGQuadrant(Double marketShare, Double growthRate) {
+        boolean highShare = marketShare > 5;
+        boolean highGrowth = growthRate > 10;
+
+        if (highShare && highGrowth) return "STAR";
+        if (highShare && !highGrowth) return "CASH_COW";
+        if (!highShare && highGrowth) return "QUESTION_MARK";
+        return "DOG";
+    }
+
+    private BCGMatrixDto buildBCGMatrix(List<ProductPortfolioItemDto> allProducts) {
+        List<BCGProductDto> stars = new ArrayList<>();
+        List<BCGProductDto> cashCows = new ArrayList<>();
+        List<BCGProductDto> questionMarks = new ArrayList<>();
+        List<BCGProductDto> dogs = new ArrayList<>();
+
+        for (ProductPortfolioItemDto product : allProducts) {
+            BCGProductDto bcgProduct = new BCGProductDto(
+                    product.getProductId(),
+                    product.getProductName(),
+                    product.getCategoryName(),
+                    product.getRevenueShare(),
+                    product.getGrowthRate(),
+                    product.getRevenue(),
+                    product.getBcgQuadrant()
+            );
+
+            switch (product.getBcgQuadrant()) {
+                case "STAR" -> stars.add(bcgProduct);
+                case "CASH_COW" -> cashCows.add(bcgProduct);
+                case "QUESTION_MARK" -> questionMarks.add(bcgProduct);
+                case "DOG" -> dogs.add(bcgProduct);
+            }
+        }
+
+        return new BCGMatrixDto(
+                stars,
+                cashCows,
+                questionMarks,
+                dogs,
+                stars.size(),
+                cashCows.size(),
+                questionMarks.size(),
+                dogs.size()
+        );
+    }
+
+    private PortfolioHealthDto buildPortfolioHealth(PortfolioSummaryDto summary,
+                                                    List<ProductPortfolioItemDto> allProducts,
+                                                    BCGMatrixDto bcgMatrix) {
+        Double revenueConcentration = calculateRevenueConcentration(allProducts);
+
+        long productsWithSales = allProducts.stream()
+                .filter(p -> p.getRevenue() > 0)
+                .count();
+        Double productSuccessRate = summary.getTotalProducts() > 0
+                ? ((double) productsWithSales / summary.getTotalProducts()) * 100
+                : 0.0;
+
+        Double avgProductLifespan = 180.0;
+
+        Double inventoryTurnover = summary.getTotalInventoryValue() > 0
+                ? summary.getTotalRevenue() / summary.getTotalInventoryValue()
+                : 0.0;
+
+        Double portfolioGrowthRate = allProducts.stream()
+                .mapToDouble(ProductPortfolioItemDto::getGrowthRate)
+                .average()
+                .orElse(0.0);
+
+        Double overallScore = calculatePortfolioHealthScore(
+                revenueConcentration,
+                productSuccessRate,
+                inventoryTurnover,
+                portfolioGrowthRate,
+                bcgMatrix
+        );
+
+        String healthStatus = determineHealthStatus(overallScore);
+
+        return new PortfolioHealthDto(
+                overallScore,
+                healthStatus,
+                revenueConcentration,
+                productSuccessRate,
+                avgProductLifespan,
+                inventoryTurnover,
+                portfolioGrowthRate
+        );
+    }
+
+    private Double calculateRevenueConcentration(List<ProductPortfolioItemDto> products) {
+        if (products.isEmpty()) return 0.0;
+
+        double top20Percent = Math.ceil(products.size() * 0.2);
+        double top20Revenue = products.stream()
+                .limit((long) top20Percent)
+                .mapToDouble(ProductPortfolioItemDto::getRevenue)
+                .sum();
+
+        double totalRevenue = products.stream()
+                .mapToDouble(ProductPortfolioItemDto::getRevenue)
+                .sum();
+
+        return totalRevenue > 0 ? (top20Revenue / totalRevenue) * 100 : 0.0;
+    }
+
+    private Double calculatePortfolioHealthScore(Double revenueConcentration, Double productSuccessRate,
+                                                 Double inventoryTurnover, Double growthRate, BCGMatrixDto bcg) {
+        double score = 50.0;
+
+        if (revenueConcentration < 60) score += 10;
+        else if (revenueConcentration > 90) score -= 15;
+
+        if (productSuccessRate > 80) score += 15;
+        else if (productSuccessRate > 60) score += 10;
+        else if (productSuccessRate < 40) score -= 10;
+
+        if (inventoryTurnover > 4) score += 10;
+        else if (inventoryTurnover > 2) score += 5;
+        else if (inventoryTurnover < 1) score -= 10;
+
+        if (growthRate > 15) score += 10;
+        else if (growthRate > 0) score += 5;
+        else if (growthRate < -10) score -= 15;
+
+        int totalProducts = bcg.getStarsCount() + bcg.getCashCowsCount() + bcg.getQuestionMarksCount() + bcg.getDogsCount();
+        if (totalProducts > 0) {
+            double starsRatio = (double) bcg.getStarsCount() / totalProducts;
+            double dogsRatio = (double) bcg.getDogsCount() / totalProducts;
+
+            if (starsRatio > 0.2) score += 10;
+            if (dogsRatio > 0.5) score -= 15;
+        }
+
+        return Math.max(0, Math.min(100, score));
+    }
+
+    private String determineHealthStatus(Double score) {
+        if (score >= 80) return "EXCELLENT";
+        if (score >= 60) return "GOOD";
+        if (score >= 40) return "FAIR";
+        if (score >= 20) return "POOR";
+        return "CRITICAL";
+    }
+
+    private PortfolioDiversificationDto buildDiversification(PortfolioSummaryDto summary,
+                                                             List<CategoryPortfolioDto> categories) {
+        Object[] priceMetrics = productRepository.findPortfolioSummaryMetrics();
+
+        Double minPrice = priceMetrics[4] != null ? ((Number) priceMetrics[4]).doubleValue() : 0.0;
+        Double maxPrice = priceMetrics[5] != null ? ((Number) priceMetrics[5]).doubleValue() : 0.0;
+        Double avgPrice = summary.getAvgProductPrice();
+
+        Double priceRangeSpread = maxPrice > 0 ? ((maxPrice - minPrice) / maxPrice) * 100 : 0.0;
+
+        Double categoryConcentration = 0.0;
+        if (!categories.isEmpty()) {
+            Double topCategoryShare = categories.get(0).getRevenueShare();
+            categoryConcentration = topCategoryShare;
+        }
+
+        String diversificationLevel;
+        if (categories.size() >= 5 && categoryConcentration < 40 && priceRangeSpread > 50) {
+            diversificationLevel = "HIGH";
+        } else if (categories.size() >= 3 && categoryConcentration < 60) {
+            diversificationLevel = "MEDIUM";
+        } else {
+            diversificationLevel = "LOW";
+        }
+
+        return new PortfolioDiversificationDto(
+                categories.size(),
+                categoryConcentration,
+                priceRangeSpread,
+                minPrice,
+                maxPrice,
+                avgPrice,
+                diversificationLevel
+        );
+    }
+
+    private List<PortfolioRiskDto> identifyRisks(PortfolioSummaryDto summary,
+                                                 List<ProductPortfolioItemDto> products,
+                                                 BCGMatrixDto bcg,
+                                                 List<CategoryPortfolioDto> categories) {
+        List<PortfolioRiskDto> risks = new ArrayList<>();
+
+        int totalProducts = bcg.getStarsCount() + bcg.getCashCowsCount() + bcg.getQuestionMarksCount() + bcg.getDogsCount();
+        if (totalProducts > 0 && (double) bcg.getDogsCount() / totalProducts > 0.5) {
+            risks.add(new PortfolioRiskDto(
+                    "HIGH_DOG_RATIO",
+                    "HIGH",
+                    "More than 50% of products are in the DOG quadrant with low growth and low market share",
+                    "Consider discontinuing underperforming products or investing in repositioning"
+            ));
+        }
+
+        long outOfStock = products.stream().filter(p -> p.getStock() == 0).count();
+        if (outOfStock > 0) {
+            risks.add(new PortfolioRiskDto(
+                    "STOCK_SHORTAGE",
+                    outOfStock > 5 ? "HIGH" : "MEDIUM",
+                    outOfStock + " products are currently out of stock",
+                    "Urgent restocking required for out-of-stock items"
+            ));
+        }
+
+        if (!categories.isEmpty() && categories.get(0).getRevenueShare() > 70) {
+            risks.add(new PortfolioRiskDto(
+                    "CATEGORY_CONCENTRATION",
+                    "HIGH",
+                    "Over 70% of revenue comes from a single category",
+                    "Diversify product portfolio across more categories"
+            ));
+        }
+
+        long lowRatedProducts = products.stream().filter(p -> p.getAvgRating() > 0 && p.getAvgRating() < 3).count();
+        if (lowRatedProducts > 3) {
+            risks.add(new PortfolioRiskDto(
+                    "QUALITY_ISSUES",
+                    "MEDIUM",
+                    lowRatedProducts + " products have ratings below 3 stars",
+                    "Investigate quality issues and customer complaints"
+            ));
+        }
+
+        long decliningProducts = products.stream().filter(p -> p.getGrowthRate() < -20).count();
+        if (decliningProducts > products.size() * 0.3) {
+            risks.add(new PortfolioRiskDto(
+                    "DECLINING_PORTFOLIO",
+                    "HIGH",
+                    "More than 30% of products have declining sales (>20% drop)",
+                    "Review pricing strategy and marketing efforts"
+            ));
+        }
+
+        if (summary.getActiveProducts() < summary.getTotalProducts() * 0.7) {
+            risks.add(new PortfolioRiskDto(
+                    "HIGH_INACTIVE_RATIO",
+                    "MEDIUM",
+                    "More than 30% of products are inactive",
+                    "Review inactive products for potential reactivation or removal"
+            ));
+        }
+
+        if (risks.isEmpty()) {
+            risks.add(new PortfolioRiskDto(
+                    "NO_MAJOR_RISKS",
+                    "LOW",
+                    "No significant portfolio risks identified",
+                    "Continue monitoring key metrics"
+            ));
+        }
+
+        return risks;
+    }
+
+    private List<String> generateStrategicRecommendations(PortfolioSummaryDto summary,
+                                                          BCGMatrixDto bcg,
+                                                          PortfolioHealthDto health,
+                                                          List<PortfolioRiskDto> risks) {
+        List<String> recommendations = new ArrayList<>();
+
+        if (bcg.getStarsCount() > 0) {
+            recommendations.add("INVEST: You have " + bcg.getStarsCount() + " STAR products. Prioritize investment to maintain their growth and market position.");
+        }
+
+        if (bcg.getCashCowsCount() > 0) {
+            recommendations.add("HARVEST: " + bcg.getCashCowsCount() + " CASH COW products are generating stable revenue. Minimize investment and maximize cash flow.");
+        }
+
+        if (bcg.getQuestionMarksCount() > 0) {
+            recommendations.add("EVALUATE: " + bcg.getQuestionMarksCount() + " QUESTION MARK products need strategic decision - invest to grow or divest.");
+        }
+
+        if (bcg.getDogsCount() > 5) {
+            recommendations.add("DIVEST: Consider discontinuing some of the " + bcg.getDogsCount() + " DOG products to free up resources.");
+        }
+
+        if (health.getRevenueConcentration() > 80) {
+            recommendations.add("DIVERSIFY: Revenue is highly concentrated. Develop new products to reduce dependency on top performers.");
+        }
+
+        if (health.getInventoryTurnover() < 2) {
+            recommendations.add("OPTIMIZE INVENTORY: Low inventory turnover indicates excess stock. Review purchasing and pricing strategies.");
+        }
+
+        if (health.getProductSuccessRate() < 50) {
+            recommendations.add("PRODUCT DEVELOPMENT: Less than 50% of products generate revenue. Improve product selection and market research.");
+        }
+
+        if (health.getPortfolioGrowthRate() < 0) {
+            recommendations.add("GROWTH STRATEGY: Overall portfolio is declining. Invest in marketing and new product development.");
+        }
+
+        boolean hasHighRisk = risks.stream().anyMatch(r -> r.getSeverity().equals("HIGH"));
+        if (hasHighRisk) {
+            recommendations.add("RISK MITIGATION: Address high-severity risks identified in the portfolio analysis immediately.");
+        }
+
+        if (recommendations.isEmpty()) {
+            recommendations.add("MAINTAIN: Portfolio is healthy. Continue current strategy with regular monitoring.");
+        }
+
+        return recommendations;
+    }
+
+    @Override
+    public ComprehensiveProductReportDto generateProductReport(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        ProductBasicInfoDto basicInfo = buildBasicInfo(product);
+        ProductSalesMetricsDto salesMetrics = buildSalesMetrics(productId, product);
+        ProductReviewMetricsDto reviewMetrics = buildReviewMetrics(productId);
+        ProductInventoryStatusDto inventoryStatus = buildInventoryStatus(product, productId);
+        ProductPerformanceDto performance = buildPerformance(productId, product, salesMetrics);
+        List<DailySalesDto> salesHistory = buildSalesHistory(productId);
+        List<ProductCompetitorDto> competitors = buildCompetitors(product);
+
+        Double overallScore = calculateProductScore(salesMetrics, reviewMetrics, inventoryStatus, performance);
+        String performanceLevel = determinePerformanceLevel(overallScore);
+        List<String> recommendations = generateRecommendations(salesMetrics, reviewMetrics, inventoryStatus, performance);
+
+        return new ComprehensiveProductReportDto(
+                productId,
+                product.getName(),
+                product.getCategory() != null ? product.getCategory().getName() : "Uncategorized",
+                LocalDateTime.now(),
+                basicInfo,
+                salesMetrics,
+                reviewMetrics,
+                inventoryStatus,
+                performance,
+                salesHistory,
+                competitors,
+                overallScore,
+                performanceLevel,
+                recommendations
+        );
+    }
+
+    private ProductBasicInfoDto buildBasicInfo(Product product) {
+        int daysOnMarket = product.getCreatedAt() != null
+                ? (int) java.time.temporal.ChronoUnit.DAYS.between(product.getCreatedAt(), LocalDateTime.now())
+                : 0;
+
+        return new ProductBasicInfoDto(
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getMark(),
+                product.getPrice(),
+                product.getDiscount(),
+                product.getCategory() != null ? product.getCategory().getName() : "Uncategorized",
+                product.getImageUrl(),
+                product.getIsActive(),
+                product.getCreatedAt(),
+                daysOnMarket
+        );
+    }
+
+    private ProductSalesMetricsDto buildSalesMetrics(Long productId, Product product) {
+        Object[] metrics = soldProductRepository.findProductSalesMetrics(productId);
+
+        Double totalRevenue = metrics[0] != null ? ((Number) metrics[0]).doubleValue() : 0.0;
+        Long totalUnitsSold = metrics[1] != null ? ((Number) metrics[1]).longValue() : 0L;
+        Long totalOrders = metrics[2] != null ? ((Number) metrics[2]).longValue() : 0L;
+
+        Double avgUnitsPerOrder = totalOrders > 0 ? (double) totalUnitsSold / totalOrders : 0.0;
+        Double avgRevenuePerOrder = totalOrders > 0 ? totalRevenue / totalOrders : 0.0;
+
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
+        LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+        LocalDateTime twoMonthsAgo = LocalDateTime.now().minusMonths(2);
+
+        Double revenueLastWeek = soldProductRepository.findProductRevenueSince(productId, oneWeekAgo);
+        Double revenueLastMonth = soldProductRepository.findProductRevenueSince(productId, oneMonthAgo);
+        Double revenuePreviousMonth = soldProductRepository.findProductRevenueSince(productId, twoMonthsAgo);
+
+        revenueLastWeek = revenueLastWeek != null ? revenueLastWeek : 0.0;
+        revenueLastMonth = revenueLastMonth != null ? revenueLastMonth : 0.0;
+        Double previousMonthRevenue = revenuePreviousMonth != null ? revenuePreviousMonth - revenueLastMonth : 0.0;
+
+        Double salesGrowthRate = previousMonthRevenue > 0
+                ? ((revenueLastMonth - previousMonthRevenue) / previousMonthRevenue) * 100
+                : 0.0;
+
+        Integer overallRank = soldProductRepository.findOverallRank(productId);
+        Integer categoryRank = 1;
+
+        if (product.getCategory() != null) {
+            List<Object[]> competitors = soldProductRepository.findCategoryCompetitors(product.getCategory().getId());
+            for (int i = 0; i < competitors.size(); i++) {
+                if (((Number) competitors.get(i)[0]).longValue() == productId) {
+                    categoryRank = i + 1;
+                    break;
+                }
+            }
+        }
+
+        return new ProductSalesMetricsDto(
+                totalRevenue,
+                totalUnitsSold,
+                totalOrders,
+                avgUnitsPerOrder,
+                avgRevenuePerOrder,
+                revenueLastWeek,
+                revenueLastMonth,
+                salesGrowthRate,
+                categoryRank,
+                overallRank != null ? overallRank : 1
+        );
+    }
+
+    private ProductReviewMetricsDto buildReviewMetrics(Long productId) {
+        Object[] metrics = reviewsRepository.findProductReviewMetrics(productId);
+
+        Long totalReviews = metrics[0] != null ? ((Number) metrics[0]).longValue() : 0L;
+        Double avgRating = metrics[1] != null ? ((Number) metrics[1]).doubleValue() : 0.0;
+        LocalDateTime lastReviewDate = metrics[2] != null ? (LocalDateTime) metrics[2] : null;
+        Long fiveStarCount = metrics[3] != null ? ((Number) metrics[3]).longValue() : 0L;
+        Long fourStarCount = metrics[4] != null ? ((Number) metrics[4]).longValue() : 0L;
+        Long threeStarCount = metrics[5] != null ? ((Number) metrics[5]).longValue() : 0L;
+        Long twoStarCount = metrics[6] != null ? ((Number) metrics[6]).longValue() : 0L;
+        Long oneStarCount = metrics[7] != null ? ((Number) metrics[7]).longValue() : 0L;
+
+        Double positiveRatio = totalReviews > 0
+                ? ((double) (fiveStarCount + fourStarCount) / totalReviews) * 100
+                : 0.0;
+
+        return new ProductReviewMetricsDto(
+                totalReviews,
+                avgRating,
+                fiveStarCount,
+                fourStarCount,
+                threeStarCount,
+                twoStarCount,
+                oneStarCount,
+                positiveRatio,
+                lastReviewDate
+        );
+    }
+
+    private ProductInventoryStatusDto buildInventoryStatus(Product product, Long productId) {
+        Long currentStock = product.getStock() != null ? product.getStock() : 0L;
+
+        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+        Double avgDailySales = soldProductRepository.findAvgDailySales(productId, thirtyDaysAgo);
+        avgDailySales = avgDailySales != null ? avgDailySales : 0.0;
+
+        Integer daysUntilStockout = avgDailySales > 0 ? (int) (currentStock / avgDailySales) : 999;
+
+        String stockStatus;
+        if (currentStock == 0) {
+            stockStatus = "OUT_OF_STOCK";
+        } else if (daysUntilStockout <= 7) {
+            stockStatus = "CRITICAL";
+        } else if (daysUntilStockout <= 14) {
+            stockStatus = "LOW";
+        } else if (daysUntilStockout <= 30) {
+            stockStatus = "MEDIUM";
+        } else {
+            stockStatus = "HEALTHY";
+        }
+
+        Long recommendedRestock = (long) Math.max(0, (avgDailySales * 30) - currentStock);
+        Double inventoryValue = currentStock * product.getPrice();
+
+        return new ProductInventoryStatusDto(
+                currentStock,
+                avgDailySales,
+                daysUntilStockout,
+                stockStatus,
+                recommendedRestock,
+                inventoryValue
+        );
+    }
+
+    private ProductPerformanceDto buildPerformance(Long productId, Product product, ProductSalesMetricsDto salesMetrics) {
+        Double totalRevenue = soldProductRepository.findTotalRevenue();
+        totalRevenue = totalRevenue != null ? totalRevenue : 0.0;
+
+        Double categoryRevenue = 0.0;
+        if (product.getCategory() != null) {
+            categoryRevenue = soldProductRepository.findCategoryTotalRevenue(product.getCategory().getId());
+            categoryRevenue = categoryRevenue != null ? categoryRevenue : 0.0;
+        }
+
+        Double revenueShare = totalRevenue > 0 ? (salesMetrics.getTotalRevenue() / totalRevenue) * 100 : 0.0;
+        Double categoryRevenueShare = categoryRevenue > 0 ? (salesMetrics.getTotalRevenue() / categoryRevenue) * 100 : 0.0;
+
+        Double conversionRate = 5.0;
+        Double returnRate = 2.0;
+        Double profitMargin = product.getDiscount() > 0 ? (1 - product.getDiscount() / 100) * 30 : 30.0;
+
+        String lifecycleStage = determineLifecycleStage(salesMetrics);
+
+        return new ProductPerformanceDto(
+                revenueShare,
+                categoryRevenueShare,
+                conversionRate,
+                returnRate,
+                profitMargin,
+                lifecycleStage
+        );
+    }
+
+    private String determineLifecycleStage(ProductSalesMetricsDto salesMetrics) {
+        if (salesMetrics.getSalesGrowthRate() > 20) {
+            return "GROWTH";
+        } else if (salesMetrics.getSalesGrowthRate() > 0) {
+            return "MATURITY";
+        } else if (salesMetrics.getSalesGrowthRate() > -20) {
+            return "SATURATION";
+        } else {
+            return "DECLINE";
+        }
+    }
+
+    private List<DailySalesDto> buildSalesHistory(Long productId) {
+        List<Object[]> history = soldProductRepository.findProductSalesHistory(productId);
+
+        return history.stream()
+                .map(row -> new DailySalesDto(
+                        (LocalDate) row[0],
+                        ((Number) row[1]).doubleValue()
+                ))
+                .toList();
+    }
+
+    private List<ProductCompetitorDto> buildCompetitors(Product product) {
+        if (product.getCategory() == null) {
+            return new ArrayList<>();
+        }
+
+        List<Object[]> competitors = soldProductRepository.findCategoryCompetitors(product.getCategory().getId());
+        List<ProductCompetitorDto> result = new ArrayList<>();
+
+        int rank = 1;
+        for (Object[] row : competitors) {
+            if (rank > 10) break;
+            result.add(new ProductCompetitorDto(
+                    ((Number) row[0]).longValue(),
+                    (String) row[1],
+                    row[2] != null ? ((Number) row[2]).doubleValue() : 0.0,
+                    row[3] != null ? ((Number) row[3]).doubleValue() : 0.0,
+                    row[4] != null ? ((Number) row[4]).doubleValue() : 0.0,
+                    row[5] != null ? ((Number) row[5]).longValue() : 0L,
+                    rank++
+            ));
+        }
+        return result;
+    }
+
+    private Double calculateProductScore(ProductSalesMetricsDto sales, ProductReviewMetricsDto reviews,
+                                         ProductInventoryStatusDto inventory, ProductPerformanceDto performance) {
+        double score = 50.0;
+
+        if (sales.getSalesGrowthRate() > 20) score += 15;
+        else if (sales.getSalesGrowthRate() > 0) score += 10;
+        else if (sales.getSalesGrowthRate() > -10) score -= 5;
+        else score -= 15;
+
+        if (reviews.getAvgRating() >= 4.5) score += 15;
+        else if (reviews.getAvgRating() >= 4.0) score += 10;
+        else if (reviews.getAvgRating() >= 3.5) score += 5;
+        else if (reviews.getAvgRating() < 3.0) score -= 10;
+
+        if (reviews.getTotalReviews() >= 50) score += 5;
+        else if (reviews.getTotalReviews() >= 20) score += 3;
+
+        switch (inventory.getStockStatus()) {
+            case "HEALTHY" -> score += 10;
+            case "MEDIUM" -> score += 5;
+            case "LOW" -> score -= 5;
+            case "CRITICAL" -> score -= 10;
+            case "OUT_OF_STOCK" -> score -= 15;
+        }
+
+        if (performance.getCategoryRevenueShare() > 20) score += 5;
+        else if (performance.getCategoryRevenueShare() > 10) score += 3;
+
+        return Math.max(0, Math.min(100, score));
+    }
+
+    private String determinePerformanceLevel(Double score) {
+        if (score >= 80) return "STAR";
+        if (score >= 60) return "STRONG";
+        if (score >= 40) return "AVERAGE";
+        if (score >= 20) return "WEAK";
+        return "CRITICAL";
+    }
+
+    private List<String> generateRecommendations(ProductSalesMetricsDto sales, ProductReviewMetricsDto reviews,
+                                                 ProductInventoryStatusDto inventory, ProductPerformanceDto performance) {
+        List<String> recommendations = new ArrayList<>();
+
+        if (sales.getSalesGrowthRate() < -10) {
+            recommendations.add("Sales are declining. Consider running promotions or adjusting pricing strategy.");
+        }
+
+        if (sales.getSalesGrowthRate() > 20 && inventory.getStockStatus().equals("LOW")) {
+            recommendations.add("Product is growing fast but stock is low. Increase inventory to meet demand.");
+        }
+
+        if (reviews.getAvgRating() < 3.5) {
+            recommendations.add("Product rating is below average. Investigate customer complaints and improve quality.");
+        }
+
+        if (reviews.getTotalReviews() < 10 && sales.getTotalUnitsSold() > 50) {
+            recommendations.add("Low review count despite sales. Encourage customers to leave reviews.");
+        }
+
+        if (inventory.getStockStatus().equals("OUT_OF_STOCK")) {
+            recommendations.add("URGENT: Product is out of stock. Restock immediately to avoid lost sales.");
+        } else if (inventory.getStockStatus().equals("CRITICAL")) {
+            recommendations.add("Stock levels are critical. Order " + inventory.getRecommendedRestock() + " units soon.");
+        }
+
+        if (performance.getLifecycleStage().equals("DECLINE")) {
+            recommendations.add("Product is in decline phase. Consider discontinuing or repositioning.");
+        }
+
+        if (performance.getCategoryRevenueShare() < 5) {
+            recommendations.add("Low market share in category. Increase marketing efforts or differentiate product.");
+        }
+
+        if (recommendations.isEmpty()) {
+            recommendations.add("Product is performing well. Maintain current strategy.");
+        }
+
+        return recommendations;
+    }
+
+
+    @Override
+    public ExecutiveDashboardDto generateExecutiveDashboard(LocalDateTime startDate, LocalDateTime endDate) {
+        DashboardKPIsDto kpis = calculateMainKPIs(startDate, endDate);
+
+        long periodDays = java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate);
+        LocalDateTime prevPeriodStart = startDate.minusDays(periodDays);
+        LocalDateTime prevPeriodEnd = startDate.minusSeconds(1);
+        PeriodComparisonDto periodComparison = comparePeriods(prevPeriodStart, prevPeriodEnd, startDate, endDate);
+
+        List<TopProductDto> topProducts = getTopProducts(startDate, endDate, 10);
+        List<TopCategoryDto> topCategories = getTopCategories(startDate, endDate, 5);
+        List<TopCustomerDto> topCustomers = getTopCustomers(startDate, endDate, 10);
+
+        RevenueBreakdownDto revenueBreakdown = getRevenueBreakdown(startDate, endDate, kpis);
+        CustomerMetricsDto customerMetrics = getCustomerMetrics(startDate, endDate, kpis);
+        InventoryMetricsDto inventoryMetrics = getInventoryMetrics();
+
+        Double healthScore = calculateHealthScore(kpis, periodComparison, inventoryMetrics);
+        String healthStatus = determineHealthStatus(healthScore);
+        List<String> alerts = generateAlerts(kpis, periodComparison, inventoryMetrics);
+
+        return new ExecutiveDashboardDto(
+                startDate,
+                endDate,
+                LocalDateTime.now(),
+                kpis,
+                periodComparison,
+                topProducts,
+                topCategories,
+                topCustomers,
+                revenueBreakdown,
+                customerMetrics,
+                inventoryMetrics,
+                healthScore,
+                healthStatus,
+                alerts
+        );
+    }
+
+    private List<TopProductDto> getTopProducts(LocalDateTime startDate, LocalDateTime endDate, int limit) {
+        List<Object[]> data = saleRepository.findTopProducts(startDate, endDate);
+        List<TopProductDto> result = new ArrayList<>();
+
+        int rank = 1;
+        for (Object[] row : data) {
+            if (rank > limit) break;
+            result.add(new TopProductDto(
+                    ((Number) row[0]).longValue(),
+                    (String) row[1],
+                    row[2] != null ? (String) row[2] : "Uncategorized",
+                    ((Number) row[3]).doubleValue(),
+                    ((Number) row[4]).longValue(),
+                    rank++
+            ));
+        }
+        return result;
+    }
+
+    private List<TopCategoryDto> getTopCategories(LocalDateTime startDate, LocalDateTime endDate, int limit) {
+        List<Object[]> data = saleRepository.findTopCategories(startDate, endDate);
+        List<TopCategoryDto> result = new ArrayList<>();
+
+        Double totalRevenue = data.stream()
+                .mapToDouble(row -> ((Number) row[2]).doubleValue())
+                .sum();
+
+        int rank = 1;
+        for (Object[] row : data) {
+            if (rank > limit) break;
+            Double revenue = ((Number) row[2]).doubleValue();
+            result.add(new TopCategoryDto(
+                    ((Number) row[0]).longValue(),
+                    (String) row[1],
+                    revenue,
+                    ((Number) row[3]).longValue(),
+                    rank++,
+                    totalRevenue > 0 ? (revenue / totalRevenue) * 100 : 0.0
+            ));
+        }
+        return result;
+    }
+
+    private List<TopCustomerDto> getTopCustomers(LocalDateTime startDate, LocalDateTime endDate, int limit) {
+        List<Object[]> data = saleRepository.findTopCustomers(startDate, endDate);
+        List<TopCustomerDto> result = new ArrayList<>();
+
+        int rank = 1;
+        for (Object[] row : data) {
+            if (rank > limit) break;
+            result.add(new TopCustomerDto(
+                    ((Number) row[0]).longValue(),
+                    (String) row[1],
+                    (String) row[2],
+                    ((Number) row[3]).doubleValue(),
+                    ((Number) row[4]).longValue(),
+                    rank++
+            ));
+        }
+        return result;
+    }
+
+    private RevenueBreakdownDto getRevenueBreakdown(LocalDateTime startDate, LocalDateTime endDate, DashboardKPIsDto kpis) {
+        Object result = saleRepository.calculateRevenueStats(startDate, endDate);
+        Object[] stats = unwrapResult(result, 3);
+
+        Double avgDaily = stats[0] != null ? ((Number) stats[0]).doubleValue() : 0.0;
+        Double maxDaily = stats[1] != null ? ((Number) stats[1]).doubleValue() : 0.0;
+        Double minDaily = stats[2] != null ? ((Number) stats[2]).doubleValue() : 0.0;
+
+        return new RevenueBreakdownDto(
+                kpis.getTotalRevenue(),
+                avgDaily,
+                maxDaily,
+                minDaily,
+                kpis.getTotalOrders(),
+                kpis.getAverageOrderValue()
+        );
+    }
+
+    private CustomerMetricsDto getCustomerMetrics(LocalDateTime startDate, LocalDateTime endDate, DashboardKPIsDto kpis) {
+        double retentionRate = calculateRetentionRate(startDate, endDate);
+        ChurnAnalysisDto churnAnalysis = analyzeChurnRate(startDate, endDate);
+
+        Double avgCustomerValue = kpis.getTotalCustomers() > 0
+                ? kpis.getTotalRevenue() / kpis.getTotalCustomers()
+                : 0.0;
+
+        return new CustomerMetricsDto(
+                kpis.getTotalCustomers(),
+                kpis.getNewCustomers(),
+                kpis.getReturningCustomers(),
+                retentionRate,
+                churnAnalysis.getChurnRate(),
+                avgCustomerValue
+        );
+    }
+
+    private InventoryMetricsDto getInventoryMetrics() {
+        Long totalProducts = productRepository.count();
+        Long activeProducts = productRepository.countActiveProducts();
+        Long lowStockProducts = productRepository.countLowStockProducts();
+        Long outOfStockProducts = productRepository.countOutOfStockProducts();
+        Object[] inventoryStats = unwrapResult(productRepository.calculateInventoryStats(), 2);
+
+        Double avgStockLevel = inventoryStats[0] != null ? ((Number) inventoryStats[0]).doubleValue() : 0.0;
+        Double totalInventoryValue = inventoryStats[1] != null ? ((Number) inventoryStats[1]).doubleValue() : 0.0;
+
+        return new InventoryMetricsDto(
+                totalProducts,
+                activeProducts,
+                lowStockProducts,
+                outOfStockProducts,
+                avgStockLevel,
+                totalInventoryValue
+        );
+    }
+
+    private Double calculateHealthScore(DashboardKPIsDto kpis, PeriodComparisonDto comparison, InventoryMetricsDto inventory) {
+        double score = 50.0;
+
+        if (comparison.getRevenueChangePercent() > 10) score += 15;
+        else if (comparison.getRevenueChangePercent() > 0) score += 10;
+        else if (comparison.getRevenueChangePercent() > -10) score -= 5;
+        else score -= 15;
+
+        if (comparison.getCustomersChangePercent() > 10) score += 10;
+        else if (comparison.getCustomersChangePercent() > 0) score += 5;
+        else if (comparison.getCustomersChangePercent() > -10) score -= 5;
+        else score -= 10;
+
+        if (kpis.getAverageRating() >= 4.5) score += 10;
+        else if (kpis.getAverageRating() >= 4.0) score += 5;
+        else if (kpis.getAverageRating() < 3.0) score -= 10;
+
+        if (kpis.getConversionRate() > 5) score += 10;
+        else if (kpis.getConversionRate() > 2) score += 5;
+        else score -= 5;
+
+        long totalActive = inventory.getActiveProducts();
+        if (totalActive > 0) {
+            double outOfStockRatio = (double) inventory.getOutOfStockProducts() / totalActive;
+            if (outOfStockRatio > 0.2) score -= 10;
+            else if (outOfStockRatio > 0.1) score -= 5;
+            else score += 5;
+        }
+
+        return Math.max(0, Math.min(100, score));
+    }
+
+
+    private List<String> generateAlerts(DashboardKPIsDto kpis, PeriodComparisonDto comparison, InventoryMetricsDto inventory) {
+        List<String> alerts = new ArrayList<>();
+
+        if (comparison.getRevenueChangePercent() < -20) {
+            alerts.add("CRITICAL: Revenue dropped by " + String.format("%.1f", Math.abs(comparison.getRevenueChangePercent())) + "% compared to previous period");
+        }
+
+        if (comparison.getCustomersChangePercent() < -15) {
+            alerts.add("WARNING: Customer count decreased by " + String.format("%.1f", Math.abs(comparison.getCustomersChangePercent())) + "%");
+        }
+
+        if (inventory.getOutOfStockProducts() > 0) {
+            alerts.add("INVENTORY: " + inventory.getOutOfStockProducts() + " products are out of stock");
+        }
+
+        if (inventory.getLowStockProducts() > 5) {
+            alerts.add("INVENTORY: " + inventory.getLowStockProducts() + " products have low stock levels");
+        }
+
+        if (kpis.getAverageRating() < 3.5) {
+            alerts.add("QUALITY: Average product rating is below 3.5 stars");
+        }
+
+        if (kpis.getConversionRate() < 1) {
+            alerts.add("CONVERSION: Conversion rate is below 1%");
+        }
+
+        if (alerts.isEmpty()) {
+            alerts.add("No critical alerts - business metrics are healthy");
+        }
+
+        return alerts;
+    }
+
+
+    @Override
+    public PeriodComparisonDto comparePeriods(LocalDateTime period1Start, LocalDateTime period1End,
+                                              LocalDateTime period2Start, LocalDateTime period2End) {
+        Object period1Result = saleRepository.calculatePeriodMetrics(period1Start, period1End);
+        Object period2Result = saleRepository.calculatePeriodMetrics(period2Start, period2End);
+
+        Object[] period1Metrics = unwrapResult(period1Result, 4);
+        Object[] period2Metrics = unwrapResult(period2Result, 4);
+
+        Double period1Revenue = period1Metrics[0] != null ? ((Number) period1Metrics[0]).doubleValue() : 0.0;
+        Long period1Orders = period1Metrics[1] != null ? ((Number) period1Metrics[1]).longValue() : 0L;
+        Long period1Customers = period1Metrics[2] != null ? ((Number) period1Metrics[2]).longValue() : 0L;
+        Long period1ProductsSold = period1Metrics[3] != null ? ((Number) period1Metrics[3]).longValue() : 0L;
+
+        Double period2Revenue = period2Metrics[0] != null ? ((Number) period2Metrics[0]).doubleValue() : 0.0;
+        Long period2Orders = period2Metrics[1] != null ? ((Number) period2Metrics[1]).longValue() : 0L;
+        Long period2Customers = period2Metrics[2] != null ? ((Number) period2Metrics[2]).longValue() : 0L;
+        Long period2ProductsSold = period2Metrics[3] != null ? ((Number) period2Metrics[3]).longValue() : 0L;
+
+        Double revenueChange = period2Revenue - period1Revenue;
+        Double revenueChangePercent = period1Revenue > 0 ? (revenueChange / period1Revenue) * 100 : 0.0;
+
+        Long ordersChange = period2Orders - period1Orders;
+        Double ordersChangePercent = period1Orders > 0 ? ((double) ordersChange / period1Orders) * 100 : 0.0;
+
+        Long customersChange = period2Customers - period1Customers;
+        Double customersChangePercent = period1Customers > 0 ? ((double) customersChange / period1Customers) * 100 : 0.0;
+
+        Long productsSoldChange = period2ProductsSold - period1ProductsSold;
+        Double productsSoldChangePercent = period1ProductsSold > 0 ? ((double) productsSoldChange / period1ProductsSold) * 100 : 0.0;
+
+        Double period1AvgOrderValue = period1Orders > 0 ? period1Revenue / period1Orders : 0.0;
+        Double period2AvgOrderValue = period2Orders > 0 ? period2Revenue / period2Orders : 0.0;
+        Double avgOrderValueChange = period2AvgOrderValue - period1AvgOrderValue;
+        Double avgOrderValueChangePercent = period1AvgOrderValue > 0 ? (avgOrderValueChange / period1AvgOrderValue) * 100 : 0.0;
+
+        String overallTrend = determineOverallTrend(revenueChangePercent, ordersChangePercent, customersChangePercent);
+
+        return new PeriodComparisonDto(
+                period1Start,
+                period1End,
+                period2Start,
+                period2End,
+                period1Revenue,
+                period2Revenue,
+                revenueChange,
+                revenueChangePercent,
+                period1Orders,
+                period2Orders,
+                ordersChange,
+                ordersChangePercent,
+                period1Customers,
+                period2Customers,
+                customersChange,
+                customersChangePercent,
+                period1ProductsSold,
+                period2ProductsSold,
+                productsSoldChange,
+                productsSoldChangePercent,
+                period1AvgOrderValue,
+                period2AvgOrderValue,
+                avgOrderValueChange,
+                avgOrderValueChangePercent,
+                overallTrend
+        );
+    }
+
+    private String determineOverallTrend(Double revenueChange, Double ordersChange, Double customersChange) {
+        double avgChange = (revenueChange + ordersChange + customersChange) / 3;
+
+        if (avgChange > 10) {
+            return "STRONG_GROWTH";
+        } else if (avgChange > 0) {
+            return "GROWTH";
+        } else if (avgChange > -10) {
+            return "DECLINE";
+        } else {
+            return "STRONG_DECLINE";
+        }
+    }
+
+    @Override
+    public List<AnomalyDetectionDto> detectSalesAnomalies(LocalDateTime startDate, LocalDateTime endDate) {
+        List<Object[]> salesData = saleRepository.findDailySalesInPeriod(startDate, endDate);
+
+        if (salesData.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<DailySalesDto> dailySales = salesData.stream()
+                .map(row -> new DailySalesDto(
+                        (LocalDate) row[0],
+                        ((Number) row[1]).doubleValue()
+                ))
+                .toList();
+
+        AnomalyDetectionRequestDto request = new AnomalyDetectionRequestDto(dailySales, 2.0);
+
+        return fastApiClient.detectAnomalies(request);
+    }
+
+    @Override
+    public List<StockoutPredictionDto> predictStockouts(int daysAhead) {
+        List<Object[]> products = soldProductRepository.findAllActiveProductsWithStock();
+
+        if (products.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+
+        List<StockoutInputDto> inputs = products.stream()
+                .map(row -> {
+                    Long productId = ((Number) row[0]).longValue();
+                    String productName = (String) row[1];
+                    Long currentStock = row[2] != null ? ((Number) row[2]).longValue() : 0L;
+
+                    List<Object[]> salesData = soldProductRepository.findDailyQuantitySoldByProduct(productId, thirtyDaysAgo);
+
+                    List<DailySalesDto> recentSales = salesData.stream()
+                            .map(r -> new DailySalesDto(
+                                    (LocalDate) r[0],
+                                    ((Number) r[1]).doubleValue()
+                            ))
+                            .toList();
+
+                    return new StockoutInputDto(
+                            productId,
+                            productName,
+                            currentStock,
+                            recentSales,
+                            daysAhead
+                    );
+                })
+                .toList();
+
+        return fastApiClient.predictStockouts(inputs);
+    }
+
+
+    @Override
+    public List<PotentialBestSellerDto> identifyPotentialBestSellers() {
+        List<Object[]> productMetrics = soldProductRepository.findProductMetricsForBestSeller();
+
+        if (productMetrics.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+
+        List<BestSellerInputDto> inputs = productMetrics.stream()
+                .map(row -> {
+                    Long productId = ((Number) row[0]).longValue();
+                    String productName = (String) row[1];
+                    String categoryName = row[2] != null ? (String) row[2] : "Uncategorized";
+                    Integer totalReviews = row[3] != null ? ((Number) row[3]).intValue() : 0;
+                    Double avgRating = row[4] != null ? ((Number) row[4]).doubleValue() : 0.0;
+                    LocalDateTime createdAt = row[5] != null ? (LocalDateTime) row[5] : LocalDateTime.now();
+
+                    int daysOnMarket = (int) java.time.temporal.ChronoUnit.DAYS.between(createdAt, LocalDateTime.now());
+
+                    List<Object[]> recentSalesData = soldProductRepository.findRecentSalesByProduct(productId, thirtyDaysAgo);
+
+                    List<DailySalesDto> recentSales = recentSalesData.stream()
+                            .map(r -> new DailySalesDto(
+                                    (LocalDate) r[0],
+                                    ((Number) r[1]).doubleValue()
+                            ))
+                            .toList();
+
+                    return new BestSellerInputDto(
+                            productId,
+                            productName,
+                            categoryName,
+                            totalReviews,
+                            avgRating,
+                            daysOnMarket,
+                            recentSales
+                    );
+                })
+                .toList();
+
+        return fastApiClient.identifyBestSellers(inputs);
+    }
+
+
+    @Override
+    public RankingPredictionDto predictFutureRanking(Long productId, int daysAhead) {
+        List<Object[]> allProductsSales = soldProductRepository.findAllProductsWithTotalSales();
+
+        if (allProductsSales.isEmpty()) {
+            return new RankingPredictionDto(productId, null, 0, 0, 0.0, 0.0, "STABLE", daysAhead);
+        }
+
+        List<RankingPredictionInputDto> allProductsInput = new ArrayList<>();
+
+        for (Object[] row : allProductsSales) {
+            Long pId = ((Number) row[0]).longValue();
+            String pName = (String) row[1];
+
+            List<Object[]> dailySales = soldProductRepository.findDailySalesByProduct(pId);
+
+            List<DailySalesDto> historicalSales = dailySales.stream()
+                    .map(r -> new DailySalesDto(
+                            (LocalDate) r[0],
+                            ((Number) r[1]).doubleValue()
+                    ))
+                    .toList();
+
+            allProductsInput.add(new RankingPredictionInputDto(
+                    pId,
+                    pName,
+                    historicalSales,
+                    daysAhead
+            ));
+        }
+
+        RankingPredictionRequestDto request = new RankingPredictionRequestDto(
+                productId,
+                daysAhead,
+                allProductsInput
+        );
+
+        return fastApiClient.predictRanking(request);
+    }
+
+    @Override
+    public DashboardKPIsDto calculateMainKPIs(LocalDateTime startDate, LocalDateTime endDate) {
+        Object revenueResult = saleRepository.calculateRevenueMetrics(startDate, endDate);
+        Long newCustomers = saleRepository.countNewCustomers(startDate, endDate);
+        Long returningCustomers = saleRepository.countReturningCustomers(startDate, endDate);
+        Object reviewResult = reviewsRepository.calculateReviewMetrics(startDate, endDate);
+        Long totalUsers = usersRepository.countTotalUsers(endDate);
+
+        Object[] revenueMetrics = unwrapResult(revenueResult, 4);
+        Object[] reviewMetrics = unwrapResult(reviewResult, 2);
+
+        Double totalRevenue = (revenueMetrics.length > 0 && revenueMetrics[0] != null) ? ((Number) revenueMetrics[0]).doubleValue() : 0.0;
+        Long totalOrders = (revenueMetrics.length > 1 && revenueMetrics[1] != null) ? ((Number) revenueMetrics[1]).longValue() : 0L;
+        Long totalCustomers = (revenueMetrics.length > 2 && revenueMetrics[2] != null) ? ((Number) revenueMetrics[2]).longValue() : 0L;
+        Long totalProductsSold = (revenueMetrics.length > 3 && revenueMetrics[3] != null) ? ((Number) revenueMetrics[3]).longValue() : 0L;
+
+        Double averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0.0;
+        Double revenuePerCustomer = totalCustomers > 0 ? totalRevenue / totalCustomers : 0.0;
+        Double averageBasketSize = totalOrders > 0 ? (double) totalProductsSold / totalOrders : 0.0;
+
+        Long totalReviews = (reviewMetrics.length > 0 && reviewMetrics[0] != null) ? ((Number) reviewMetrics[0]).longValue() : 0L;
+        Double averageRating = (reviewMetrics.length > 1 && reviewMetrics[1] != null) ? ((Number) reviewMetrics[1]).doubleValue() : 0.0;
+
+        Long safeNewCustomers = newCustomers != null ? newCustomers : 0L;
+        Long safeReturningCustomers = returningCustomers != null ? returningCustomers : 0L;
+        Long safeTotalUsers = totalUsers != null ? totalUsers : 0L;
+
+        Double conversionRate = safeTotalUsers > 0 ? ((double) totalCustomers / safeTotalUsers) * 100 : 0.0;
+
+        return new DashboardKPIsDto(
+                totalRevenue,
+                totalOrders,
+                totalCustomers,
+                totalProductsSold,
+                averageOrderValue,
+                revenuePerCustomer,
+                safeNewCustomers,
+                safeReturningCustomers,
+                averageBasketSize,
+                totalReviews,
+                averageRating,
+                conversionRate
+        );
+    }
+
+    @Override
+    public List<ChurnPredictionDto> predictCustomerChurn() {
+        List<Object[]> rawData = saleRepository.findUserPurchaseMetrics();
+
+        if (rawData.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<ChurnInputDto> churnInputs = rawData.stream()
+                .map(row -> {
+                    Long userId = ((Number) row[0]).longValue();
+                    Integer daysSinceLastPurchase = row[1] != null ? ((Number) row[1]).intValue() : 999;
+                    Integer totalPurchases = ((Number) row[2]).intValue();
+                    Double totalSpent = row[3] != null ? ((Number) row[3]).doubleValue() : 0.0;
+                    Double avgOrderValue = totalPurchases > 0 ? totalSpent / totalPurchases : 0.0;
+                    Integer purchaseFrequency = totalPurchases;
+
+                    return new ChurnInputDto(
+                            userId,
+                            daysSinceLastPurchase,
+                            totalPurchases,
+                            totalSpent,
+                            avgOrderValue,
+                            purchaseFrequency
+                    );
+                })
+                .toList();
+
+        return fastApiClient.predictChurn(churnInputs);
+    }
+
+    @Override
+    public SegmentBehaviorAnalysisDto analyzeBehaviorBySegment(String segmentName) {
+        Segment segment = Segment.valueOf(segmentName.toUpperCase());
+
+        Object[] row = saleRepository.analyzeSegmentBehavior(segment);
+
+        if (row == null || row[0] == null) {
+            return new SegmentBehaviorAnalysisDto(segmentName, 0L, 0L, 0.0, 0.0, 0.0, 0L);
+        }
+
+        Long totalUsers = ((Number) row[0]).longValue();
+        Long totalPurchases = ((Number) row[1]).longValue();
+        Double totalRevenue = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
+        Long totalProductsBought = row[3] != null ? ((Number) row[3]).longValue() : 0L;
+
+        Double avgOrderValue = totalPurchases > 0 ? totalRevenue / totalPurchases : 0.0;
+        Double avgPurchasesPerUser = totalUsers > 0 ? (double) totalPurchases / totalUsers : 0.0;
+
+        return new SegmentBehaviorAnalysisDto(
+                segmentName,
+                totalUsers,
+                totalPurchases,
+                totalRevenue,
+                avgOrderValue,
+                avgPurchasesPerUser,
+                totalProductsBought
+        );
+    }
+
+
+    // perform Recency, frequency and monetary analysis
+    @Override
+    public List<RFMSegmentDto> performRFMAnalysis() {
+
+        List<Object[]> rawData = saleRepository.computeRFMRaw();
+
+        if (rawData.isEmpty()) {
+            return List.of();
+        }
+
+        List<RFMInputDto> input = new ArrayList<>();
+
+        for (Object[] row : rawData) {
+
+            Long customerId = (Long) row[0];
+            LocalDateTime lastPurchaseDate =
+                    (LocalDateTime) row[1];
+            Long purchaseCount = (Long) row[2];
+            Double totalAmount = (Double) row[3];
+
+            RFMInputDto dto = new RFMInputDto();
+            dto.setCustomerId(customerId);
+            dto.setLastPurchaseDate(
+                    lastPurchaseDate.toLocalDate()
+            );
+            dto.setPurchaseCount(
+                    purchaseCount.intValue()
+            );
+            dto.setTotalAmount(totalAmount);
+
+            input.add(dto);
+        }
+
+        return fastApiClient.performRFMAnalysis(input);
+    }
 
 
     private LocalDateTime truncateDate(LocalDateTime date, TimeGranularity timeGranularity) {
@@ -574,8 +3011,44 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
     }
 
     @Override
+    public ChurnAnalysisDto analyzeChurnRate(LocalDateTime startDate, LocalDateTime endDate) {
+        Long usersAtStart = saleRepository.countUsersBeforeDate(startDate);
+        Long churnedUsers = saleRepository.countChurnedUsers(startDate, endDate);
+        Long activeUsers = saleRepository.countActiveUsersDuringPeriod(startDate, endDate);
+
+        if (usersAtStart == null || usersAtStart == 0) {
+            return new ChurnAnalysisDto(0L, 0L, 0.0, 0L, 0L);
+        }
+
+        double churnRate = ((double) churnedUsers / usersAtStart) * 100;
+        Long totalUsersAtEnd = usersAtStart - churnedUsers + activeUsers;
+
+        return new ChurnAnalysisDto(
+                usersAtStart,
+                churnedUsers,
+                churnRate,
+                activeUsers,
+                totalUsersAtEnd
+        );
+    }
+
+    @Override
     public double calculateCustomerLifetimeValue(Long userId) {
         return 0;
+    }
+
+    @Override
+    public double calculateRetentionRate(LocalDateTime startDate, LocalDateTime endDate) {
+        Long usersAtStart = saleRepository.countUsersBeforeDate(startDate);
+        Long usersAtEnd = saleRepository.countUsersByEndDate(endDate);
+        Long newUsers = saleRepository.countNewUsersDuringPeriod(startDate, endDate);
+
+        if (usersAtStart == null || usersAtStart == 0) {
+            return 0.0;
+        }
+
+        long retainedUsers = usersAtEnd - newUsers;
+        return ((double) retainedUsers / usersAtStart) * 100;
     }
 
     @Override
@@ -668,11 +3141,11 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
 
             analysis.add(
                     new CategoryPerformanceDto(
-                            (Long) row[0],      // categoryId
-                            (String) row[1],    // categoryName
-                            (Long) row[2],      // totalQuantitySold
-                            (Double) row[3],    // totalRevenue
-                            (Long) row[4]       // totalSales
+                            ((Number) row[0]).longValue(),      // categoryId
+                            (String) row[1],                     // categoryName
+                            ((Number) row[2]).longValue(),       // totalQuantitySold
+                            ((Number) row[3]).doubleValue(),     // totalRevenue
+                            ((Number) row[4]).longValue()        // totalSales
                     )
             );
         }
@@ -690,10 +3163,10 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
 
         for (Object[] row : results) {
 
-            Long productId = (Long) row[0];
+            Long productId = ((Number) row[0]).longValue();
             String productName = (String) row[1];
-            Double revenue = (Double) row[2];
-            Double cost = (Double) row[3];
+            Double revenue = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
+            Double cost = row[3] != null ? ((Number) row[3]).doubleValue() : 0.0;
 
             Double profit = revenue - cost;
 
@@ -732,9 +3205,9 @@ public class AdvancedAnalyticsServiceImpl implements AdvancedAnalyticsService {
             return new PromotionImpactAnalysisDto(0.0, 0L, 0.0);
         }
 
-        Double avgDiscount = (Double) row[0];
-        Long totalUnits = (Long) row[1];
-        Double totalRevenue = (Double) row[2];
+        Double avgDiscount = row[0] != null ? ((Number) row[0]).doubleValue() : 0.0;
+        Long totalUnits = row[1] != null ? ((Number) row[1]).longValue() : 0L;
+        Double totalRevenue = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
 
         return new PromotionImpactAnalysisDto(avgDiscount, totalUnits, totalRevenue);
     }

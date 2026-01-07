@@ -1,7 +1,8 @@
-import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatSliderModule } from '@angular/material/slider';
 import { CommonModule } from '@angular/common';
+import { Subject, takeUntil, catchError, of, forkJoin } from 'rxjs';
 import { Category } from '../../../core/models/category.model';
 import { CategoryService } from '../../../core/services/category.service';
 import { ProductService } from '../../../core/services/product.service';
@@ -25,7 +26,8 @@ export interface FilterState {
   templateUrl: './product-filter-sidebar.html',
   styleUrl: './product-filter-sidebar.css',
 })
-export class ProductFilterSidebar implements OnInit {
+export class ProductFilterSidebar implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
 
   constructor(
     private categoryService: CategoryService,
@@ -35,8 +37,14 @@ export class ProductFilterSidebar implements OnInit {
 
   @Output() filtersChanged = new EventEmitter<FilterState>();
 
-  categories : Category[] = [];
-  brands : string[] = [];
+  categories: Category[] = [];
+  brands: string[] = [];
+  
+  // Loading states
+  isLoadingCategories = true;
+  isLoadingBrands = true;
+  categoriesError = false;
+  brandsError = false;
 
   showAllBrands = false;
   showAllCategories = false;
@@ -72,10 +80,10 @@ export class ProductFilterSidebar implements OnInit {
   }
 
   priceRanges = [
-    { label: 'Up to $45', min: 0, max: 45 },
-    { label: '$45 to $90', min: 45, max: 90 },
-    { label: '$90 to $150', min: 90, max: 150 },
-    { label: '$150 & above', min: 150, max: 10000 }
+    { label: 'Under $50', min: 0, max: 50 },
+    { label: '$50 to $100', min: 50, max: 100 },
+    { label: '$100 to $200', min: 100, max: 200 },
+    { label: '$200 & above', min: 200, max: 10000 }
   ];
 
   filterState: FilterState = {
@@ -88,14 +96,46 @@ export class ProductFilterSidebar implements OnInit {
   };
 
   ngOnInit(): void {
-    this.categoryService.getCategories().subscribe((data) => {
-      this.categories = data;
-      this.cd.detectChanges();
-    });
-    // Décommenter si vous avez un endpoint pour les marques
-    // this.productService.getBrands().subscribe((data: string[]) => {
-    //   this.brands = data;
-    // });
+    this.loadFiltersData();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadFiltersData(): void {
+    // Load categories
+    this.categoryService.getCategories()
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError(error => {
+          console.error('Failed to load categories:', error);
+          this.categoriesError = true;
+          return of([]);
+        })
+      )
+      .subscribe(data => {
+        this.categories = data;
+        this.isLoadingCategories = false;
+        this.cd.detectChanges();
+      });
+
+    // Load brands
+    this.productService.getBrands()
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError(error => {
+          console.warn('Brands endpoint not available:', error);
+          this.brandsError = true;
+          return of([]);
+        })
+      )
+      .subscribe(data => {
+        this.brands = data;
+        this.isLoadingBrands = false;
+        this.cd.detectChanges();
+      });
   }
 
   /**
@@ -208,8 +248,14 @@ export class ProductFilterSidebar implements OnInit {
       brands: []
     };
     
-    
-    // Émettre les filtres réinitialisés
     this.applyFilters();
+  }
+
+  hasActiveFilters(): boolean {
+    return this.filterState.categories.length > 0 ||
+           this.filterState.brands.length > 0 ||
+           this.filterState.minRating > 0 ||
+           this.filterState.priceMin > 0 ||
+           this.filterState.priceMax < 10000;
   }
 }

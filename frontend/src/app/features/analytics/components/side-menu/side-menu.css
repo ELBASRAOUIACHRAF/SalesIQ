@@ -146,6 +146,28 @@
   text-overflow: ellipsis;
 }
 
+/* Badge styling */
+.badge {
+  margin-left: auto;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge.analytics {
+  background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.menu-list li.active .badge.analytics {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: none;
+}
+
 /* Overlay for mobile */
 .menu-overlay {
   display: none;

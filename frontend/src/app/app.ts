@@ -54,17 +54,4 @@ import { CheckoutPage } from './shared/pages/checkout-page/checkout-page';
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {
-  currentFilters: FilterState = {
-    categories: [],
-    priceMin: 0,
-    priceMax: 10000,
-    priceRanges: [],
-    minRating: 0,
-    brands: []
-  };
-
-  onFiltersChanged(filters: FilterState): void {
-    this.currentFilters = filters;
-  }
-}
+export class App {}

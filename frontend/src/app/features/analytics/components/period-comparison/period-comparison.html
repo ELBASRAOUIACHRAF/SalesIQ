@@ -1,0 +1,216 @@
+<section class="comparison-container">
+  <!-- Header -->
+  <header class="comparison-header">
+    <div class="header-content">
+      <h3>📊 Period Comparison</h3>
+      <p class="subtitle">Compare performance across different time periods</p>
+    </div>
+  </header>
+
+  <!-- Period Selection -->
+  <div class="period-selection">
+    <!-- Quick Presets -->
+    <div class="presets-row">
+      <span class="presets-label">Quick Select:</span>
+      <div class="preset-buttons">
+        <button *ngFor="let preset of presets" 
+                class="preset-btn"
+                (click)="applyPreset(preset.value)">
+          {{ preset.label }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Custom Date Ranges -->
+    <div class="date-ranges">
+      <div class="period-group current">
+        <label class="period-label">
+          <span class="period-dot current"></span>
+          Current Period
+        </label>
+        <div class="date-inputs">
+          <input type="date" [(ngModel)]="periods.current.start" />
+          <span class="date-to">to</span>
+          <input type="date" [(ngModel)]="periods.current.end" />
+        </div>
+      </div>
+
+      <div class="vs-divider">VS</div>
+
+      <div class="period-group previous">
+        <label class="period-label">
+          <span class="period-dot previous"></span>
+          Previous Period
+        </label>
+        <div class="date-inputs">
+          <input type="date" [(ngModel)]="periods.previous.start" />
+          <span class="date-to">to</span>
+          <input type="date" [(ngModel)]="periods.previous.end" />
+        </div>
+      </div>
+
+      <button class="compare-btn" (click)="loadComparison()" [disabled]="isLoading || !isValidDates()">
+        🔍 Compare
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Analyzing periods...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-state">
+    <p>⚠️ {{ errorMessage }}</p>
+    <button class="retry-button" (click)="loadComparison()">🔄 Retry</button>
+  </div>
+
+  <!-- Results -->
+  <div *ngIf="!isLoading && !errorMessage && comparison" class="results-section">
+    
+    <!-- Key Metrics Grid -->
+    <div class="metrics-grid">
+      <div class="metric-card revenue">
+        <div class="metric-header">
+          <span class="metric-icon">💰</span>
+          <span class="metric-title">Total Revenue</span>
+        </div>
+        <div class="metric-comparison">
+          <div class="current-value">
+            <span class="value-label">Period 1</span>
+            <span class="value">{{ comparison.period1Revenue | currency:'USD':'symbol':'1.0-0' }}</span>
+          </div>
+          <div class="change-indicator" [class]="getChangeClass(comparison.revenueChangePercent)">
+            {{ getChangeIcon(comparison.revenueChangePercent) }}
+            {{ formatChange(comparison.revenueChangePercent) }}
+          </div>
+          <div class="previous-value">
+            <span class="value-label">Period 2</span>
+            <span class="value">{{ comparison.period2Revenue | currency:'USD':'symbol':'1.0-0' }}</span>
+          </div>
+        </div>
+        <div class="comparison-bar">
+          <div class="bar current" [style.width]="getBarWidth(comparison.period1Revenue, comparison.period2Revenue).current"></div>
+          <div class="bar previous" [style.width]="getBarWidth(comparison.period1Revenue, comparison.period2Revenue).previous"></div>
+        </div>
+      </div>
+
+      <div class="metric-card orders">
+        <div class="metric-header">
+          <span class="metric-icon">📦</span>
+          <span class="metric-title">Total Orders</span>
+        </div>
+        <div class="metric-comparison">
+          <div class="current-value">
+            <span class="value-label">Period 1</span>
+            <span class="value">{{ comparison.period1Orders | number }}</span>
+          </div>
+          <div class="change-indicator" [class]="getChangeClass(comparison.ordersChangePercent)">
+            {{ getChangeIcon(comparison.ordersChangePercent) }}
+            {{ formatChange(comparison.ordersChangePercent) }}
+          </div>
+          <div class="previous-value">
+            <span class="value-label">Period 2</span>
+            <span class="value">{{ comparison.period2Orders | number }}</span>
+          </div>
+        </div>
+        <div class="comparison-bar">
+          <div class="bar current" [style.width]="getBarWidth(comparison.period1Orders, comparison.period2Orders).current"></div>
+          <div class="bar previous" [style.width]="getBarWidth(comparison.period1Orders, comparison.period2Orders).previous"></div>
+        </div>
+      </div>
+
+      <div class="metric-card customers">
+        <div class="metric-header">
+          <span class="metric-icon">👥</span>
+          <span class="metric-title">Total Customers</span>
+        </div>
+        <div class="metric-comparison">
+          <div class="current-value">
+            <span class="value-label">Period 1</span>
+            <span class="value">{{ comparison.period1Customers | number }}</span>
+          </div>
+          <div class="change-indicator" [class]="getChangeClass(comparison.customersChangePercent)">
+            {{ getChangeIcon(comparison.customersChangePercent) }}
+            {{ formatChange(comparison.customersChangePercent) }}
+          </div>
+          <div class="previous-value">
+            <span class="value-label">Period 2</span>
+            <span class="value">{{ comparison.period2Customers | number }}</span>
+          </div>
+        </div>
+        <div class="comparison-bar">
+          <div class="bar current" [style.width]="getBarWidth(comparison.period1Customers, comparison.period2Customers).current"></div>
+          <div class="bar previous" [style.width]="getBarWidth(comparison.period1Customers, comparison.period2Customers).previous"></div>
+        </div>
+      </div>
+
+      <div class="metric-card aov">
+        <div class="metric-header">
+          <span class="metric-icon">🎯</span>
+          <span class="metric-title">Avg Order Value</span>
+        </div>
+        <div class="metric-comparison">
+          <div class="current-value">
+            <span class="value-label">Period 1</span>
+            <span class="value">{{ comparison.period1AvgOrderValue | currency:'USD':'symbol':'1.0-0' }}</span>
+          </div>
+          <div class="change-indicator" [class]="getChangeClass(comparison.avgOrderValueChangePercent)">
+            {{ getChangeIcon(comparison.avgOrderValueChangePercent) }}
+            {{ formatChange(comparison.avgOrderValueChangePercent) }}
+          </div>
+          <div class="previous-value">
+            <span class="value-label">Period 2</span>
+            <span class="value">{{ comparison.period2AvgOrderValue | currency:'USD':'symbol':'1.0-0' }}</span>
+          </div>
+        </div>
+        <div class="comparison-bar">
+          <div class="bar current" [style.width]="getBarWidth(comparison.period1AvgOrderValue, comparison.period2AvgOrderValue).current"></div>
+          <div class="bar previous" [style.width]="getBarWidth(comparison.period1AvgOrderValue, comparison.period2AvgOrderValue).previous"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <div class="legend-item">
+        <span class="legend-bar current"></span>
+        <span>Period 1</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-bar previous"></span>
+        <span>Period 2</span>
+      </div>
+    </div>
+
+    <!-- Performance Summary -->
+    <div class="summary-section">
+      <h4>📈 Performance Summary</h4>
+      <div class="summary-grid">
+        <div class="summary-item" [class]="getChangeClass(comparison.revenueChangePercent)">
+          <span class="summary-label">Revenue</span>
+          <span class="summary-value">{{ formatChange(comparison.revenueChangePercent) }}</span>
+        </div>
+        <div class="summary-item" [class]="getChangeClass(comparison.ordersChangePercent)">
+          <span class="summary-label">Orders</span>
+          <span class="summary-value">{{ formatChange(comparison.ordersChangePercent) }}</span>
+        </div>
+        <div class="summary-item" [class]="getChangeClass(comparison.customersChangePercent)">
+          <span class="summary-label">Customers</span>
+          <span class="summary-value">{{ formatChange(comparison.customersChangePercent) }}</span>
+        </div>
+        <div class="summary-item" [class]="getChangeClass(comparison.avgOrderValueChangePercent)">
+          <span class="summary-label">AOV</span>
+          <span class="summary-value">{{ formatChange(comparison.avgOrderValueChangePercent) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Data -->
+  <div *ngIf="!isLoading && !errorMessage && !comparison" class="no-data">
+    <p>📅 Select periods to compare and click "Compare"</p>
+  </div>
+</section>

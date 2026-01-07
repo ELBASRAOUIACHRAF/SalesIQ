@@ -1,10 +1,9 @@
-from app.services import forecasting_service, sentiment_service
+from app.services import forecasting_service
 from fastapi import APIRouter, HTTPException
 from app.api.models.salesforecast_model import (
     SalesForecastRequest,
     SalesForecastResponse,
-    SegmentationRequest,
-    SentimentAnalysisRequest
+    SegmentationRequest
 )
 from app.services.forecasting_service import forecast_sales
 
@@ -17,9 +16,7 @@ router = APIRouter(
 async def get_segments(payload: SegmentationRequest):
     return forecasting_service.segment_customers(payload.customers, payload.n_segments)
 
-@router.post("/analyze-sentiment")
-async def analyze_sentiment(payload: SentimentAnalysisRequest):
-    return sentiment_service.analyze_all_products(payload.products)
+# analyze-sentiment route moved to sentiment.py
 
 @router.post("/forecastSales", response_model=SalesForecastResponse)
 def forecast_sales_endpoint(request: SalesForecastRequest):

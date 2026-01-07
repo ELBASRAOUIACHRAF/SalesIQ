@@ -56,25 +56,33 @@ export class ABCAnalysisComponent implements OnInit {
 
   // Get products based on active tab
   get displayedProducts(): ABCProductDto[] {
+    const classA = this.abcData?.classA ?? [];
+    const classB = this.abcData?.classB ?? [];
+    const classC = this.abcData?.classC ?? [];
+    
     switch (this.activeTab) {
-      case 'A': return this.abcData.classA;
-      case 'B': return this.abcData.classB;
-      case 'C': return this.abcData.classC;
-      default: return [...this.abcData.classA, ...this.abcData.classB, ...this.abcData.classC];
+      case 'A': return classA;
+      case 'B': return classB;
+      case 'C': return classC;
+      default: return [...classA, ...classB, ...classC];
     }
   }
 
   // Summary statistics
   get summary() {
+    const classA = this.abcData?.classA ?? [];
+    const classB = this.abcData?.classB ?? [];
+    const classC = this.abcData?.classC ?? [];
+    
     return {
-      totalProducts: this.abcData.classA.length + this.abcData.classB.length + this.abcData.classC.length,
-      classACount: this.abcData.classA.length,
-      classBCount: this.abcData.classB.length,
-      classCCount: this.abcData.classC.length,
-      totalRevenue: this.abcData.totalRevenue,
-      classARevenue: this.abcData.classA.reduce((sum, p) => sum + p.revenue, 0),
-      classBRevenue: this.abcData.classB.reduce((sum, p) => sum + p.revenue, 0),
-      classCRevenue: this.abcData.classC.reduce((sum, p) => sum + p.revenue, 0)
+      totalProducts: classA.length + classB.length + classC.length,
+      classACount: classA.length,
+      classBCount: classB.length,
+      classCCount: classC.length,
+      totalRevenue: this.abcData?.totalRevenue ?? 0,
+      classARevenue: classA.reduce((sum, p) => sum + (p.revenue ?? 0), 0),
+      classBRevenue: classB.reduce((sum, p) => sum + (p.revenue ?? 0), 0),
+      classCRevenue: classC.reduce((sum, p) => sum + (p.revenue ?? 0), 0)
     };
   }
 

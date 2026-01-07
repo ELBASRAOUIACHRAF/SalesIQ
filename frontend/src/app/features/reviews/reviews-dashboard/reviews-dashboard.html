@@ -2,86 +2,72 @@
   <div class="dashboard-content">
     <div class="dashboard-header">
       <app-top-bar
-        [title]="'Reviews Dashboard'"
-        [tabs]="['Today','This Week','This Month','This Year']"
-        [activeTab]="'Today'"
-        [dateText]="'05 Feb 2024, Monday'"
-        [buttonLabel]="'VIEW ALL REVIEWS'"
+        [title]="'Reviews Analytics'"
+        [tabs]="[]"
+        [activeTab]="''"
+        [dateText]="'Sentiment Analysis'"
+        [buttonLabel]="''"
       ></app-top-bar>
+      
+      <!-- Import/Export Actions -->
+      <div class="action-bar">
+        <div class="action-group">
+          <span class="group-label">Reviews:</span>
+          <button class="action-btn import-btn" (click)="triggerImport()">
+            <span class="icon">📥</span> Import
+          </button>
+          <button class="action-btn export-btn" (click)="onExportReviews()">
+            <span class="icon">📤</span> Export
+          </button>
+        </div>
+        <input 
+          #fileInput 
+          type="file" 
+          accept=".csv" 
+          style="display: none;" 
+          (change)="onFileSelected($event)"
+        />
+      </div>
+      
+      <!-- Import Status Message -->
+      <div *ngIf="importMessage" class="import-message" [class.success]="importSuccess" [class.error]="!importSuccess">
+        {{ importMessage }}
+      </div>
     </div>
 
-    <div class="kpi-cards">
-      <app-kpi-card
-        *ngFor="let k of kpis"
-        [title]="k.title"
-        [value]="k.value"
-        [subtitle]="k.subtitle"
-        [change]="k.change"
-        [sparkline]="k.sparkline"
-        [accentColor]="k.accentColor"
-      ></app-kpi-card>
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Loading reviews data...</p>
     </div>
 
-    <div class="bar-kpi-cards">
-      <app-kpi-bar-chart
-        *ngFor="let b of barCards"
-        [title]="b.title"
-        [value]="b.value"
-        [subtitle]="b.subtitle"
-        [color]="b.color"
-        [bars]="b.bars"
-        [xAxisLabels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
-        [showAxis]="true"
-      ></app-kpi-bar-chart>
-    </div>
+    <ng-container *ngIf="!isLoading">
+      <div class="kpi-cards">
+        <app-kpi-card
+          *ngFor="let k of kpis"
+          [title]="k.title"
+          [value]="k.value"
+          [subtitle]="k.subtitle"
+          [change]="k.change"
+          [sparkline]="k.sparkline"
+          [accentColor]="k.accentColor"
+        ></app-kpi-card>
+      </div>
 
-    <div class="chart-kpi-cards">
-      <app-chart-kpi-card
-        *ngFor="let c of chartCards"
-        [title]="c.title"
-        [value]="c.value"
-        [subtitle]="c.subtitle"
-        [color]="c.color"
-        [data]="c.data"
-        [xAxisLabels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
-        [showAxes]="true"
-      ></app-chart-kpi-card>
-    </div>
+      <div class="pies-row">
+        <app-kpi-pie-chart
+          title="Sentiment Distribution"
+          [value]="pieTotal"
+          subtitle="Total reviews analyzed"
+          [segments]="pieData"
+        ></app-kpi-pie-chart>
+      </div>
 
-    <div class="pies-row">
-      <app-kpi-pie-chart
-        title="Rating Distribution"
-        [value]="pieTotal"
-        subtitle="All reviews"
-        [segments]="pieData"
-      ></app-kpi-pie-chart>
-    </div>
-
-    <div class="big-card-grid">
-      <app-big-card
-        title="Customer Satisfaction"
-        subtitle="Overall rating"
-        [value]="4.6"
-        [change]="0.2"
-        [chartData]="[4.4, 4.5, 4.5, 4.6, 4.6, 4.6, 4.6]"
-        color="#6366f1"
-        footer="Based on all customer reviews"
-        [xAxisLabels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
-        [showAxes]="true"
-      ></app-big-card>
-
-      <app-big-card
-        title="Review Engagement"
-        subtitle="Response rate"
-        [value]="87.5"
-        [change]="5.2"
-        [chartData]="[80, 82, 84, 85, 86, 87, 87.5]"
-        color="#10b981"
-        footer="Percentage of reviews responded to"
-        [xAxisLabels]="['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']"
-        [showAxes]="true"
-      ></app-big-card>
-    </div>
+      <!-- Reviews Analytics Component -->
+      <div class="analytics-section">
+        <app-reviews-analytics></app-reviews-analytics>
+      </div>
+    </ng-container>
   </div>
 </div>
 

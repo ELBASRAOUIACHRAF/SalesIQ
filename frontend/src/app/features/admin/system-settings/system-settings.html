@@ -1,0 +1,124 @@
+<div class="settings-page">
+  <!-- Header -->
+  <header class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">⚙️ System Settings</h1>
+      <p class="page-subtitle">Configure application preferences and system behavior</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline" (click)="importSettings()" title="Import settings from file">
+        <span class="btn-icon">📥</span>
+        Import
+      </button>
+      <button class="btn btn-outline" (click)="exportSettings()" title="Export settings to file">
+        <span class="btn-icon">📤</span>
+        Export
+      </button>
+      <button class="btn btn-secondary" (click)="resetSettings()" title="Reset to default settings">
+        <span class="btn-icon">🔄</span>
+        Reset
+      </button>
+      <button 
+        class="btn btn-primary" 
+        (click)="saveSettings()"
+        [disabled]="!hasChanges || saving"
+        title="Save all changes"
+      >
+        <span *ngIf="!saving" class="btn-icon">💾</span>
+        <span *ngIf="saving" class="spinner-icon">⏳</span>
+        {{ saving ? 'Saving...' : 'Save Changes' }}
+      </button>
+    </div>
+  </header>
+
+  <!-- Unsaved Changes Banner -->
+  <div *ngIf="hasChanges" class="changes-banner">
+    <span class="banner-icon">⚠️</span>
+    <span>You have unsaved changes. Don't forget to save!</span>
+  </div>
+
+  <!-- Settings Groups -->
+  <div class="settings-container">
+    <div class="settings-grid">
+      <div *ngFor="let group of settingGroups" class="settings-group">
+        <div class="group-header">
+          <span class="group-icon">{{ group.icon }}</span>
+          <div class="group-info">
+            <h2 class="group-title">{{ group.title }}</h2>
+            <p class="group-description">{{ group.description }}</p>
+          </div>
+        </div>
+        
+        <div class="settings-list">
+          <div *ngFor="let setting of group.settings" class="setting-item">
+            <div class="setting-info">
+              <label class="setting-label">{{ setting.label }}</label>
+              <p class="setting-description">{{ setting.description }}</p>
+            </div>
+            <div class="setting-control">
+              <!-- Toggle -->
+              <label *ngIf="setting.type === 'toggle'" class="toggle-switch">
+                <input 
+                  type="checkbox" 
+                  [(ngModel)]="setting.value"
+                  (ngModelChange)="onSettingChange()"
+                />
+                <span class="toggle-slider"></span>
+              </label>
+              
+              <!-- Select -->
+              <select 
+                *ngIf="setting.type === 'select'"
+                [(ngModel)]="setting.value"
+                (ngModelChange)="onSettingChange()"
+                class="setting-select"
+              >
+                <option *ngFor="let opt of setting.options" [value]="opt.value">
+                  {{ opt.label }}
+                </option>
+              </select>
+              
+              <!-- Number -->
+              <input 
+                *ngIf="setting.type === 'number'"
+                type="number"
+                [(ngModel)]="setting.value"
+                (ngModelChange)="onSettingChange()"
+                [attr.min]="setting.min"
+                [attr.max]="setting.max"
+                class="setting-input"
+              />
+              
+              <!-- Text -->
+              <input 
+                *ngIf="setting.type === 'text'"
+                type="text"
+                [(ngModel)]="setting.value"
+                (ngModelChange)="onSettingChange()"
+                class="setting-input"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Section -->
+  <div class="info-section">
+    <div class="info-card">
+      <span class="info-icon">💡</span>
+      <div class="info-content">
+        <h4>Need Help?</h4>
+        <p>Some settings may require application restart to take effect. Contact support for advanced configuration options.</p>
+      </div>
+    </div>
+    <div class="info-card">
+      <span class="info-icon">🔒</span>
+      <div class="info-content">
+        <h4>Security Note</h4>
+        <p>Changing security settings may affect user access. Review changes carefully before saving.</p>
+      </div>
+    </div>
+  </div>
+</div>

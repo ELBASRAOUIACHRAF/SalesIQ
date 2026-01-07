@@ -1,0 +1,148 @@
+<section class="forecast-container">
+  <!-- Header -->
+  <header class="forecast-header">
+    <div class="header-content">
+      <h3>🔮 Sales Forecast</h3>
+      <p class="subtitle">AI-powered predictive sales analysis</p>
+    </div>
+    <div class="header-controls">
+      <select [(ngModel)]="forecastPeriod" (change)="onPeriodChange()" class="period-select">
+        <option *ngFor="let period of periodOptions" [value]="period">
+          Next {{ period }} Days
+        </option>
+      </select>
+      <button class="refresh-btn" (click)="loadForecast()" [disabled]="isLoading">
+        🔄
+      </button>
+    </div>
+  </header>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Generating forecast...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-state">
+    <p>⚠️ {{ errorMessage }}</p>
+    <button class="retry-button" (click)="loadForecast()">🔄 Retry</button>
+  </div>
+
+  <!-- Forecast Content -->
+  <div *ngIf="!isLoading && !errorMessage" class="forecast-content">
+
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+      <div class="summary-card total">
+        <div class="card-icon">💰</div>
+        <div class="card-info">
+          <span class="card-value">{{ totalPredicted | currency:'USD':'symbol':'1.0-0' }}</span>
+          <span class="card-label">Total Predicted Revenue</span>
+        </div>
+      </div>
+
+      <div class="summary-card daily">
+        <div class="card-icon">📊</div>
+        <div class="card-info">
+          <span class="card-value">{{ avgDailySales | currency:'USD':'symbol':'1.0-0' }}</span>
+          <span class="card-label">Avg Daily Sales</span>
+        </div>
+      </div>
+
+      <div class="summary-card peak">
+        <div class="card-icon">🏆</div>
+        <div class="card-info">
+          <span class="card-value">{{ peakDay?.predictedSales | currency:'USD':'symbol':'1.0-0' }}</span>
+          <span class="card-label">Peak Day ({{ formatDate(peakDay?.date || '') }})</span>
+        </div>
+      </div>
+
+      <div class="summary-card confidence" [class]="getConfidenceClass(avgConfidence)">
+        <div class="card-icon">🎯</div>
+        <div class="card-info">
+          <span class="card-value">{{ avgConfidence | number:'1.0-0' }}%</span>
+          <span class="card-label">Avg Confidence</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Forecast Chart -->
+    <div class="chart-section">
+      <h4>Forecast Timeline</h4>
+      <div class="chart-container">
+        <div class="chart-bars">
+          <div *ngFor="let day of forecastData; let i = index" 
+               class="bar-column"
+               [title]="formatDateLong(day.date) + ': ' + (day.predictedSales | currency:'USD')">
+            <div class="bar-wrapper">
+              <div class="confidence-range" 
+                   [style.height]="getBarHeight(day.upperBound)"
+                   [style.bottom]="getBarHeight(day.lowerBound)">
+              </div>
+              <div class="bar-fill" [style.height]="getBarHeight(day.predictedSales)">
+                <span class="bar-value" *ngIf="i % Math.ceil(forecastData.length / 10) === 0">
+                  {{ day.predictedSales | currency:'USD':'symbol':'1.0-0' }}
+                </span>
+              </div>
+            </div>
+            <span class="bar-label" *ngIf="i % Math.ceil(forecastData.length / 7) === 0">
+              {{ formatDate(day.date) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="chart-legend">
+        <div class="legend-item">
+          <span class="legend-bar primary"></span>
+          <span>Predicted Sales</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-bar confidence"></span>
+          <span>Confidence Range</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Forecast Table -->
+    <div class="table-section">
+      <h4>Daily Forecast Details</h4>
+      <div class="table-wrapper">
+        <table class="forecast-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Predicted Sales</th>
+              <th>Lower Bound</th>
+              <th>Upper Bound</th>
+              <th>Confidence</th>
+              <th>Trend</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let day of forecastData; let i = index">
+              <td class="date-cell">{{ formatDateLong(day.date) }}</td>
+              <td class="value-cell primary">{{ day.predictedSales | currency:'USD':'symbol':'1.0-0' }}</td>
+              <td class="value-cell">{{ day.lowerBound | currency:'USD':'symbol':'1.0-0' }}</td>
+              <td class="value-cell">{{ day.upperBound | currency:'USD':'symbol':'1.0-0' }}</td>
+              <td>
+                <span class="confidence-badge" [class]="getConfidenceClass(day.confidence)">
+                  {{ day.confidence | number:'1.0-0' }}%
+                </span>
+              </td>
+              <td class="trend-cell">{{ getTrendIcon(i) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="forecastData.length === 0" class="empty-state">
+      <p>🔮 No forecast data available</p>
+      <p class="hint">Historical sales data required for predictions</p>
+    </div>
+  </div>
+</section>

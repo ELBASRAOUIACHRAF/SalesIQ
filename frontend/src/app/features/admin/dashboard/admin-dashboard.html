@@ -1,0 +1,156 @@
+<div class="admin-dashboard">
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="header-left">
+      <h1 class="page-title">🛡️ Admin Dashboard</h1>
+      <p class="page-subtitle">{{ currentDate }}</p>
+    </div>
+    <div class="header-right">
+      <span class="last-updated">Last updated: {{ lastUpdated }}</span>
+      <button class="refresh-btn" (click)="refresh()">
+        <span class="btn-icon">🔄</span>
+        Refresh
+      </button>
+    </div>
+  </header>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading admin dashboard...</p>
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <!-- Welcome Banner -->
+    <section class="welcome-banner">
+      <div class="welcome-content">
+        <h2>👋 Welcome, Administrator</h2>
+        <p>Manage your SalesIQ platform from this control center</p>
+      </div>
+      <div class="system-status">
+        <div class="status-item">
+          <span class="status-dot healthy"></span>
+          <span class="status-label">Database: {{ systemHealth.database }}</span>
+        </div>
+        <div class="status-item">
+          <span class="status-dot healthy"></span>
+          <span class="status-label">API: {{ systemHealth.api }}</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Storage: {{ systemHealth.storage }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Grid -->
+    <section class="stats-section">
+      <h3 class="section-title">📊 Overview Statistics</h3>
+      <div class="stats-grid">
+        <a *ngFor="let stat of stats" 
+           [routerLink]="stat.link" 
+           class="stat-card"
+           [style.--accent-color]="stat.color">
+          <div class="stat-icon">{{ stat.icon }}</div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stat.value }}</span>
+            <span class="stat-title">{{ stat.title }}</span>
+          </div>
+          <div class="stat-arrow">→</div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Two Column Layout -->
+    <div class="two-column-layout">
+      <!-- Recent Sales -->
+      <section class="recent-sales-section">
+        <div class="section-header">
+          <h3 class="section-title">💰 Recent Sales</h3>
+          <a routerLink="/admin/sales" class="view-all-link">View All →</a>
+        </div>
+        <div class="sales-table-wrapper">
+          <table class="sales-table" *ngIf="recentSales.length > 0">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Payment</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let sale of recentSales">
+                <td class="sale-id">#{{ sale.id }}</td>
+                <td class="sale-date">{{ formatDate(sale.dateOfSale) }}</td>
+                <td class="sale-amount">{{ sale.totalAmount | currency }}</td>
+                <td>
+                  <span class="status-badge" [ngClass]="getStatusClass(sale.status)">
+                    {{ sale.status }}
+                  </span>
+                </td>
+                <td class="sale-payment">{{ sale.paymentMethod }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="recentSales.length === 0" class="empty-state">
+            <span class="empty-icon">📋</span>
+            <p>No recent sales</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick Actions -->
+      <section class="quick-actions-section">
+        <h3 class="section-title">⚡ Quick Actions</h3>
+        <div class="quick-actions-grid">
+          <a *ngFor="let action of quickActions" 
+             [routerLink]="action.link" 
+             class="quick-action-card">
+            <span class="action-icon">{{ action.icon }}</span>
+            <span class="action-label">{{ action.label }}</span>
+          </a>
+        </div>
+      </section>
+    </div>
+
+    <!-- Management Shortcuts -->
+    <section class="management-section">
+      <h3 class="section-title">🎯 Management Center</h3>
+      <div class="management-grid">
+        <a routerLink="/admin/users" class="management-card users">
+          <div class="card-icon">👥</div>
+          <div class="card-content">
+            <h4>User Management</h4>
+            <p>View, edit, and manage user accounts</p>
+          </div>
+          <span class="card-arrow">→</span>
+        </a>
+        <a routerLink="/admin/products" class="management-card products">
+          <div class="card-icon">📦</div>
+          <div class="card-content">
+            <h4>Product Management</h4>
+            <p>Add, edit, and organize products</p>
+          </div>
+          <span class="card-arrow">→</span>
+        </a>
+        <a routerLink="/admin/categories" class="management-card categories">
+          <div class="card-icon">🏷️</div>
+          <div class="card-content">
+            <h4>Category Management</h4>
+            <p>Organize product categories</p>
+          </div>
+          <span class="card-arrow">→</span>
+        </a>
+        <a routerLink="/admin/data" class="management-card data">
+          <div class="card-icon">📁</div>
+          <div class="card-content">
+            <h4>Data Management</h4>
+            <p>Import and export CSV data</p>
+          </div>
+          <span class="card-arrow">→</span>
+        </a>
+      </div>
+    </section>
+  </ng-container>
+</div>

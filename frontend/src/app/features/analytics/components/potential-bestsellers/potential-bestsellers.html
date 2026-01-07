@@ -1,0 +1,148 @@
+<section class="bestsellers-container">
+  <!-- Header -->
+  <header class="bestsellers-header">
+    <div class="header-content">
+      <h3>🌟 Potential Bestsellers</h3>
+      <p class="subtitle">AI-identified products with high growth potential</p>
+    </div>
+    <button class="refresh-btn" (click)="loadBestsellers()" [disabled]="isLoading">
+      🔄 Refresh
+    </button>
+  </header>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Analyzing product potential...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-state">
+    <p>⚠️ {{ errorMessage }}</p>
+    <button class="retry-button" (click)="loadBestsellers()">🔄 Retry</button>
+  </div>
+
+  <!-- Results -->
+  <div *ngIf="!isLoading && !errorMessage" class="results-section">
+    
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+      <div class="summary-card rocket">
+        <div class="card-icon">🚀</div>
+        <div class="card-content">
+          <span class="card-value">{{ veryHighPotential.length }}</span>
+          <span class="card-label">Very High Potential</span>
+        </div>
+      </div>
+
+      <div class="summary-card star">
+        <div class="card-icon">⭐</div>
+        <div class="card-content">
+          <span class="card-value">{{ highPotential.length }}</span>
+          <span class="card-label">High Potential</span>
+        </div>
+      </div>
+
+      <div class="summary-card total">
+        <div class="card-icon">📦</div>
+        <div class="card-content">
+          <span class="card-value">{{ products.length }}</span>
+          <span class="card-label">Products Analyzed</span>
+        </div>
+      </div>
+
+      <div class="summary-card growth">
+        <div class="card-icon">📈</div>
+        <div class="card-content">
+          <span class="card-value">{{ avgGrowthRate | number:'1.0-0' }}%</span>
+          <span class="card-label">Avg Growth Rate</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="products-grid">
+      <div *ngFor="let product of products; let i = index" 
+           class="product-card"
+           [class]="getPotentialClass(product.potentialLevel)">
+        
+        <div class="product-rank">
+          <span class="rank-number">{{ i + 1 }}</span>
+          <span class="potential-icon">{{ getPotentialIcon(product.potentialLevel) }}</span>
+        </div>
+
+        <div class="product-main">
+          <div class="product-header">
+            <h4 class="product-name">{{ product.productName }}</h4>
+            <span class="potential-badge" [class]="getPotentialClass(product.potentialLevel)">
+              {{ product.potentialLevel.replace('_', ' ') }}
+            </span>
+          </div>
+          
+          <span class="product-category">{{ product.categoryName }}</span>
+          
+          <!-- Potential Score Bar -->
+          <div class="score-section">
+            <div class="score-header">
+              <span>Potential Score</span>
+              <span class="score-value">{{ product.potentialScore | number:'1.0-0' }}</span>
+            </div>
+            <div class="score-bar">
+              <div class="score-fill" [style.width]="getScoreBarWidth(product.potentialScore)"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-metrics">
+          <div class="metric">
+            <span class="metric-label">Current Sales</span>
+            <span class="metric-value">{{ product.currentSales | currency:'USD':'symbol':'1.0-0' }}</span>
+          </div>
+          
+          <div class="metric growth-metric">
+            <span class="metric-label">Growth Rate</span>
+            <span class="metric-value" [class.positive]="product.salesGrowthRate > 0" [class.negative]="product.salesGrowthRate < 0">
+              {{ getGrowthIcon(product.salesGrowthRate) }} {{ product.salesGrowthRate | number:'1.1-1' }}%
+            </span>
+          </div>
+
+          <div class="metric">
+            <span class="metric-label">Avg Rating</span>
+            <span class="metric-value rating">⭐ {{ product.avgRating | number:'1.1-1' }}</span>
+          </div>
+
+          <div class="metric">
+            <span class="metric-label">Reviews</span>
+            <span class="metric-value">{{ product.totalReviews }}</span>
+          </div>
+
+          <div class="metric">
+            <span class="metric-label">Days on Market</span>
+            <span class="metric-value">{{ product.daysOnMarket }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="products.length === 0" class="empty-state">
+      <p>🔍 No potential bestsellers identified yet</p>
+      <p class="hint">Products need sales history to be analyzed</p>
+    </div>
+
+    <!-- Insights -->
+    <div *ngIf="veryHighPotential.length > 0" class="insights-section">
+      <h4>💡 Insights</h4>
+      <div class="insight-cards">
+        <div class="insight-card">
+          <span class="insight-icon">🎯</span>
+          <p>Consider increasing inventory for <strong>{{ veryHighPotential[0]?.productName }}</strong> - showing highest potential</p>
+        </div>
+        <div *ngIf="avgGrowthRate > 20" class="insight-card">
+          <span class="insight-icon">📊</span>
+          <p>Average growth rate of <strong>{{ avgGrowthRate | number:'1.0-0' }}%</strong> indicates strong market momentum</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

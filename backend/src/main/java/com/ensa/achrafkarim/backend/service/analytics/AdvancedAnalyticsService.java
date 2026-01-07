@@ -153,7 +153,7 @@ AdvancedAnalyticsService {
      * - F : Fréquence d'achat
      * - M : Montant dépensé
      */
-    //List<RFMSegmentDto> performRFMAnalysis();
+    List<RFMSegmentDto> performRFMAnalysis();
 
     /**
      * Calcul de la valeur vie client (Customer Lifetime Value - CLV)
@@ -165,13 +165,13 @@ AdvancedAnalyticsService {
      * Analyse du taux de rétention (Retention Rate)
      * Formule : ((Clients fin - Nouveaux clients) / Clients début) × 100
      */
-    //double calculateRetentionRate(LocalDateTime startDate, LocalDateTime endDate);
+    double calculateRetentionRate(LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Analyse du taux de churn (Churn Rate)
      * Pourcentage de clients perdus sur une période
      */
-    //ChurnAnalysisDto analyzeChurnRate(LocalDateTime startDate, LocalDateTime endDate);
+    ChurnAnalysisDto analyzeChurnRate(LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Segmentation client automatique (K-Means Clustering)
@@ -181,17 +181,18 @@ AdvancedAnalyticsService {
     /**
      * Analyse du comportement d'achat par segment
      */
-    //SegmentBehaviorAnalysisDto analyzeBehaviorBySegment(String segmentName);
+    SegmentBehaviorAnalysisDto analyzeBehaviorBySegment(String segmentName);
 
     /**
      * Prédiction du churn client (Churn Prediction)
      * Identifie les clients à risque de partir
      */
-    //List<ChurnPredictionDto> predictCustomerChurn();
+    List<ChurnPredictionDto> predictCustomerChurn();
 
     /**
      * Analyse du Net Promoter Score (NPS)
      * Basé sur les avis : Promoteurs (9-10), Passifs (7-8), Détracteurs (0-6)
+     * future updates
      */
     //NPSAnalysisDto calculateNPS();
 
@@ -203,11 +204,12 @@ AdvancedAnalyticsService {
      * Calcul des KPIs principaux (Key Performance Indicators)
      * Revenue, Profit, Conversion Rate, AOV, etc.
      */
-    //DashboardKPIsDto calculateMainKPIs(LocalDateTime startDate, LocalDateTime endDate);
+    DashboardKPIsDto calculateMainKPIs(LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Analyse de conversion (Conversion Funnel Analysis)
      * Vues → Clics → Paniers → Achats
+     * future updates
      */
     //ConversionFunnelDto analyzeConversionFunnel(LocalDateTime startDate, LocalDateTime endDate);
 
@@ -215,12 +217,14 @@ AdvancedAnalyticsService {
 
     /**
      * Analyse de la performance par canal de vente
+     * future updates
      */
     //List<ChannelPerformanceDto> analyzeChannelPerformance(LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Calcul du taux de marge brute
      * Formule : ((Ventes - Coût des ventes) / Ventes) × 100
+     * future updates
      */
     //double calculateGrossMarginRate(LocalDateTime startDate, LocalDateTime endDate);
 
@@ -231,22 +235,23 @@ AdvancedAnalyticsService {
     /**
      * Prédiction de la position future dans le classement
      */
-    //RankingPredictionDto predictFutureRanking(Long productId, int daysAhead);
+    RankingPredictionDto predictFutureRanking(Long productId, int daysAhead);
 
     /**
      * Identification des best-sellers potentiels
      * Utilise ML pour détecter les produits qui vont exploser
      */
-    //List<PotentialBestSellerDto> identifyPotentialBestSellers();
+    List<PotentialBestSellerDto> identifyPotentialBestSellers();
 
     /**
      * Prédiction de rupture de stock (Stock-out Prediction)
      */
-    //List<StockoutPredictionDto> predictStockouts(int daysAhead);
+    List<StockoutPredictionDto> predictStockouts(int daysAhead);
 
     /**
      * Recommandation de réapprovisionnement
      * Calcule la quantité optimale à commander
+     * for future updates
      */
     //ReplenishmentRecommendationDto recommendReplenishment(Long productId);
 
@@ -254,10 +259,11 @@ AdvancedAnalyticsService {
      * Détection d'anomalies dans les ventes
      * Identifie les pics ou chutes inhabituels
      */
-    //List<AnomalyDetectionDto> detectSalesAnomalies(LocalDateTime startDate, LocalDateTime endDate);
+    List<AnomalyDetectionDto> detectSalesAnomalies(LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Prédiction de la demande future (Demand Forecasting)
+     * for future updates
      */
     //DemandForecastDto forecastDemand(Long productId, int daysAhead);
 
@@ -269,10 +275,11 @@ AdvancedAnalyticsService {
      * Comparaison de performance entre périodes
      * Exemple : Ce mois vs mois dernier
      */
-    //PeriodComparisonDto comparePeriods(LocalDateTime period1Start, LocalDateTime period1End,LocalDateTime period2Start, LocalDateTime period2End);
+    PeriodComparisonDto comparePeriods(LocalDateTime period1Start, LocalDateTime period1End,LocalDateTime period2Start, LocalDateTime period2End);
 
     /**
      * Benchmarking de produits similaires
+     * for future updates
      */
     //ProductBenchmarkDto benchmarkProduct(Long productId, List<Long> competitorIds);
 
@@ -280,8 +287,7 @@ AdvancedAnalyticsService {
      * Analyse d'écart (Variance Analysis)
      * Compare résultats réels vs prévisions/objectifs
      */
-    //VarianceAnalysisDto analyzeVariance(LocalDateTime startDate, LocalDateTime endDate);
-
+    VarianceAnalysisDto analyzeVariance(LocalDateTime startDate, LocalDateTime endDate);
     // ========================================
     // 8. ANALYSES DE CONTENU (CONTENT ANALYTICS)
     // ========================================
@@ -298,11 +304,12 @@ AdvancedAnalyticsService {
      * Extraction de topics des avis (Topic Modeling)
      * Identifie les thèmes récurrents dans les commentaires
      */
-    //List<TopicDto> extractReviewTopics(Long productId);
+    List<TopicDto> extractReviewTopics(Long productId);
 
     /**
      * Analyse de corrélation note/ventes
      * Mesure l'impact des notes sur les performances
+     * for future updates
      */
     //RatingSalesCorrelationDto analyzeRatingSalesCorrelation();
 
@@ -313,6 +320,7 @@ AdvancedAnalyticsService {
 
     // ========================================
     // 9. ANALYSES GÉOGRAPHIQUES (GEO ANALYTICS)
+    // for future updates
     // ========================================
 
     /**
@@ -337,20 +345,20 @@ AdvancedAnalyticsService {
     /**
      * Génération du dashboard exécutif complet
      */
-    //ExecutiveDashboardDto generateExecutiveDashboard(LocalDateTime startDate, LocalDateTime endDate);
+    ExecutiveDashboardDto generateExecutiveDashboard(LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Rapport d'analyse complet pour un produit
      */
-    //ComprehensiveProductReportDto generateProductReport(Long productId);
+    ComprehensiveProductReportDto generateProductReport(Long productId);
 
     /**
      * Rapport d'analyse de portefeuille produits
      */
-    //PortfolioAnalysisReportDto generatePortfolioReport();
+    PortfolioAnalysisReportDto generatePortfolioReport();
 
     /**
      * Scorecard de performance globale
      */
-    //PerformanceScorecardDto generatePerformanceScorecard(LocalDateTime startDate, LocalDateTime endDate);
+    PerformanceScorecardDto generatePerformanceScorecard(LocalDateTime startDate, LocalDateTime endDate);
 }

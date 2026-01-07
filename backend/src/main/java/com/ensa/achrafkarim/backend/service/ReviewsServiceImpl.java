@@ -33,6 +33,14 @@ public class ReviewsServiceImpl implements ReviewsService{
     ReviewsDetailsMapper reviewsDetailsMapper;
 
     @Override
+    public List<ReviewsDto> getAllReviews() {
+        List<Reviews> reviewsList = reviewsRepository.findAll();
+        return reviewsList.stream()
+                .map(rev -> reviewsMapper.toDto(rev))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<ReviewsDto> getReviewsByProduct(Long productId) {
         List<Reviews> reviewsList = reviewsRepository.findAllByproductId(productId);
         return reviewsList.stream()

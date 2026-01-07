@@ -10,6 +10,11 @@ export interface Users {
     createdAt: Date | string;
     updatedAt: Date | string;
     lastLogin: Date | string;
+    active?: boolean;
+    bio?: string;
+    city?: string;
+    country?: string;
+    postalCode?: string;
     
     // imageUrl?: string; 
     

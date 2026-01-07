@@ -1,0 +1,197 @@
+<section class="anomaly-container">
+  <!-- Header -->
+  <header class="anomaly-header">
+    <div class="header-content">
+      <h3>⚡ Anomaly Detection</h3>
+      <p class="subtitle">AI-powered unusual sales pattern detection</p>
+    </div>
+    <button class="refresh-btn" (click)="loadAnomalies()" [disabled]="isLoading">
+      🔄 Refresh
+    </button>
+  </header>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Scanning for anomalies...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-state">
+    <p>⚠️ {{ errorMessage }}</p>
+    <button class="retry-button" (click)="loadAnomalies()">🔄 Retry</button>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!isLoading && !errorMessage" class="content-section">
+
+    <!-- Alert Banner -->
+    <div *ngIf="criticalCount > 0" class="alert-banner">
+      <span class="alert-icon">🚨</span>
+      <span class="alert-text">
+        <strong>{{ criticalCount }} critical anomal{{ criticalCount > 1 ? 'ies' : 'y' }}</strong> detected! Review recommended.
+      </span>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+      <div class="summary-card total">
+        <div class="card-visual">
+          <span class="card-icon">⚡</span>
+          <span class="card-value">{{ anomalies.length }}</span>
+        </div>
+        <span class="card-label">Total Anomalies</span>
+      </div>
+
+      <div class="summary-card spike" (click)="typeFilter = 'SPIKE'; onFilterChange()">
+        <div class="card-visual">
+          <span class="card-icon">📈</span>
+          <span class="card-value">{{ spikeCount }}</span>
+        </div>
+        <span class="card-label">Sales Spikes</span>
+      </div>
+
+      <div class="summary-card drop" (click)="typeFilter = 'DROP'; onFilterChange()">
+        <div class="card-visual">
+          <span class="card-icon">📉</span>
+          <span class="card-value">{{ dropCount }}</span>
+        </div>
+        <span class="card-label">Sales Drops</span>
+      </div>
+
+      <div class="summary-card deviation">
+        <div class="card-visual">
+          <span class="card-icon">📊</span>
+          <span class="card-value">{{ avgDeviation | number:'1.0-0' }}%</span>
+        </div>
+        <span class="card-label">Avg Deviation</span>
+      </div>
+    </div>
+
+    <!-- Date Range & Filters -->
+    <div class="filters-section">
+      <div class="date-range">
+        <div class="date-field">
+          <label>From</label>
+          <input type="date" [(ngModel)]="dateRange.start" (change)="onDateChange()" />
+        </div>
+        <span class="date-separator">→</span>
+        <div class="date-field">
+          <label>To</label>
+          <input type="date" [(ngModel)]="dateRange.end" (change)="onDateChange()" />
+        </div>
+      </div>
+
+      <div class="filter-controls">
+        <div class="filter-group">
+          <label>Type</label>
+          <select [(ngModel)]="typeFilter" (change)="onFilterChange()">
+            <option value="ALL">All Types</option>
+            <option value="SPIKE">Spikes</option>
+            <option value="DROP">Drops</option>
+            <option value="OUTLIER">Outliers</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Severity</label>
+          <select [(ngModel)]="severityFilter" (change)="onFilterChange()">
+            <option value="ALL">All Severities</option>
+            <option value="CRITICAL">Critical</option>
+            <option value="HIGH">High</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="LOW">Low</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="anomaly-timeline">
+      <div *ngFor="let anomaly of filteredAnomalies" 
+           class="anomaly-item"
+           [class]="getTypeClass(anomaly.anomalyType)">
+        
+        <div class="timeline-marker">
+          <span class="marker-icon">{{ getTypeIcon(anomaly.anomalyType) }}</span>
+          <div class="marker-line"></div>
+        </div>
+
+        <div class="anomaly-card">
+          <div class="card-header">
+            <div class="type-badge" [class]="getTypeClass(anomaly.anomalyType)">
+              {{ anomaly.anomalyType }}
+            </div>
+            <div class="severity-badge" [class]="getSeverityClass(anomaly.severity)">
+              {{ getSeverityIcon(anomaly.severity) }} {{ anomaly.severity }}
+            </div>
+            <span class="anomaly-date">{{ formatDate(anomaly.date) }}</span>
+          </div>
+
+          <div class="card-body">
+            <div class="product-info">
+              <h4 class="product-name">Anomaly Detected</h4>
+              <span class="category">{{ anomaly.anomalyType }} Event</span>
+            </div>
+
+            <div class="metrics-row">
+              <div class="metric">
+                <span class="metric-label">Actual Sales</span>
+                <span class="metric-value">{{ anomaly.salesValue | currency:'USD':'symbol':'1.0-0' }}</span>
+              </div>
+
+              <div class="metric">
+                <span class="metric-label">Expected</span>
+                <span class="metric-value expected">{{ anomaly.expectedValue | currency:'USD':'symbol':'1.0-0' }}</span>
+              </div>
+
+              <div class="metric deviation-metric">
+                <span class="metric-label">Deviation</span>
+                <span class="metric-value" 
+                      [class.positive]="anomaly.deviation > 0"
+                      [class.negative]="anomaly.deviation < 0">
+                  {{ getDeviationDisplay(anomaly.deviation) }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Deviation Bar -->
+            <div class="deviation-bar-wrapper">
+              <div class="deviation-bar">
+                <div class="bar-center"></div>
+                <div class="deviation-fill" 
+                     [class.positive]="anomaly.deviation > 0"
+                     [class.negative]="anomaly.deviation < 0"
+                     [style.width.%]="Math.min(Math.abs(anomaly.deviation), 100)"
+                     [style.left]="anomaly.deviation > 0 ? '50%' : 'auto'"
+                     [style.right]="anomaly.deviation < 0 ? '50%' : 'auto'">
+                </div>
+              </div>
+              <div class="bar-labels">
+                <span>-100%</span>
+                <span>0%</span>
+                <span>+100%</span>
+              </div>
+            </div>
+
+            <p *ngIf="anomaly.zScore > 2" class="cause-text">
+              💡 <strong>Z-Score:</strong> {{ anomaly.zScore | number:'1.2-2' }} (significant deviation)
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="filteredAnomalies.length === 0" class="empty-state">
+        <div class="empty-icon">✨</div>
+        <p>No anomalies detected in the selected period</p>
+        <span class="empty-hint">Try adjusting the date range or filters</span>
+      </div>
+    </div>
+
+    <!-- Results Count -->
+    <div class="results-count" *ngIf="filteredAnomalies.length > 0">
+      Showing {{ filteredAnomalies.length }} of {{ anomalies.length }} anomalies
+    </div>
+  </div>
+</section>

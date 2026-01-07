@@ -28,6 +28,11 @@ public class ReviewsRestController {
     ReviewsService reviewsService;
     private final UsersService usersService;
 
+    @GetMapping("/getallreviews")
+    public List<ReviewsDto> getAllReviews(){
+        return reviewsService.getAllReviews();
+    }
+
     @PreAuthorize("permitAll()")
     @GetMapping("/productreviews/{productId}")
     public List<ReviewsDto> getReviewsByProduct(@PathVariable Long productId){

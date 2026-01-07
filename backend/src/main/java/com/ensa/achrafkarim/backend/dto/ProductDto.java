@@ -10,18 +10,19 @@ import java.util.List;
 public class ProductDto {
     private Long id;
     private String name;
-    private double price;
-    private double rating;
+    private Double price;
+    private Double rating;
     private Long reviewsCount;
     private String asin;
     private String description;
     private String mark;
     private Long stock;
-    private double discount;
+    private Double discount;
     private String imageUrl;
     private List<String> imagesGallery;
-    private double weight;
-    private double length;
-    private double height;
+    private Double weight;
+    private Double length;
+    private Double height;
 
+    public ProductDto() {}
 }

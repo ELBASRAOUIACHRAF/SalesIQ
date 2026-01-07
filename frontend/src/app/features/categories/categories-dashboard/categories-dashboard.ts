@@ -1,56 +1,310 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, AfterViewInit, NgZone, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Subject, takeUntil, catchError, of, finalize, forkJoin } from 'rxjs';
 import { KpiCardComponent } from '../../../shared/components/kpi-card/kpi-card';
-import { ChartKpiCardComponent } from '../../analytics/components/chart-kpi-card/chart-kpi-card';
-import { KpiPieChartComponent } from '../../analytics/components/kpi-pie-chart/kpi-pie-chart';
-import { KpiBarChartComponent } from '../../analytics/components/kpi-bar-chart/kpi-bar-chart';
-import { BigCardComponent } from '../../analytics/components/big-kpi-card/big-kpi-card';
 import { TopBarComponent } from '../../analytics/components/top-bar/top-bar';
+import { CategoryPerformanceComponent } from '../../analytics/components/category-performance/category-performance';
+import { ApiService, CategoryDetailsDto, CategoryPerformanceDto } from '../../../core/services/app.service';
+import { CsvService } from '../../../core/services/csv.service';
+
+interface CategoryKpi {
+  title: string;
+  value: number | string;
+  subtitle: string;
+  change: number;
+  sparkline: number[];
+  accentColor: string;
+}
+
+interface CategoryWithPerformance extends CategoryDetailsDto {
+  revenue?: number;
+  quantitySold?: number;
+  salesCount?: number;
+}
 
 @Component({
   selector: 'app-categories-dashboard',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     TopBarComponent,
     KpiCardComponent,
-    ChartKpiCardComponent,
-    BigCardComponent,
-    KpiBarChartComponent,
-    KpiPieChartComponent
+    CategoryPerformanceComponent
   ],
   templateUrl: './categories-dashboard.html',
   styleUrls: ['./categories-dashboard.css'],
 })
-export class CategoriesDashboard implements OnInit {
-  ngOnInit(): void {}
+export class CategoriesDashboard implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  
+  private destroy$ = new Subject<void>();
 
-  kpis = [
-    { title: 'Total Categories', value: 24, subtitle: 'Active', change: 8.3, sparkline: [20, 21, 22, 23, 23, 24, 24], accentColor: '#6366f1' },
-    { title: 'Products per Category', value: 52, subtitle: 'Average', change: 3.2, sparkline: [48, 49, 50, 51, 51, 52, 52], accentColor: '#8b5cf6' },
-    { title: 'Top Category Sales', value: 45678, subtitle: 'This month', change: 15.6, sparkline: [38000, 40000, 42000, 43000, 44000, 45000, 45678], accentColor: '#10b981' },
-    { title: 'Category Growth', value: 12.5, subtitle: '% increase', change: 2.4, sparkline: [10, 10.5, 11, 11.5, 12, 12.3, 12.5], accentColor: '#f59e0b' },
-  ];
+  // CSV Import/Export state
+  importMessage = '';
+  importSuccess = false;
+  isExporting = false;
+  isImporting = false;
 
-  chartCards = [
-    { title: 'Category Performance', value: 234567, subtitle: 'Total revenue', color: '#6366f1', data: [200000, 210000, 205000, 220000, 230000, 225000, 234567] },
-    { title: 'Category Distribution', value: 1247, subtitle: 'Total products', color: '#8b5cf6', data: [1100, 1150, 1180, 1200, 1220, 1235, 1247] }
-  ];
+  constructor(
+    private apiService: ApiService,
+    private csvService: CsvService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
+  ) {}
 
-  barCards = [
-    { title: 'Category Sales', value: 18, subtitle: 'Top categories', color: '#6366f1', bars: [20, 18, 15, 12, 10, 8, 6] },
-    { title: 'New Products', value: 89, subtitle: 'By category', color: '#10b981', bars: [10, 12, 15, 14, 16, 15, 18] }
-  ];
+  ngOnInit(): void {
+    this.loadData();
+  }
 
-  pieData = [
-    { label: 'Electronics', value: 35, color: '#6366f1' },
-    { label: 'Clothing', value: 28, color: '#8b5cf6' },
-    { label: 'Home & Garden', value: 22, color: '#10b981' },
-    { label: 'Other', value: 15, color: '#f59e0b' }
-  ];
+  ngAfterViewInit(): void {
+    this.cdr.detectChanges();
+  }
 
-  get pieTotal(): number {
-    return this.pieData.reduce((sum, p) => sum + (p.value || 0), 0);
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  // State
+  loading = false;
+  error: string | null = null;
+  categories: CategoryWithPerformance[] = [];
+  categoryPerformance: CategoryPerformanceDto[] = [];
+  kpis: CategoryKpi[] = [];
+
+  // View state
+  searchTerm = '';
+  sortBy: 'name' | 'products' | 'revenue' | 'status' = 'revenue';
+  sortDirection: 'asc' | 'desc' = 'desc';
+  filterStatus: 'all' | 'active' | 'inactive' = 'all';
+
+  loadData(): void {
+    this.loading = true;
+    this.error = null;
+
+    forkJoin({
+      categories: this.apiService.getCategoriesDetails().pipe(catchError(() => of([]))),
+      performance: this.apiService.getCategoryPerformance().pipe(catchError(() => of([])))
+    })
+    .pipe(
+      takeUntil(this.destroy$),
+      finalize(() => this.loading = false)
+    )
+    .subscribe({
+      next: ({ categories, performance }) => {
+        this.categoryPerformance = performance;
+        
+        // Merge category details with performance data
+        this.categories = categories.map(cat => {
+          const perf = performance.find(p => p.categoryId === cat.id);
+          return {
+            ...cat,
+            revenue: perf?.totalRevenue || 0,
+            quantitySold: perf?.totalQuantitySold || 0,
+            salesCount: perf?.totalSales || 0
+          };
+        });
+
+        this.calculateKpis();
+        
+        // Force change detection and trigger resize for components
+        this.ngZone.run(() => {
+          this.cdr.detectChanges();
+          setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+            this.cdr.detectChanges();
+          }, 100);
+        });
+      },
+      error: (err) => {
+        console.error('Failed to load categories', err);
+        this.error = err?.message || 'Failed to load categories';
+      }
+    });
+  }
+
+  private calculateKpis(): void {
+    const cats = this.categories;
+    const totalCategories = cats.length;
+    const activeCategories = cats.filter(c => c.isActive).length;
+    const totalProducts = cats.reduce((sum, c) => sum + (c.productCount || 0), 0);
+    const avgProductsPerCategory = totalCategories > 0 ? Math.round(totalProducts / totalCategories) : 0;
+    const totalRevenue = cats.reduce((sum, c) => sum + (c.revenue || 0), 0);
+    const topCategory = cats.reduce((max, c) => (c.revenue || 0) > (max?.revenue || 0) ? c : max, cats[0]);
+
+    const generateSparkline = (baseValue: number): number[] => {
+      const variation = baseValue * 0.1;
+      return Array.from({ length: 7 }, (_, i) => {
+        const progress = i / 6;
+        return Math.round(baseValue * (0.85 + progress * 0.15) + (Math.random() - 0.5) * variation);
+      });
+    };
+
+    this.kpis = [
+      {
+        title: 'Total Categories',
+        value: totalCategories,
+        subtitle: `${activeCategories} Active`,
+        change: activeCategories > 0 ? (activeCategories / totalCategories) * 100 : 0,
+        sparkline: generateSparkline(totalCategories),
+        accentColor: '#6366f1'
+      },
+      {
+        title: 'Total Products',
+        value: totalProducts,
+        subtitle: 'Across categories',
+        change: 5.2,
+        sparkline: generateSparkline(totalProducts),
+        accentColor: '#8b5cf6'
+      },
+      {
+        title: 'Avg Products/Category',
+        value: avgProductsPerCategory,
+        subtitle: 'Per category',
+        change: 3.1,
+        sparkline: generateSparkline(avgProductsPerCategory || 1),
+        accentColor: '#10b981'
+      },
+      {
+        title: 'Total Revenue',
+        value: this.formatCurrency(totalRevenue),
+        subtitle: topCategory?.name || 'N/A',
+        change: 12.5,
+        sparkline: generateSparkline(totalRevenue || 1),
+        accentColor: '#f59e0b'
+      }
+    ];
+  }
+
+  // Filtered and sorted categories
+  get filteredCategories(): CategoryWithPerformance[] {
+    let result = [...this.categories];
+
+    // Filter by search
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      result = result.filter(c => 
+        c.name.toLowerCase().includes(term) || 
+        c.description?.toLowerCase().includes(term)
+      );
+    }
+
+    // Filter by status
+    if (this.filterStatus !== 'all') {
+      result = result.filter(c => 
+        this.filterStatus === 'active' ? c.isActive : !c.isActive
+      );
+    }
+
+    // Sort
+    result.sort((a, b) => {
+      let comparison = 0;
+      switch (this.sortBy) {
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'products':
+          comparison = (a.productCount || 0) - (b.productCount || 0);
+          break;
+        case 'revenue':
+          comparison = (a.revenue || 0) - (b.revenue || 0);
+          break;
+        case 'status':
+          comparison = (a.isActive ? 1 : 0) - (b.isActive ? 1 : 0);
+          break;
+      }
+      return this.sortDirection === 'desc' ? -comparison : comparison;
+    });
+
+    return result;
+  }
+
+  // Sort handler
+  setSortBy(field: 'name' | 'products' | 'revenue' | 'status'): void {
+    if (this.sortBy === field) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = field;
+      this.sortDirection = 'desc';
+    }
+  }
+
+  // Helpers
+  formatCurrency(value: number): string {
+    if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
+    if (value >= 1000) return `$${(value / 1000).toFixed(1)}K`;
+    return `$${value.toFixed(2)}`;
+  }
+
+  getRevenuePercentage(revenue: number): number {
+    const maxRevenue = Math.max(...this.categories.map(c => c.revenue || 0), 1);
+    return (revenue / maxRevenue) * 100;
+  }
+
+  // ============ CSV Import/Export Methods ============
+
+  onExportCategories(): void {
+    if (this.isExporting) return;
+    
+    this.isExporting = true;
+    this.importMessage = '';
+
+    this.csvService.exportCategories().subscribe({
+      next: (blob) => {
+        this.csvService.downloadBlob(blob, 'categories.csv');
+        this.isExporting = false;
+      },
+      error: (err) => {
+        console.error('Export error:', err);
+        this.importMessage = 'Failed to export categories. Is the backend running?';
+        this.importSuccess = false;
+        this.isExporting = false;
+        setTimeout(() => this.importMessage = '', 5000);
+      }
+    });
+  }
+
+  triggerImport(): void {
+    this.fileInput.nativeElement.click();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    
+    if (!file) return;
+    
+    if (!file.name.endsWith('.csv')) {
+      this.importMessage = 'Please select a CSV file';
+      this.importSuccess = false;
+      setTimeout(() => this.importMessage = '', 3000);
+      return;
+    }
+
+    this.isImporting = true;
+    this.importMessage = 'Importing categories...';
+    this.importSuccess = true;
+
+    this.csvService.importCategories(file).subscribe({
+      next: (response) => {
+        this.importMessage = response.message || `Successfully imported ${response.count} categories`;
+        this.importSuccess = response.success;
+        this.isImporting = false;
+        input.value = '';
+        this.loadData(); // Refresh data
+        setTimeout(() => this.importMessage = '', 5000);
+      },
+      error: (err) => {
+        console.error('Import error:', err);
+        this.importMessage = 'Failed to import categories. Check file format.';
+        this.importSuccess = false;
+        this.isImporting = false;
+        input.value = '';
+        setTimeout(() => this.importMessage = '', 5000);
+      }
+    });
   }
 }
 

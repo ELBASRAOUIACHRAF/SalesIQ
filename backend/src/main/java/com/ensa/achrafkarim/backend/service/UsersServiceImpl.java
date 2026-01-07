@@ -7,6 +7,9 @@ import com.ensa.achrafkarim.backend.entities.Users;
 import com.ensa.achrafkarim.backend.enums.Role;
 import com.ensa.achrafkarim.backend.enums.Segment;
 import com.ensa.achrafkarim.backend.mapper.UsersMapper;
+import com.ensa.achrafkarim.backend.repository.ReviewsRepository;
+import com.ensa.achrafkarim.backend.repository.SaleRepository;
+import com.ensa.achrafkarim.backend.repository.SearchHistoryRepository;
 import com.ensa.achrafkarim.backend.repository.UsersRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -26,10 +30,12 @@ import java.util.stream.Collectors;
 public class UsersServiceImpl implements UsersService{
 
     // private PasswordEncoder passwordEncoder;
-    UsersRepository  usersRepository;
-    UsersMapper  usersMapper;
+    UsersRepository usersRepository;
+    UsersMapper usersMapper;
+    ReviewsRepository reviewsRepository;
+    SaleRepository saleRepository;
+    SearchHistoryRepository searchHistoryRepository;
     PasswordEncoder passwordEncoder;
-
 
     @Override
     public void updateUsersSegment(Long usersId, Segment segment) {
@@ -54,12 +60,33 @@ public class UsersServiceImpl implements UsersService{
 
     @Override
     public UsersDto updateUsers(UsersDto usersDto) {
-        return null;
+        Users user = usersRepository.findById(usersDto.getId()).orElse(null);
+        if (user == null) return null;
+
+        if (usersDto.getUsername() != null) user.setUsername(usersDto.getUsername());
+        if (usersDto.getFirstName() != null) user.setFirstName(usersDto.getFirstName());
+        if (usersDto.getLastName() != null) user.setLastName(usersDto.getLastName());
+        if (usersDto.getEmail() != null) user.setEmail(usersDto.getEmail());
+        if (usersDto.getPhoneNumber() != null) user.setPhoneNumber(usersDto.getPhoneNumber());
+        if (usersDto.getRole() != null) user.setRole(usersDto.getRole());
+        if (usersDto.getBio() != null) user.setBio(usersDto.getBio());
+        if (usersDto.getCity() != null) user.setCity(usersDto.getCity());
+        if (usersDto.getCountry() != null) user.setCountry(usersDto.getCountry());
+        if (usersDto.getPostalCode() != null) user.setPostalCode(usersDto.getPostalCode());
+
+        user.setUpdatedAt(LocalDateTime.now());
+        Users savedUser = usersRepository.save(user);
+        return usersMapper.toDto(savedUser);
     }
 
     @Override
+    @Transactional
     public void deleteUsers(Long usersId) {
-        if (!usersRepository.existsById(usersId)) return ;
+        if (!usersRepository.existsById(usersId)) return;
+        // Delete related entities first to avoid foreign key constraint violations
+        reviewsRepository.deleteAllByUsersId(usersId);
+        saleRepository.deleteAllByUsersId(usersId);
+        searchHistoryRepository.deleteAllByUserId(usersId);
         usersRepository.deleteById(usersId);
     }
 

@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import recommendation, sales_forecast, mba
+from app.api.routes import (recommendation, sales_forecast, mba, rfm, 
+                            churn, ranking, bestseller, stockout, anomaly,
+                            topic, sentiment)
 from app.services.recommendation_service import reco_service
 
 app = FastAPI(
@@ -40,6 +42,54 @@ app.include_router(
     mba.router,
     prefix="/api/v1",
     tags=["Market Basket Analysis"]
+)
+
+app.include_router(
+    rfm.router,
+    prefix="/api/v1",
+    tags=["rfm analysis"]   
+)
+
+app.include_router(
+    churn.router,
+    prefix="/api/v1",
+    tags=["churn analysis"]
+)
+
+app.include_router(
+    ranking.router,
+    prefix="/api/v1",
+    tags=["ranking analysis"]
+)
+
+app.include_router(
+    bestseller.router,
+    prefix="/api/v1",
+    tags=["bestseller analysis"]
+)
+
+app.include_router(
+    stockout.router,
+    prefix="/api/v1",
+    tags=["stockout prediction"]
+)
+
+app.include_router(
+    anomaly.router,
+    prefix="/api/v1",
+    tags=["anomaly detection"]
+)
+
+app.include_router(
+    topic.router,
+    prefix="/api/v1",
+    tags=["topic modeling"]
+)
+
+app.include_router(
+    sentiment.router,
+    prefix="/api/v1",
+    tags=["sentiment analysis"]
 )
 
 @app.get("/")
