@@ -14,7 +14,8 @@ public class Category {
     private Long id;
     private String name;
     private String description;
-    private boolean isActive = true;
+    @Column(name = "is_active")
+    private Boolean isActive = true;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

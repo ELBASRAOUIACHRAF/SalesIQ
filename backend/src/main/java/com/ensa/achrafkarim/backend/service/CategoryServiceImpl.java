@@ -35,7 +35,10 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryMapper.toEntity(categoryDto);
         category.setCreatedAt(LocalDateTime.now());
         category.setUpdatedAt(LocalDateTime.now());
-        category.setActive(true);
+        // Default new categories to active unless explicitly set
+        if (category.getIsActive() == null) {
+            category.setIsActive(true);
+        }
         Category categorySaved = categoryRepository.save(category);
         return categoryMapper.toDto(categorySaved);
     }
@@ -47,6 +50,9 @@ public class CategoryServiceImpl implements CategoryService {
         category.setUpdatedAt(LocalDateTime.now());
         category.setName(categoryDto.getName());
         category.setDescription(categoryDto.getDescription());
+        if (categoryDto.getIsActive() != null) {
+            category.setIsActive(categoryDto.getIsActive());
+        }
         Category categoryUpdated = categoryRepository.save(category);
         return categoryMapper.toDto(categoryUpdated);
     }
@@ -77,7 +83,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto activateCategory(Long id) {
         Category category = categoryRepository.findById(id).orElse(null);
         if (category == null) return null;
-        category.setActive(true);
+        category.setIsActive(true);
         Category updatedCat = categoryRepository.save(category);
         return categoryMapper.toDto(updatedCat);
     }
@@ -86,7 +92,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto deactivateCategory(Long id) {
         Category category = categoryRepository.findById(id).orElse(null);
         if (category == null) return null;
-        category.setActive(false);
+        category.setIsActive(false);
         Category updatedCat = categoryRepository.save(category);
         return categoryMapper.toDto(updatedCat);
     }

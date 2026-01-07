@@ -84,14 +84,15 @@ export class CategoriesManagement implements OnInit, OnDestroy {
   // Modal operations
   openAddModal(): void {
     this.modalMode = 'add';
-    this.formData = {};
+    this.formData = { isActive: true };
     this.showModal = true;
   }
 
   openEditModal(category: Category): void {
     this.modalMode = 'edit';
     this.selectedCategory = category;
-    this.formData = { ...category };
+    // Ensure boolean default so toggle is hydrated even if API omits it
+    this.formData = { ...category, isActive: category.isActive ?? true };
     this.showModal = true;
   }
 
@@ -109,6 +110,10 @@ export class CategoriesManagement implements OnInit, OnDestroy {
 
   saveCategory(): void {
     if (this.modalMode === 'add') {
+      // ensure new category defaults to active
+      if (this.formData.isActive === undefined) {
+        this.formData.isActive = true;
+      }
       // Use /addCategory endpoint
       this.http.post<Category>(`${this.apiUrl}addCategory`, this.formData)
         .pipe(takeUntil(this.destroy$))
