@@ -2,13 +2,13 @@
   <!-- Header -->
   <header class="dashboard-header">
     <div class="header-left">
-      <h1 class="page-title">🛡️ Admin Dashboard</h1>
+      <h1 class="page-title"><mat-icon class="title-icon">admin_panel_settings</mat-icon> Admin Dashboard</h1>
       <p class="page-subtitle">{{ currentDate }}</p>
     </div>
     <div class="header-right">
       <span class="last-updated">Last updated: {{ lastUpdated }}</span>
       <button class="refresh-btn" (click)="refresh()">
-        <span class="btn-icon">🔄</span>
+        <mat-icon class="btn-icon">refresh</mat-icon>
         Refresh
       </button>
     </div>
@@ -24,7 +24,7 @@
     <!-- Welcome Banner -->
     <section class="welcome-banner">
       <div class="welcome-content">
-        <h2>👋 Welcome, Administrator</h2>
+        <h2><mat-icon class="wave-icon">waving_hand</mat-icon> Welcome, Administrator</h2>
         <p>Manage your SalesIQ platform from this control center</p>
       </div>
       <div class="system-status">
@@ -44,18 +44,18 @@
 
     <!-- Stats Grid -->
     <section class="stats-section">
-      <h3 class="section-title">📊 Overview Statistics</h3>
+      <h3 class="section-title"><mat-icon class="inline-icon">bar_chart</mat-icon> Overview Statistics</h3>
       <div class="stats-grid">
         <a *ngFor="let stat of stats" 
            [routerLink]="stat.link" 
            class="stat-card"
            [style.--accent-color]="stat.color">
-          <div class="stat-icon">{{ stat.icon }}</div>
+          <div class="stat-icon"><mat-icon>{{ stat.icon }}</mat-icon></div>
           <div class="stat-content">
             <span class="stat-value">{{ stat.value }}</span>
             <span class="stat-title">{{ stat.title }}</span>
           </div>
-          <div class="stat-arrow">→</div>
+          <div class="stat-arrow"><mat-icon>arrow_forward</mat-icon></div>
         </a>
       </div>
     </section>
@@ -65,7 +65,7 @@
       <!-- Recent Sales -->
       <section class="recent-sales-section">
         <div class="section-header">
-          <h3 class="section-title">💰 Recent Sales</h3>
+          <h3 class="section-title"><mat-icon class="inline-icon">receipt_long</mat-icon> Recent Sales</h3>
           <a routerLink="/admin/sales" class="view-all-link">View All →</a>
         </div>
         <div class="sales-table-wrapper">
@@ -94,7 +94,7 @@
             </tbody>
           </table>
           <div *ngIf="recentSales.length === 0" class="empty-state">
-            <span class="empty-icon">📋</span>
+            <span class="empty-icon"><mat-icon class="empty-icon">assignment</mat-icon></span>
             <p>No recent sales</p>
           </div>
         </div>
@@ -102,12 +102,12 @@
 
       <!-- Quick Actions -->
       <section class="quick-actions-section">
-        <h3 class="section-title">⚡ Quick Actions</h3>
+        <h3 class="section-title"><mat-icon class="inline-icon">flash_on</mat-icon> Quick Actions</h3>
         <div class="quick-actions-grid">
           <a *ngFor="let action of quickActions" 
              [routerLink]="action.link" 
              class="quick-action-card">
-            <span class="action-icon">{{ action.icon }}</span>
+            <span class="action-icon"><mat-icon>{{ action.icon }}</mat-icon></span>
             <span class="action-label">{{ action.label }}</span>
           </a>
         </div>
@@ -116,39 +116,39 @@
 
     <!-- Management Shortcuts -->
     <section class="management-section">
-      <h3 class="section-title">🎯 Management Center</h3>
+      <h3 class="section-title"><mat-icon class="inline-icon">center_focus_strong</mat-icon> Management Center</h3>
       <div class="management-grid">
         <a routerLink="/admin/users" class="management-card users">
-          <div class="card-icon">👥</div>
+          <div class="card-icon"><mat-icon>people</mat-icon></div>
           <div class="card-content">
             <h4>User Management</h4>
             <p>View, edit, and manage user accounts</p>
           </div>
-          <span class="card-arrow">→</span>
+          <span class="card-arrow"><mat-icon>arrow_forward</mat-icon></span>
         </a>
         <a routerLink="/admin/products" class="management-card products">
-          <div class="card-icon">📦</div>
+          <div class="card-icon"><mat-icon>inventory_2</mat-icon></div>
           <div class="card-content">
             <h4>Product Management</h4>
             <p>Add, edit, and organize products</p>
           </div>
-          <span class="card-arrow">→</span>
+          <span class="card-arrow"><mat-icon>arrow_forward</mat-icon></span>
         </a>
         <a routerLink="/admin/categories" class="management-card categories">
-          <div class="card-icon">🏷️</div>
+          <div class="card-icon"><mat-icon>category</mat-icon></div>
           <div class="card-content">
             <h4>Category Management</h4>
             <p>Organize product categories</p>
           </div>
-          <span class="card-arrow">→</span>
+          <span class="card-arrow"><mat-icon>arrow_forward</mat-icon></span>
         </a>
         <a routerLink="/admin/data" class="management-card data">
-          <div class="card-icon">📁</div>
+          <div class="card-icon"><mat-icon>folder_open</mat-icon></div>
           <div class="card-content">
             <h4>Data Management</h4>
             <p>Import and export CSV data</p>
           </div>
-          <span class="card-arrow">→</span>
+          <span class="card-arrow"><mat-icon>arrow_forward</mat-icon></span>
         </a>
       </div>
     </section>

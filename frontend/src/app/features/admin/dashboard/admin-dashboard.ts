@@ -6,6 +6,7 @@ import { ProductService } from '../../../core/services/product.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { SaleService, SaleDto } from '../../../core/services/sale.service';
 import { AnalyticsService } from '../../../core/services/analytics.service';
+import { MatIconModule } from '@angular/material/icon';
 
 interface StatCard {
   title: string;
@@ -26,7 +27,7 @@ interface RecentActivity {
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, MatIconModule],
   templateUrl: './admin-dashboard.html',
   styleUrls: ['./admin-dashboard.css']
 })
@@ -45,12 +46,12 @@ export class AdminDashboard implements OnInit, OnDestroy {
   
   // Quick actions
   quickActions = [
-    { label: 'Add Product', icon: '📦', link: '/admin/products', action: 'add' },
-    { label: 'Add Category', icon: '🏷️', link: '/admin/categories', action: 'add' },
-    { label: 'Export Data', icon: '📤', link: '/admin/data', action: 'export' },
-    { label: 'Import Data', icon: '📥', link: '/admin/data', action: 'import' },
-    { label: 'View Analytics', icon: '📊', link: '/analytics', action: 'view' },
-    { label: 'Manage Users', icon: '👥', link: '/admin/users', action: 'manage' }
+    { label: 'Add Product', icon: 'add_box', link: '/admin/products', action: 'add' },       
+    { label: 'Add Category', icon: 'create_new_folder', link: '/admin/categories', action: 'add' },  
+    { label: 'Export Data', icon: 'file_upload', link: '/admin/data', action: 'export' },    
+    { label: 'Import Data', icon: 'file_download', link: '/admin/data', action: 'import' },  
+    { label: 'View Analytics', icon: 'insights', link: '/analytics', action: 'view' },       
+    { label: 'Manage Users', icon: 'manage_accounts', link: '/admin/users', action: 'manage' }  
   ];
 
   // System health
@@ -104,50 +105,50 @@ export class AdminDashboard implements OnInit, OnDestroy {
           .filter(s => s.status === 'COMPLETED')
           .reduce((sum, s) => sum + s.totalAmount, 0);
 
-        this.stats = [
-          {
-            title: 'Total Products',
-            value: products.length,
-            icon: '📦',
-            color: '#6366f1',
-            link: '/admin/products'
-          },
-          {
-            title: 'Categories',
-            value: categories.length,
-            icon: '🏷️',
-            color: '#8b5cf6',
-            link: '/admin/categories'
-          },
-          {
-            title: 'Total Sales',
-            value: sales.length,
-            icon: '💰',
-            color: '#10b981',
-            link: '/admin/sales'
-          },
-          {
-            title: 'Revenue',
-            value: this.formatCurrency(totalRevenue),
-            icon: '💵',
-            color: '#f59e0b',
-            link: '/admin/sales'
-          },
-          {
-            title: 'Pending Orders',
-            value: sales.filter(s => s.status === 'PENDING').length,
-            icon: '⏳',
-            color: '#ef4444',
-            link: '/admin/sales'
-          },
-          {
-            title: 'Completed Orders',
-            value: sales.filter(s => s.status === 'COMPLETED').length,
-            icon: '✅',
-            color: '#22c55e',
-            link: '/admin/sales'
-          }
-        ];
+          this.stats = [
+            {
+              title: 'Total Products',
+              value: products.length,
+              icon: 'inventory_2', 
+              color: '#6366f1',
+              link: '/admin/products'
+            },
+            {
+              title: 'Categories',
+              value: categories.length,
+              icon: 'category', 
+              color: '#8b5cf6',
+              link: '/admin/categories'
+            },
+            {
+              title: 'Total Sales',
+              value: sales.length,
+              icon: 'shopping_cart', 
+              color: '#10b981',
+              link: '/admin/sales'
+            },
+            {
+              title: 'Revenue',
+              value: this.formatCurrency(totalRevenue),
+              icon: 'payments', 
+              color: '#f59e0b',
+              link: '/admin/sales'
+            },
+            {
+              title: 'Pending Orders',
+              value: sales.filter(s => s.status === 'PENDING').length,
+              icon: 'pending_actions', 
+              color: '#ef4444',
+              link: '/admin/sales'
+            },
+            {
+              title: 'Completed Orders',
+              value: sales.filter(s => s.status === 'COMPLETED').length,
+              icon: 'check_circle', 
+              color: '#22c55e',
+              link: '/admin/sales'
+            }
+          ];
 
         // Recent sales
         this.recentSales = sales

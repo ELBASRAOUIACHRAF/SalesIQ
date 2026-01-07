@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { CategoryPerformanceDto } from '../../../../core/models/categoryPerformance.model';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-category-performance',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './category-performance.html',
   styleUrls: ['./category-performance.css']
 })

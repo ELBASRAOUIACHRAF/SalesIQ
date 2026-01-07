@@ -8,6 +8,7 @@ import { ReviewsAnalyticsComponent } from '../../analytics/components/reviews-an
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { CsvService } from '../../../core/services/csv.service';
 import { ReviewsSentimentAnalysisDto } from '../../../core/models/reviewsSentiment.model';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-reviews-dashboard',
@@ -17,7 +18,8 @@ import { ReviewsSentimentAnalysisDto } from '../../../core/models/reviewsSentime
     TopBarComponent,
     KpiCardComponent,
     KpiPieChartComponent,
-    ReviewsAnalyticsComponent
+    ReviewsAnalyticsComponent,
+    MatIconModule
   ],
   templateUrl: './reviews-dashboard.html',
   styleUrls: ['./reviews-dashboard.css'],

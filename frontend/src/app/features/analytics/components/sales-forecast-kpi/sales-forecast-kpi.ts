@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { SalesForecastDto, ForecastPointDto } from '../../../../core/models/salesForecast.model';
+import { MatIconModule } from '@angular/material/icon';
 
 type Trend = 'up' | 'down' | 'flat';
 
@@ -12,7 +13,7 @@ type Point = { x: number; y: number };
 @Component({
   selector: 'app-sales-forecast-kpi',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './sales-forecast-kpi.html',
   styleUrls: ['./sales-forecast-kpi.css']
 })
@@ -63,11 +64,11 @@ export class SalesForecastKpiComponent implements OnInit, OnChanges, OnDestroy {
   get trendIcon(): string {
     switch (this.trend) {
       case 'down':
-        return '▼';
+        return 'trending_down'; // Était ▼
       case 'flat':
-        return '▬';
+        return 'trending_flat'; // Était ▬
       default:
-        return '▲';
+        return 'trending_up';   // Était ▲
     }
   }
 

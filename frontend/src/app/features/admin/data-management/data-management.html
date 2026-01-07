@@ -2,12 +2,12 @@
   <!-- Header -->
   <header class="page-header">
     <div class="header-left">
-      <h1 class="page-title">📊 Data Management</h1>
+      <h1 class="page-title"><mat-icon class="title-icon">dataset</mat-icon> Data Management</h1>
       <p class="page-subtitle">Import and export data across all system entities</p>
     </div>
     <div class="header-actions">
       <button class="btn btn-primary" (click)="exportAll()">
-        <span class="btn-icon">📤</span>
+        <mat-icon class="btn-icon">cloud_download</mat-icon>
         Export All Data
       </button>
     </div>
@@ -15,7 +15,7 @@
 
   <!-- Info Banner -->
   <div class="info-banner">
-    <div class="info-icon">💡</div>
+    <div class="info-icon"><mat-icon>lightbulb</mat-icon></div>
     <div class="info-content">
       <h3>Data Import/Export Hub</h3>
       <p>Manage your data in bulk using CSV files. Export data for backups or analysis, and import data to quickly populate your system.</p>
@@ -30,7 +30,7 @@
       [style.--accent-color]="entity.color"
     >
       <div class="entity-header">
-        <div class="entity-icon">{{ entity.icon }}</div>
+        <div class="entity-icon"><mat-icon>{{ entity.icon }}</mat-icon></div>
         <h3 class="entity-name">{{ entity.name }}</h3>
       </div>
       <p class="entity-description">{{ entity.description }}</p>
@@ -40,13 +40,15 @@
           (click)="entity.exportFn()"
           [disabled]="exportingEntity === entity.name"
         >
-          <span *ngIf="exportingEntity !== entity.name">📤 Export</span>
-          <span *ngIf="exportingEntity === entity.name" class="loading-text">
-            <span class="mini-spinner"></span> Exporting...
-          </span>
+        <ng-container *ngIf="exportingEntity !== entity.name">
+          <mat-icon>file_download</mat-icon> Export
+        </ng-container>
+        <span *ngIf="exportingEntity === entity.name" class="loading-text">
+          <span class="mini-spinner"></span> Exporting...
+        </span>
         </button>
         <button class="action-btn import" (click)="openImportModal(entity)">
-          📥 Import
+          <mat-icon>file_upload</mat-icon> Import
         </button>
       </div>
     </div>
@@ -70,25 +72,25 @@
 
   <!-- Tips Section -->
   <div class="tips-section">
-    <h3 class="tips-title">📝 Tips & Best Practices</h3>
+    <h3 class="tips-title"><mat-icon class="inline-icon">tips_and_updates</mat-icon> Tips & Best Practices</h3>
     <div class="tips-grid">
       <div class="tip-card">
-        <div class="tip-icon">⚠️</div>
+        <div class="tip-icon"><mat-icon>warning_amber</mat-icon></div>
         <h4>Backup First</h4>
         <p>Always export your current data before importing new data to prevent data loss.</p>
       </div>
       <div class="tip-card">
-        <div class="tip-icon">📋</div>
+        <div class="tip-icon"><mat-icon>table_view</mat-icon></div>
         <h4>CSV Format</h4>
         <p>Ensure your CSV files use UTF-8 encoding and proper column headers matching the export format.</p>
       </div>
       <div class="tip-card">
-        <div class="tip-icon">🔄</div>
+        <div class="tip-icon"><mat-icon>table_view</mat-icon></div>
         <h4>Import Order</h4>
         <p>When importing related data, import parent entities (Categories) before child entities (Products).</p>
       </div>
       <div class="tip-card">
-        <div class="tip-icon">✅</div>
+        <div class="tip-icon"><mat-icon>check_circle_outline</mat-icon></div>
         <h4>Validation</h4>
         <p>The system validates imported data automatically. Invalid rows will be skipped with error messages.</p>
       </div>
@@ -99,14 +101,14 @@
   <div *ngIf="showImportModal" class="modal-overlay" (click)="closeImportModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h2>📥 Import {{ selectedEntity?.name }}</h2>
+        <h2><mat-icon class="modal-icon">cloud_upload</mat-icon> Import {{ selectedEntity?.name }}</h2>
         <button class="close-btn" (click)="closeImportModal()">✕</button>
       </div>
       
       <div class="modal-body">
         <div class="upload-area" [class.has-file]="selectedFile">
           <div *ngIf="!selectedFile" class="upload-prompt">
-            <div class="upload-icon">📁</div>
+            <div class="upload-icon"><mat-icon>folder_open</mat-icon></div>
             <p class="upload-text">Drag & drop your CSV file here</p>
             <p class="upload-subtext">or click to browse</p>
             <input 
@@ -117,7 +119,7 @@
             />
           </div>
           <div *ngIf="selectedFile" class="file-selected">
-            <div class="file-icon">📄</div>
+            <div class="file-icon"><mat-icon>description</mat-icon></div>
             <div class="file-info">
               <span class="file-name">{{ selectedFile.name }}</span>
               <span class="file-size">{{ (selectedFile.size / 1024).toFixed(2) }} KB</span>
@@ -127,7 +129,7 @@
         </div>
 
         <div class="import-warning">
-          <span class="warning-icon">⚠️</span>
+          <span class="warning-icon"><mat-icon>close</mat-icon></span>
           <p>Importing data will add new records. Existing records with matching IDs may be updated.</p>
         </div>
       </div>
@@ -139,7 +141,7 @@
           (click)="importData()"
           [disabled]="!selectedFile || importing"
         >
-          <span *ngIf="!importing">📥 Import Data</span>
+          <span *ngIf="!importing"><mat-icon>info</mat-icon> Import Data</span>
           <span *ngIf="importing" class="loading-text">
             <span class="mini-spinner"></span> Importing...
           </span>

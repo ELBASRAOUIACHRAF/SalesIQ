@@ -17,11 +17,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
+import { MatIconModule } from '@angular/material/icon';
+
 
 @Component({
   selector: 'app-growth-rate-card',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './growth-rate-card.html',
   styleUrls: ['./growth-rate-card.css']
 })
@@ -134,13 +136,13 @@ export class GrowthRateCardComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (rate: number) => {
-          console.log('✅ Growth rate received:', rate);
+          console.log('Growth rate received:', rate);
           this.growthRate = rate;
           this.isLoading = false;
           this.cdr.detectChanges();
         },
         error: (err) => {
-          console.error('❌ Error calculating growth rate:', err);
+          console.error('Error calculating growth rate:', err);
           this.errorMessage = 'Failed to calculate growth rate. Is the backend running?';
           this.isLoading = false;
           this.growthRate = null;
@@ -168,9 +170,9 @@ export class GrowthRateCardComponent implements OnInit, OnDestroy {
   /** Get icon based on growth status */
   get growthIcon(): string {
     switch (this.growthStatus) {
-      case 'positive': return '📈';
-      case 'negative': return '📉';
-      default: return '➡️';
+      case 'positive': return 'trending_up';   
+      case 'negative': return 'trending_down'; 
+      default: return 'trending_flat';         
     }
   }
 }

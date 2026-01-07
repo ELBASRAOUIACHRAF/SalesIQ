@@ -1,24 +1,28 @@
 <section class="forecast-card" role="group" aria-label="Sales forecast summary">
   <header class="card-header">
     <div class="title-block">
-      <p class="eyebrow">{{ title }}</p>
+      <p class="eyebrow"><mat-icon class="tiny-icon">show_chart</mat-icon> {{ title }}</p>
       <div class="horizon">{{ horizonLabel }}</div>
     </div>
     <div class="controls">
       <label class="horizon-input">
-        <span>Days</span>
+        <span><mat-icon class="tiny-icon">calendar_today</mat-icon> Days</span>
         <input type="number" min="1" max="365" [ngModel]="horizonDays" (ngModelChange)="updateHorizon($event)" />
       </label>
       <button type="button" class="action" (click)="triggerRequest()" [disabled]="isLoading">
-        <span *ngIf="!isLoading">🔮 Generate</span>
-        <span *ngIf="isLoading">⏳ Loading...</span>
+        <ng-container *ngIf="!isLoading">
+          <mat-icon>auto_awesome</mat-icon> <span>Generate</span>
+        </ng-container>
+        <ng-container *ngIf="isLoading">
+          <mat-icon class="spin">hourglass_empty</mat-icon> <span>Loading...</span>
+        </ng-container>
       </button>
     </div>
   </header>
 
   <!-- Error Message -->
   <div *ngIf="errorMessage" class="error-banner">
-    ⚠️ {{ errorMessage }}
+    <mat-icon class="inline-icon">error_outline</mat-icon> {{ errorMessage }}
   </div>
 
   <!-- Loading State -->
@@ -33,7 +37,7 @@
       <span class="number">{{ total | number:'1.0-0' }}</span>
     </div>
     <div class="trend" [class.up]="trend === 'up'" [class.down]="trend === 'down'" [class.flat]="trend === 'flat'">
-      <span class="trend-icon" aria-hidden="true">{{ trendIcon }}</span>
+      <mat-icon class="trend-icon">{{ trendIcon }}</mat-icon>
       <span class="trend-label">{{ changeLabel }}</span>
     </div>
   </div>
@@ -59,12 +63,13 @@
 
   <div class="meta-row">
     <div class="meta">{{ model }} · updated {{ lastUpdated }} · {{ forecastHorizonLabel }}</div>
-    <div class="insight">💡 {{ insight }}</div>
+    <div class="insight"><mat-icon class="inline-icon">lightbulb</mat-icon> {{ insight }}</div>
   </div>
 
   <div class="forecast-list" *ngIf="forecastEntries.length">
     <div class="forecast-row" *ngFor="let f of forecastEntries">
       <span class="day">
+        <mat-icon class="tiny-icon faded">today</mat-icon>
         <ng-container *ngIf="f.date">{{ f.date }}</ng-container>
         <ng-container *ngIf="!f.date">Day {{ f.day }}</ng-container>
       </span>
@@ -74,7 +79,7 @@
 
   <!-- API Info -->
   <details class="api-info">
-    <summary>🔧 API Details</summary>
+    <summary><mat-icon class="inline-icon">integration_instructions</mat-icon> API Details</summary>
     <div class="api-content">
       <code>GET /api/v1/analytics/forecastSales?daysAhead={{ horizonDays }}</code>
     </div>

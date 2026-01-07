@@ -8,7 +8,7 @@
   
   <!-- Header -->
   <div class="card-header">
-    <h3>📊 Sales Growth Rate Calculator</h3>
+    <h3><mat-icon class="header-icon">show_chart</mat-icon> Sales Growth Rate Calculator</h3>
     <p class="subtitle">Compare revenue between two time periods</p>
   </div>
 
@@ -17,7 +17,7 @@
     
     <!-- Period 1 (Baseline) -->
     <div class="period-group">
-      <h4>📅 Period 1 (Baseline)</h4>
+      <h4><mat-icon class="inline-icon">date_range</mat-icon> Period 1 (Baseline)</h4>
       <p class="period-description">The reference period to compare against</p>
       <div class="date-row">
         <div class="input-group">
@@ -43,7 +43,7 @@
 
     <!-- Period 2 (Comparison) -->
     <div class="period-group">
-      <h4>📅 Period 2 (Comparison)</h4>
+      <h4><mat-icon class="inline-icon">update</mat-icon> Period 2 (Comparison)</h4>
       <p class="period-description">The period to measure growth</p>
       <div class="date-row">
         <div class="input-group">
@@ -74,16 +74,20 @@
         (click)="onCalculateClick()"
         [disabled]="isLoading"
       >
-        <span *ngIf="!isLoading">🔢 Calculate Growth Rate</span>
-        <span *ngIf="isLoading">⏳ Calculating...</span>
+      <ng-container *ngIf="!isLoading">
+        <mat-icon>calculate</mat-icon> <span>Calculate Growth Rate</span>
+      </ng-container>
+      <ng-container *ngIf="isLoading">
+        <mat-icon class="spin">hourglass_empty</mat-icon> <span>Calculating...</span>
+      </ng-container>
       </button>
     </div>
   </div>
 
   <!-- Error Message -->
   <div *ngIf="errorMessage" class="error-state">
-    <p>⚠️ {{ errorMessage }}</p>
-    <button class="retry-button" (click)="onCalculateClick()">🔄 Retry</button>
+    <p><mat-icon class="inline-icon">error_outline</mat-icon> {{ errorMessage }}</p>
+    <button class="retry-button" (click)="onCalculateClick()"><mat-icon>refresh</mat-icon> Retry</button>
   </div>
 
   <!-- Loading State -->
@@ -95,7 +99,7 @@
 
   <!-- Initial State -->
   <div *ngIf="!hasCalculated && !isLoading" class="initial-state">
-    <div class="empty-icon">📈</div>
+    <div class="empty-icon"><mat-icon>bar_chart</mat-icon></div>
     <p>Select two periods and click <strong>Calculate</strong> to see the growth rate.</p>
   </div>
 
@@ -103,7 +107,7 @@
   <div *ngIf="!isLoading && !errorMessage && growthRate !== null && hasCalculated" class="result-section">
     
     <div class="result-card" [ngClass]="growthStatus">
-      <div class="result-icon">{{ growthIcon }}</div>
+      <div class="result-icon"><mat-icon class="large-icon">{{ growthIcon }}</mat-icon></div>
       <div class="result-value">
         <span class="percentage">{{ growthRate | number:'1.2-2' }}%</span>
         <span class="label">Growth Rate</span>
@@ -112,19 +116,19 @@
 
     <div class="result-explanation">
       <p *ngIf="growthStatus === 'positive'">
-        🎉 <strong>Great news!</strong> Sales increased by {{ growthRate | number:'1.2-2' }}% compared to the baseline period.
+        <mat-icon class="inline-icon success-icon">celebration</mat-icon> <strong>Great news!</strong> Sales increased by {{ growthRate | number:'1.2-2' }}% compared to the baseline period.
       </p>
       <p *ngIf="growthStatus === 'negative'">
-        ⚠️ <strong>Attention:</strong> Sales decreased by {{ growthRate * -1 | number:'1.2-2' }}% compared to the baseline period.
+        <mat-icon class="inline-icon warning-icon">warning_amber</mat-icon> <strong>Attention:</strong> Sales decreased by {{ growthRate * -1 | number:'1.2-2' }}% compared to the baseline period.
       </p>
       <p *ngIf="growthStatus === 'neutral'">
-        ➡️ <strong>No change:</strong> Sales remained the same between the two periods.
+        <mat-icon class="inline-icon">trending_flat</mat-icon> <strong>No change:</strong> Sales remained the same between the two periods.
       </p>
     </div>
 
     <div class="formula-info">
       <details>
-        <summary>📐 Formula Used</summary>
+        <summary><mat-icon class="inline-icon">functions</mat-icon> Formula Used</summary>
         <div class="formula-content">
           <code>Growth Rate = ((Period2 Revenue - Period1 Revenue) / Period1 Revenue) × 100</code>
         </div>
@@ -135,7 +139,7 @@
   <!-- API Info -->
   <div class="api-info">
     <details>
-      <summary>🔧 API Details</summary>
+      <summary><mat-icon class="inline-icon">integration_instructions</mat-icon> API Details</summary>
       <div class="api-details">
         <p><strong>Endpoint:</strong> <code>GET /api/v1/analytics/growth-rate</code></p>
         <p><strong>Parameters:</strong></p>

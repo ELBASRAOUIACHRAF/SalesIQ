@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { ChurnPredictionDto } from '../../../../core/models/churnPrediction.model';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-churn-prediction',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './churn-prediction.html',
   styleUrls: ['./churn-prediction.css']
 })
@@ -117,11 +118,11 @@ export class ChurnPredictionComponent implements OnInit, OnDestroy {
 
   getRiskIcon(risk: string): string {
     switch (risk) {
-      case 'CRITICAL': return '🔴';
-      case 'HIGH': return '🟠';
-      case 'MEDIUM': return '🟡';
-      case 'LOW': return '🟢';
-      default: return '⚪';
+      case 'CRITICAL': return 'dangerous';
+      case 'HIGH': return 'warning';
+      case 'MEDIUM': return 'info';
+      case 'LOW': return 'check_circle';
+      default: return 'help_outline';
     }
   }
 

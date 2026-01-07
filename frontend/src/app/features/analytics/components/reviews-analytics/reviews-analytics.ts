@@ -7,11 +7,12 @@ import { ProductService } from '../../../../core/services/product.service';
 import { ReviewsSentimentAnalysisDto } from '../../../../core/models/reviewsSentiment.model';
 import { TopicDto } from '../../../../core/models/topic.model';
 import { Product } from '../../../../core/models/product.model';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-reviews-analytics',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './reviews-analytics.html',
   styleUrls: ['./reviews-analytics.css']
 })
@@ -198,10 +199,10 @@ export class ReviewsAnalyticsComponent implements OnInit, OnDestroy {
 
   getSentimentIcon(sentiment: string): string {
     switch (sentiment) {
-      case 'POSITIVE': return '😊';
-      case 'NEUTRAL': return '😐';
-      case 'NEGATIVE': return '😞';
-      default: return '❓';
+      case 'POSITIVE': return 'sentiment_satisfied_alt'; 
+      case 'NEUTRAL': return 'sentiment_neutral';        
+      case 'NEGATIVE': return 'sentiment_dissatisfied';  
+      default: return 'help_outline';                    
     }
   }
 

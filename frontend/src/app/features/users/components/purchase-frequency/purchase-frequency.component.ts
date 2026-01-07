@@ -2,11 +2,12 @@ import { Component, Input, signal, computed, OnInit, ChangeDetectorRef } from '@
 import { CommonModule } from '@angular/common';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { PurchaseFrequencyAnalysisDto } from '../../../../core/models/purchaseFrequency.model';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-purchase-frequency',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './purchase-frequency.component.html',
   styleUrls: ['./purchase-frequency.component.css']
 })

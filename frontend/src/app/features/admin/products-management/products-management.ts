@@ -9,11 +9,12 @@ import { CategoryService } from '../../../core/services/category.service';
 import { CsvService } from '../../../core/services/csv.service';
 import { HttpClient } from '@angular/common/http';
 import { SystemSettingsService } from '../../../core/services/system-settings.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-products-management',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './products-management.html',
   styleUrls: ['./products-management.css']
 })

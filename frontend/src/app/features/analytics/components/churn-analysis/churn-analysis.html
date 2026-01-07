@@ -2,7 +2,7 @@
   <!-- Header -->
   <header class="churn-header">
     <div class="header-content">
-      <h3>📉 Churn Rate Analysis</h3>
+      <h3><mat-icon class="header-icon">trending_down</mat-icon> Churn Rate Analysis</h3>
       <p class="subtitle">Track customer attrition and retention metrics</p>
     </div>
   </header>
@@ -11,7 +11,7 @@
   <div class="form-section">
     <div class="input-row">
       <div class="input-group">
-        <label for="startDate">📅 Start Date</label>
+        <label for="startDate"><mat-icon class="inline-icon">calendar_today</mat-icon> Start Date</label>
         <input 
           type="date" 
           id="startDate"
@@ -21,7 +21,7 @@
       </div>
       
       <div class="input-group">
-        <label for="endDate">📅 End Date</label>
+        <label for="endDate"><mat-icon class="inline-icon">event</mat-icon> End Date</label>
         <input 
           type="date" 
           id="endDate"
@@ -36,8 +36,12 @@
           (click)="onAnalyzeClick()"
           [disabled]="isLoading"
         >
-          <span *ngIf="!isLoading">🔍 Analyze</span>
-          <span *ngIf="isLoading">⏳ Loading...</span>
+        <ng-container *ngIf="!isLoading">
+          <mat-icon>analytics</mat-icon> <span>Analyze</span>
+        </ng-container>
+        <ng-container *ngIf="isLoading">
+          <mat-icon class="spin">hourglass_empty</mat-icon> <span>Loading...</span>
+        </ng-container>
         </button>
       </div>
     </div>
@@ -45,8 +49,8 @@
 
   <!-- Error State -->
   <div *ngIf="errorMessage" class="error-state">
-    <p>⚠️ {{ errorMessage }}</p>
-    <button class="retry-button" (click)="onAnalyzeClick()">🔄 Retry</button>
+    <p><mat-icon class="inline-icon">error_outline</mat-icon> {{ errorMessage }}</p>
+    <button class="retry-button" (click)="onAnalyzeClick()"><mat-icon>refresh</mat-icon> Retry</button>
   </div>
 
   <!-- Loading State -->
@@ -62,10 +66,10 @@
     <div class="churn-indicator" [class]="churnSeverity">
       <div class="churn-value-container">
         <div class="churn-icon">
-          <span *ngIf="churnSeverity === 'low'">✅</span>
-          <span *ngIf="churnSeverity === 'medium'">⚠️</span>
-          <span *ngIf="churnSeverity === 'high'">🔶</span>
-          <span *ngIf="churnSeverity === 'critical'">🔴</span>
+          <mat-icon *ngIf="churnSeverity === 'low'">check_circle</mat-icon>
+          <mat-icon *ngIf="churnSeverity === 'medium'">warning_amber</mat-icon>
+          <mat-icon *ngIf="churnSeverity === 'high'">error_outline</mat-icon>
+          <mat-icon *ngIf="churnSeverity === 'critical'">report_problem</mat-icon>
         </div>
         <div class="churn-main-value">
           <span class="value">{{ churnData.churnRate | number:'1.1-1' }}%</span>
@@ -86,7 +90,7 @@
     <!-- Metrics Grid -->
     <div class="metrics-grid">
       <div class="metric-card">
-        <div class="metric-icon">👥</div>
+        <div class="metric-icon"><mat-icon>group</mat-icon></div>
         <div class="metric-content">
           <span class="metric-value">{{ churnData.usersAtStart | number }}</span>
           <span class="metric-label">Users at Start</span>
@@ -94,7 +98,7 @@
       </div>
 
       <div class="metric-card warning">
-        <div class="metric-icon">📤</div>
+        <div class="metric-icon"><mat-icon>person_remove</mat-icon></div>
         <div class="metric-content">
           <span class="metric-value">{{ churnData.usersLost | number }}</span>
           <span class="metric-label">Users Lost</span>
@@ -102,7 +106,7 @@
       </div>
 
       <div class="metric-card success">
-        <div class="metric-icon">✨</div>
+        <div class="metric-icon"><mat-icon>person_check</mat-icon></div>
         <div class="metric-content">
           <span class="metric-value">{{ churnData.activeUsers | number }}</span>
           <span class="metric-label">Active Users</span>
@@ -110,7 +114,7 @@
       </div>
 
       <div class="metric-card info">
-        <div class="metric-icon">📊</div>
+        <div class="metric-icon"><mat-icon>groups</mat-icon></div>
         <div class="metric-content">
           <span class="metric-value">{{ churnData.totalUsersAtEnd | number }}</span>
           <span class="metric-label">Users at End</span>
@@ -122,7 +126,7 @@
     <div class="retention-section">
       <div class="retention-card">
         <div class="retention-header">
-          <span class="retention-icon">💚</span>
+          <span class="retention-icon"><mat-icon class="retention-icon">loyalty</mat-icon></span>
           <span class="retention-title">Retention Rate</span>
         </div>
         <div class="retention-value">{{ retentionRate | number:'1.1-1' }}%</div>
@@ -130,9 +134,15 @@
           <div class="retention-fill" [style.width]="retentionRate + '%'"></div>
         </div>
         <p class="retention-hint">
-          <span *ngIf="retentionRate >= 90">🎉 Excellent customer retention!</span>
-          <span *ngIf="retentionRate >= 70 && retentionRate < 90">👍 Good retention, room for improvement</span>
-          <span *ngIf="retentionRate < 70">⚠️ Consider implementing retention strategies</span>
+          <span *ngIf="retentionRate >= 90" class="hint-flex">
+            <mat-icon class="tiny-icon">celebration</mat-icon> Excellent customer retention!
+          </span>
+          <span *ngIf="retentionRate >= 70 && retentionRate < 90" class="hint-flex">
+            <mat-icon class="tiny-icon">thumb_up</mat-icon> Good retention, room for improvement
+          </span>
+          <span *ngIf="retentionRate < 70" class="hint-flex">
+            <mat-icon class="tiny-icon">warning</mat-icon> Consider implementing retention strategies
+          </span>
         </p>
       </div>
     </div>
@@ -140,7 +150,7 @@
     <!-- Explanation -->
     <div class="explanation">
       <details>
-        <summary>📚 Understanding Churn Metrics</summary>
+        <summary><mat-icon class="inline-icon">menu_book</mat-icon> Understanding Churn Metrics</summary>
         <div class="explanation-content">
           <ul>
             <li><strong>Churn Rate:</strong> Percentage of customers who stopped purchasing during this period</li>

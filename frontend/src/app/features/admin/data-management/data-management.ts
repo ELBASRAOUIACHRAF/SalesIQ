@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CsvService } from '../../../core/services/csv.service';
+import { MatIconModule } from '@angular/material/icon';
 
 interface DataEntity {
   name: string;
@@ -15,7 +16,7 @@ interface DataEntity {
 @Component({
   selector: 'app-data-management',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './data-management.html',
   styleUrls: ['./data-management.css']
 })
@@ -41,7 +42,7 @@ export class DataManagement implements OnInit {
     this.entities = [
       {
         name: 'Users',
-        icon: '👥',
+        icon: 'people', 
         description: 'User accounts with profiles, roles and preferences',
         exportFn: () => this.exportUsers(),
         importFn: (file) => this.importUsers(file),
@@ -49,7 +50,7 @@ export class DataManagement implements OnInit {
       },
       {
         name: 'Products',
-        icon: '📦',
+        icon: 'inventory_2', 
         description: 'Product catalog with prices, stock and descriptions',
         exportFn: () => this.exportProducts(),
         importFn: (file) => this.importProducts(file),
@@ -57,7 +58,7 @@ export class DataManagement implements OnInit {
       },
       {
         name: 'Categories',
-        icon: '📁',
+        icon: 'folder', 
         description: 'Product categories and organization structure',
         exportFn: () => this.exportCategories(),
         importFn: (file) => this.importCategories(file),
@@ -65,7 +66,7 @@ export class DataManagement implements OnInit {
       },
       {
         name: 'Sales',
-        icon: '💰',
+        icon: 'monetization_on', 
         description: 'Sales transactions and order history',
         exportFn: () => this.exportSales(),
         importFn: (file) => this.importSales(file),
@@ -73,7 +74,7 @@ export class DataManagement implements OnInit {
       },
       {
         name: 'Reviews',
-        icon: '⭐',
+        icon: 'star', 
         description: 'Product reviews and customer feedback',
         exportFn: () => this.exportReviews(),
         importFn: (file) => this.importReviews(file),
@@ -81,7 +82,7 @@ export class DataManagement implements OnInit {
       },
       {
         name: 'Sold Products',
-        icon: '🛒',
+        icon: 'shopping_cart', 
         description: 'Individual items sold in each transaction',
         exportFn: () => this.exportSoldProducts(),
         importFn: (file) => this.importSoldProducts(file),
@@ -89,7 +90,7 @@ export class DataManagement implements OnInit {
       },
       {
         name: 'Baskets',
-        icon: '🧺',
+        icon: 'shopping_basket', 
         description: 'Shopping baskets and cart items',
         exportFn: () => this.exportBaskets(),
         importFn: (file) => this.importBaskets(file),
@@ -97,7 +98,7 @@ export class DataManagement implements OnInit {
       },
       {
         name: 'Search History',
-        icon: '🔍',
+        icon: 'manage_search', 
         description: 'User search queries and history',
         exportFn: () => this.exportSearchHistory(),
         importFn: (file) => this.importSearchHistory(file),

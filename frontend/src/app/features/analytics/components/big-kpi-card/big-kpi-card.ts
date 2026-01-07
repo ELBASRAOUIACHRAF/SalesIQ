@@ -1,10 +1,12 @@
 import { Component, Input, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+
 
 @Component({
   selector: 'app-big-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   changeDetection: ChangeDetectionStrategy.Default,
   templateUrl: './big-kpi-card.html',
   styleUrls: ['./big-kpi-card.css'],

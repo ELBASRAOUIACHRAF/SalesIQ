@@ -2,10 +2,11 @@
   <!-- Notification Bell -->
   <div class="notification-wrapper">
     <button class="notif" aria-label="notifications" (click)="toggleNotificationPanel($event)">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <!-- <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+      </svg> -->
+      <mat-icon>notifications_none</mat-icon>
       <span class="badge" *ngIf="unreadCount > 0">{{ unreadCount > 99 ? '99+' : unreadCount }}</span>
     </button>
 
@@ -15,10 +16,10 @@
     <!-- Notification Panel -->
     <div class="notification-panel" *ngIf="notificationPanelOpen" (click)="$event.stopPropagation()">
       <div class="panel-header">
-        <h3>🔔 Notifications</h3>
+        <h3><mat-icon class="inline-icon">notifications</mat-icon> Notifications</h3>
         <div class="panel-actions">
-          <button class="action-btn" (click)="refreshNotifications()" title="Refresh">🔄</button>
-          <button class="action-btn" (click)="markAllAsRead()" title="Mark all read" *ngIf="unreadCount > 0">✓</button>
+          <button class="action-btn" (click)="refreshNotifications()" title="Refresh"><mat-icon>refresh</mat-icon></button>
+          <button class="action-btn" (click)="markAllAsRead()" title="Mark all read" *ngIf="unreadCount > 0"><mat-icon>done_all</mat-icon></button>
         </div>
       </div>
       
@@ -32,18 +33,18 @@
           [routerLink]="notif.actionUrl"
           (click)="markAsRead(notif, $event)"
         >
-          <span class="notif-icon">{{ getTypeIcon(notif.type) }}</span>
+          <span class="notif-icon"><mat-icon>{{ getTypeIcon(notif.type) }}</mat-icon></span>
           <div class="notif-content">
             <div class="notif-title">{{ notif.title }}</div>
             <div class="notif-message">{{ notif.message }}</div>
             <div class="notif-time">{{ formatTime(notif.timestamp) }}</div>
           </div>
-          <span class="severity-indicator" *ngIf="!notif.read">{{ getSeverityIcon(notif.severity) }}</span>
+          <span class="severity-indicator" *ngIf="!notif.read"><mat-icon class="tiny-icon">{{ getSeverityIcon(notif.severity) }}</mat-icon></span>
         </a>
       </div>
       
       <div class="empty-state" *ngIf="notifications.length === 0">
-        <span class="empty-icon">🎉</span>
+        <span class="empty-icon"><mat-icon>notifications_off</mat-icon></span>
         <p>No notifications</p>
         <small>You're all caught up!</small>
       </div>
@@ -51,7 +52,7 @@
   </div>
 
   <!-- Help Button -->
-  <button class="help-btn" aria-label="help">?</button>
+  <button class="help-btn" aria-label="help"><mat-icon>help_outline</mat-icon></button>
 
   <!-- Profile -->
   <div class="profile" [class.profile-loading]="isLoading" [class.profile-error]="loadError" tabindex="0" aria-label="profile">

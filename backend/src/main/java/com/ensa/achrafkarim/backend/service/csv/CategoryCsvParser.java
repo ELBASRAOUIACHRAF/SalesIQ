@@ -43,7 +43,7 @@ public class CategoryCsvParser extends AbstractCsvParser <CategoryCsvDto, Catego
         }
         category.setName(dto.getName());
         category.setDescription(dto.getDescription());
-        category.setActive(dto.getIsActive() != null ? dto.getIsActive() : true);
+        category.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
         category.setCreatedAt(LocalDateTime.now());
         category.setUpdatedAt(LocalDateTime.now());
 
@@ -56,7 +56,7 @@ public class CategoryCsvParser extends AbstractCsvParser <CategoryCsvDto, Catego
         dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setDescription(entity.getDescription());
-        dto.setIsActive(entity.isActive());
+        dto.setIsActive(entity.getIsActive());
         return dto;
     }
 

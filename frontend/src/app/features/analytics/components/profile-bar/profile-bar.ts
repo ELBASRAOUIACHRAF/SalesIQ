@@ -6,11 +6,12 @@ import { Subject, takeUntil, catchError, of } from 'rxjs';
 import { UsersService } from '../../../../core/services/users.service';
 import { ProfileModel } from '../../../../core/models/profile.model';
 import { NotificationService, AppNotification } from '../../../../core/services/notification.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-profile-bar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, MatIconModule],
   templateUrl: './profile-bar.html',
   styleUrls: ['./profile-bar.css']
 })
@@ -111,19 +112,19 @@ export class ProfileBarComponent implements OnInit, OnDestroy {
 
   getSeverityIcon(severity: string): string {
     switch (severity) {
-      case 'critical': return '🚨';
-      case 'warning': return '⚠️';
-      default: return 'ℹ️';
+      case 'critical': return 'report_problem'; 
+      case 'warning': return 'warning_amber';  
+      default: return 'info';                  
     }
   }
-
+  
   getTypeIcon(type: string): string {
     switch (type) {
-      case 'low_stock': return '📦';
-      case 'high_churn': return '👥';
-      case 'sales_anomaly': return '📊';
-      case 'new_review': return '⭐';
-      default: return '🔔';
+      case 'low_stock': return 'inventory_2';   
+      case 'high_churn': return 'person_remove';
+      case 'sales_anomaly': return 'analytics'; 
+      case 'new_review': return 'star';         
+      default: return 'notifications';          
     }
   }
 

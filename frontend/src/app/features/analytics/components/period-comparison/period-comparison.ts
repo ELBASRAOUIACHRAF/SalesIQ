@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { PeriodComparisonDto } from '../../../../core/models/periodComparison.model';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-period-comparison',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './period-comparison.html',
   styleUrls: ['./period-comparison.css']
 })
@@ -153,11 +154,11 @@ export class PeriodComparisonComponent implements OnInit, OnDestroy {
   }
 
   getChangeIcon(change: number): string {
-    if (change > 20) return '🚀';
-    if (change > 0) return '📈';
-    if (change < -20) return '📉';
-    if (change < 0) return '↘️';
-    return '➡️';
+    if (change > 20) return 'rocket_launch';   
+    if (change > 0) return 'trending_up';      
+    if (change < -20) return 'trending_down';  
+    if (change < 0) return 'trending_down';      
+    return 'trending_flat';                    
   }
 
   formatChange(change: number): string {

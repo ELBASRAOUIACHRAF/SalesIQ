@@ -7,6 +7,7 @@ import { TopBarComponent } from '../../analytics/components/top-bar/top-bar';
 import { CategoryPerformanceComponent } from '../../analytics/components/category-performance/category-performance';
 import { ApiService, CategoryDetailsDto, CategoryPerformanceDto } from '../../../core/services/app.service';
 import { CsvService } from '../../../core/services/csv.service';
+import { MatIconModule } from '@angular/material/icon';
 
 interface CategoryKpi {
   title: string;
@@ -31,7 +32,8 @@ interface CategoryWithPerformance extends CategoryDetailsDto {
     FormsModule,
     TopBarComponent,
     KpiCardComponent,
-    CategoryPerformanceComponent
+    CategoryPerformanceComponent,
+    MatIconModule
   ],
   templateUrl: './categories-dashboard.html',
   styleUrls: ['./categories-dashboard.css'],

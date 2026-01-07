@@ -2,11 +2,16 @@
   <!-- Header -->
   <header class="executive-header">
     <div class="header-content">
-      <h3>👔 Executive Dashboard</h3>
+      <h3><mat-icon class="header-icon">business_center</mat-icon> Executive Dashboard</h3>
       <p class="subtitle">High-level business intelligence at a glance</p>
     </div>
     <button class="refresh-btn" (click)="loadDashboard()" [disabled]="isLoading">
-      🔄 Refresh
+      <ng-container *ngIf="!isLoading">
+        <mat-icon>refresh</mat-icon> Refresh
+      </ng-container>
+      <ng-container *ngIf="isLoading">
+        <mat-icon class="spin">hourglass_empty</mat-icon> Loading...
+      </ng-container>
     </button>
   </header>
 
@@ -18,8 +23,8 @@
 
   <!-- Error State -->
   <div *ngIf="errorMessage" class="error-state">
-    <p>⚠️ {{ errorMessage }}</p>
-    <button class="retry-button" (click)="loadDashboard()">🔄 Retry</button>
+    <p><mat-icon class="inline-icon">error_outline</mat-icon> {{ errorMessage }}</p>
+    <button class="retry-button" (click)="loadDashboard()"><mat-icon>replay</mat-icon> Retry</button>
   </div>
 
   <!-- Dashboard Content -->
@@ -51,45 +56,45 @@
     <!-- KPI Grid -->
     <div class="kpi-grid">
       <div class="kpi-card revenue">
-        <div class="kpi-icon">💰</div>
+        <div class="kpi-icon"><mat-icon>monetization_on</mat-icon></div>
         <div class="kpi-content">
           <span class="kpi-label">Total Revenue</span>
           <span class="kpi-value">{{ dashboard.kpis.totalRevenue | currency:'USD':'symbol':'1.0-0' }}</span>
           <div class="kpi-change positive">
-            📈 from this period
+            <mat-icon class="tiny-icon">trending_up</mat-icon> from this period
           </div>
         </div>
       </div>
 
       <div class="kpi-card orders">
-        <div class="kpi-icon">📦</div>
+        <div class="kpi-icon"><mat-icon>shopping_bag</mat-icon></div>
         <div class="kpi-content">
           <span class="kpi-label">Total Orders</span>
           <span class="kpi-value">{{ dashboard.kpis.totalOrders | number }}</span>
           <div class="kpi-change positive">
-            📈 from this period
+            <mat-icon class="tiny-icon">trending_up</mat-icon> from this period
           </div>
         </div>
       </div>
 
       <div class="kpi-card customers">
-        <div class="kpi-icon">👥</div>
+        <div class="kpi-icon"><mat-icon>groups</mat-icon></div>
         <div class="kpi-content">
           <span class="kpi-label">Total Customers</span>
           <span class="kpi-value">{{ dashboard.kpis.totalCustomers | number }}</span>
           <div class="kpi-change positive">
-            📈 from this period
+            <mat-icon class="tiny-icon">trending_up</mat-icon> from this period
           </div>
         </div>
       </div>
 
       <div class="kpi-card aov">
-        <div class="kpi-icon">🎯</div>
+        <div class="kpi-icon"><mat-icon>receipt_long</mat-icon></div>
         <div class="kpi-content">
           <span class="kpi-label">Avg Order Value</span>
           <span class="kpi-value">{{ dashboard.kpis.averageOrderValue | currency:'USD':'symbol':'1.0-0' }}</span>
           <div class="kpi-change positive">
-            📈 from this period
+            <mat-icon class="tiny-icon">trending_up</mat-icon> from this period
           </div>
         </div>
       </div>
@@ -99,7 +104,7 @@
     <div class="secondary-grid">
       <div class="secondary-card">
         <div class="card-header">
-          <span class="card-title">📊 Conversion Rate</span>
+          <span class="card-title"><mat-icon class="inline-icon">pie_chart</mat-icon> Conversion Rate</span>
           <span class="card-value">{{ dashboard.kpis.conversionRate | number:'1.1-1' }}%</span>
         </div>
         <div class="progress-bar">
@@ -109,7 +114,7 @@
 
       <div class="secondary-card">
         <div class="card-header">
-          <span class="card-title">🔄 Retention Rate</span>
+          <span class="card-title"><mat-icon class="inline-icon">autorenew</mat-icon> Retention Rate</span>
           <span class="card-value">{{ dashboard.customerMetrics.retentionRate | number:'1.1-1' }}%</span>
         </div>
         <div class="progress-bar">
@@ -119,7 +124,7 @@
 
       <div class="secondary-card">
         <div class="card-header">
-          <span class="card-title">📈 Avg Rating</span>
+          <span class="card-title"><mat-icon class="inline-icon">star</mat-icon> Avg Rating</span>
           <span class="card-value">{{ dashboard.kpis.averageRating | number:'1.1-1' }}</span>
         </div>
         <div class="progress-bar">
@@ -129,7 +134,7 @@
 
       <div class="secondary-card">
         <div class="card-header">
-          <span class="card-title">⚠️ Churn Risk</span>
+          <span class="card-title"><mat-icon class="inline-icon">warning_amber</mat-icon> Churn Risk</span>
           <span class="card-value">{{ dashboard.customerMetrics.churnRate | number:'1.1-1' }}%</span>
         </div>
         <div class="progress-bar">
@@ -141,7 +146,7 @@
     <!-- Top Performers -->
     <div class="performers-section">
       <div class="top-products">
-        <h4>🏆 Top Products</h4>
+        <h4><mat-icon class="inline-icon">emoji_events</mat-icon> Top Products</h4>
         <div class="performer-list">
           <div *ngFor="let product of dashboard.topProducts; let i = index" class="performer-item">
             <span class="rank">{{ i + 1 }}</span>
@@ -155,7 +160,7 @@
       </div>
 
       <div class="top-customers">
-        <h4>👑 Top Customers</h4>
+        <h4><mat-icon class="inline-icon">workspace_premium</mat-icon> Top Customers</h4>
         <div class="performer-list">
           <div *ngFor="let customer of dashboard.topCustomers; let i = index" class="performer-item">
             <span class="rank">{{ i + 1 }}</span>
@@ -169,7 +174,7 @@
       </div>
 
       <div class="top-categories">
-        <h4>📂 Top Categories</h4>
+        <h4><mat-icon class="inline-icon">folder_open</mat-icon> Top Categories</h4>
         <div class="performer-list">
           <div *ngFor="let category of dashboard.topCategories; let i = index" class="performer-item">
             <span class="rank">{{ i + 1 }}</span>
@@ -185,10 +190,10 @@
 
     <!-- Alerts Section -->
     <div class="insights-section" *ngIf="dashboard.alerts.length">
-      <h4>💡 Alerts</h4>
+      <h4><mat-icon class="inline-icon">lightbulb</mat-icon> Alerts</h4>
       <div class="insights-grid">
         <div *ngFor="let alert of dashboard.alerts" class="insight-card">
-          <span class="insight-icon">⚠️</span>
+          <span class="insight-icon"><mat-icon>notifications_active</mat-icon></span>
           <p class="insight-text">{{ alert }}</p>
         </div>
       </div>

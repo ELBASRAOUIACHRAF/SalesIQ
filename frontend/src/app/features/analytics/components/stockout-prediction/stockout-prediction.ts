@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { StockoutPredictionDto } from '../../../../core/models/stockoutPrediction.model';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-stockout-prediction',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './stockout-prediction.html',
   styleUrls: ['./stockout-prediction.css']
 })
@@ -125,11 +126,11 @@ export class StockoutPredictionComponent implements OnInit, OnDestroy {
 
   getRiskIcon(level: string): string {
     switch (level) {
-      case 'CRITICAL': return '🚨';
-      case 'HIGH': return '⚠️';
-      case 'MEDIUM': return '⏳';
-      case 'LOW': return '✅';
-      default: return '📦';
+      case 'CRITICAL': return 'report_problem';  
+      case 'HIGH': return 'warning';             
+      case 'MEDIUM': return 'hourglass_empty';   
+      case 'LOW': return 'check_circle';         
+      default: return 'inventory_2';             
     }
   }
 

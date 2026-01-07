@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter, HostListener, OnInit, AfterViewInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProfileBarComponent } from '../profile-bar/profile-bar';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-top-bar',
   standalone: true,
-  imports: [CommonModule, ProfileBarComponent],
+  imports: [CommonModule, ProfileBarComponent, MatIconModule],
   templateUrl: './top-bar.html',
   styleUrls: ['./top-bar.css']
 })

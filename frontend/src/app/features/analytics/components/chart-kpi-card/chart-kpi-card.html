@@ -5,7 +5,7 @@
     <div class="meta-left">
       <div class="icon" *ngIf="iconUrl || iconClass">
         <img *ngIf="iconUrl" [src]="iconUrl" [alt]="title + ' icon'" />
-        <i *ngIf="!iconUrl && iconClass" [class]="iconClass" aria-hidden="true"></i>
+        <!-- <i *ngIf="!iconUrl && iconClass" [class]="iconClass" aria-hidden="true"></i> --><mat-icon *ngIf="!iconUrl && iconClass">{{ iconClass }}</mat-icon>
       </div>
       <div class="text">
         <div class="title">{{ title }}</div>
@@ -22,7 +22,11 @@
         [class.neutral]="change === 0"
         *ngIf="change !== undefined"
       >
-        <span class="arrow">{{ change && change > 0 ? '▲' : change && change < 0 ? '▼' : '•' }}</span>
+        <span class="arrow">
+          <mat-icon class="change-icon">
+          {{ change > 0 ? 'arrow_drop_up' : (change < 0 ? 'arrow_drop_down' : 'remove') }}
+        </mat-icon>
+      </span>
         <span>{{ change && change > 0 ? '+' : '' }}{{ change | number:'1.0-2' }}%</span>
       </div>
     </div>
@@ -44,7 +48,10 @@
       </div>
       <div class="stat-item trend" [class.trend-up]="stats.trend === 'up'" [class.trend-down]="stats.trend === 'down'">
         <span class="stat-label">Trend</span>
-        <span class="stat-value">{{ stats.trend === 'up' ? '↑' : stats.trend === 'down' ? '↓' : '→' }} {{ stats.trendPercent.toFixed(1) }}%</span>
+        <span class="stat-value"><mat-icon class="tiny-icon" *ngIf="stats.trend === 'up'">trending_up</mat-icon>
+          <mat-icon class="tiny-icon" *ngIf="stats.trend === 'down'">trending_down</mat-icon>
+          <mat-icon class="tiny-icon" *ngIf="stats.trend === 'neutral'">trending_flat</mat-icon>
+          {{ stats.trendPercent.toFixed(1) }}%</span>
       </div>
     </div>
     

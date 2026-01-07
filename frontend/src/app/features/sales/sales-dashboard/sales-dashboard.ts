@@ -15,6 +15,7 @@ import { GrowthRateCardComponent } from '../../analytics/components/growth-rate-
 import { SeasonalityAnalysisComponent } from '../../analytics/components/seasonality-chart/seasonality-chart';
 import { CohortCardComponent } from '../../analytics/cohort-card/cohort-card';
 import { PurchaseFrequencyComponent } from '../../users/components/purchase-frequency/purchase-frequency.component';
+import { MatIconModule } from '@angular/material/icon';
 
 // Services
 import { AnalyticsService } from '../../../core/services/analytics.service';
@@ -36,7 +37,8 @@ import { SaleService } from '../../../core/services/sale.service';
     GrowthRateCardComponent,
     SeasonalityAnalysisComponent,
     CohortCardComponent,
-    PurchaseFrequencyComponent
+    PurchaseFrequencyComponent,
+    MatIconModule
   ],
   templateUrl: './sales-dashboard.html',
   styleUrls: ['./sales-dashboard.css'],

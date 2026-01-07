@@ -2,11 +2,16 @@
   <!-- Header -->
   <header class="prediction-header">
     <div class="header-content">
-      <h3>🔮 Churn Prediction</h3>
+      <h3><mat-icon class="header-icon">online_prediction</mat-icon> Churn Prediction</h3>
       <p class="subtitle">AI-powered identification of at-risk customers</p>
     </div>
     <button class="refresh-btn" (click)="loadPredictions()" [disabled]="isLoading">
-      🔄 Refresh
+      <ng-container *ngIf="!isLoading">
+        <mat-icon>refresh</mat-icon> Refresh
+      </ng-container>
+      <ng-container *ngIf="isLoading">
+        <mat-icon class="spin">hourglass_empty</mat-icon> Loading...
+      </ng-container>
     </button>
   </header>
 
@@ -18,8 +23,8 @@
 
   <!-- Error State -->
   <div *ngIf="errorMessage" class="error-state">
-    <p>⚠️ {{ errorMessage }}</p>
-    <button class="retry-button" (click)="loadPredictions()">🔄 Retry</button>
+    <p><mat-icon class="inline-icon">error_outline</mat-icon> {{ errorMessage }}</p>
+    <button class="retry-button" (click)="loadPredictions()"><mat-icon>replay</mat-icon> Retry</button>
   </div>
 
   <!-- Results -->
@@ -28,7 +33,7 @@
     <!-- Summary Cards -->
     <div class="summary-grid">
       <div class="summary-card total">
-        <div class="card-icon">👥</div>
+        <div class="card-icon"><mat-icon>groups</mat-icon></div>
         <div class="card-content">
           <span class="card-value">{{ predictions.length }}</span>
           <span class="card-label">Total Analyzed</span>
@@ -36,7 +41,7 @@
       </div>
 
       <div class="summary-card critical">
-        <div class="card-icon">🔴</div>
+        <div class="card-icon"><mat-icon>dangerous</mat-icon></div>
         <div class="card-content">
           <span class="card-value">{{ criticalCount }}</span>
           <span class="card-label">Critical Risk</span>
@@ -44,7 +49,7 @@
       </div>
 
       <div class="summary-card high">
-        <div class="card-icon">🟠</div>
+        <div class="card-icon"><mat-icon>warning</mat-icon></div>
         <div class="card-content">
           <span class="card-value">{{ highCount }}</span>
           <span class="card-label">High Risk</span>
@@ -52,7 +57,7 @@
       </div>
 
       <div class="summary-card avg">
-        <div class="card-icon">📊</div>
+        <div class="card-icon"><mat-icon>analytics</mat-icon></div>
         <div class="card-content">
           <span class="card-value">{{ avgChurnProbability | number:'1.0-0' }}%</span>
           <span class="card-label">Avg Churn Prob.</span>
@@ -62,7 +67,7 @@
 
     <!-- Alert Banner -->
     <div *ngIf="totalAtRisk > 0" class="alert-banner">
-      <span class="alert-icon">⚠️</span>
+      <span class="alert-icon"><mat-icon>notification_important</mat-icon></span>
       <span class="alert-text">
         <strong>{{ totalAtRisk }} customers</strong> are at high risk of churning. Consider implementing retention strategies.
       </span>
@@ -73,10 +78,22 @@
       <div class="filter-group">
         <span class="control-label">Filter:</span>
         <button [class.active]="filterRisk === 'all'" (click)="setFilter('all')">All</button>
-        <button [class.active]="filterRisk === 'CRITICAL'" (click)="setFilter('CRITICAL')">🔴 Critical</button>
-        <button [class.active]="filterRisk === 'HIGH'" (click)="setFilter('HIGH')">🟠 High</button>
-        <button [class.active]="filterRisk === 'MEDIUM'" (click)="setFilter('MEDIUM')">🟡 Medium</button>
-        <button [class.active]="filterRisk === 'LOW'" (click)="setFilter('LOW')">🟢 Low</button>
+        
+        <button [class.active]="filterRisk === 'CRITICAL'" (click)="setFilter('CRITICAL')">
+          <mat-icon class="tiny-icon">dangerous</mat-icon> Critical
+        </button>
+        
+        <button [class.active]="filterRisk === 'HIGH'" (click)="setFilter('HIGH')">
+          <mat-icon class="tiny-icon">warning</mat-icon> High
+        </button>
+        
+        <button [class.active]="filterRisk === 'MEDIUM'" (click)="setFilter('MEDIUM')">
+          <mat-icon class="tiny-icon">info</mat-icon> Medium
+        </button>
+        
+        <button [class.active]="filterRisk === 'LOW'" (click)="setFilter('LOW')">
+          <mat-icon class="tiny-icon">check_circle</mat-icon> Low
+        </button>
       </div>
       
       <div class="sort-group">
@@ -92,7 +109,7 @@
     <!-- Customer List -->
     <div class="customer-list">
       <div *ngIf="filteredPredictions.length === 0" class="empty-state">
-        <p>🎉 No customers match the selected filter</p>
+        <p><mat-icon class="inline-icon">celebration</mat-icon> No customers match the selected filter</p>
       </div>
 
       <div *ngFor="let customer of filteredPredictions; let i = index" 
@@ -105,7 +122,7 @@
           <div class="customer-header">
             <span class="customer-id">Customer #{{ customer.userId }}</span>
             <span class="risk-badge" [class]="getRiskClass(customer.riskLevel)">
-              {{ getRiskIcon(customer.riskLevel) }} {{ customer.riskLevel }}
+              <mat-icon class="badge-icon">{{ getRiskIcon(customer.riskLevel) }}</mat-icon> {{ customer.riskLevel }}
             </span>
           </div>
           
@@ -120,17 +137,17 @@
 
         <div class="customer-metrics">
           <div class="metric">
-            <span class="metric-icon">📅</span>
+            <span class="metric-icon"><mat-icon>history</mat-icon></span>
             <span class="metric-value">{{ customer.daysSinceLastPurchase }}</span>
             <span class="metric-label">Days Inactive</span>
           </div>
           <div class="metric">
-            <span class="metric-icon">🛒</span>
+            <span class="metric-icon"><mat-icon>shopping_cart</mat-icon></span>
             <span class="metric-value">{{ customer.totalPurchases }}</span>
             <span class="metric-label">Purchases</span>
           </div>
           <div class="metric">
-            <span class="metric-icon">💰</span>
+            <span class="metric-icon"><mat-icon>attach_money</mat-icon></span>
             <span class="metric-value">{{ customer.totalSpent | currency:'USD':'symbol':'1.0-0' }}</span>
             <span class="metric-label">Total Spent</span>
           </div>

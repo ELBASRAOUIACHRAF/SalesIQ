@@ -2,11 +2,11 @@
   <!-- Header -->
   <header class="anomaly-header">
     <div class="header-content">
-      <h3>⚡ Anomaly Detection</h3>
+      <h3><mat-icon class="header-icon">bolt</mat-icon> Anomaly Detection</h3>
       <p class="subtitle">AI-powered unusual sales pattern detection</p>
     </div>
     <button class="refresh-btn" (click)="loadAnomalies()" [disabled]="isLoading">
-      🔄 Refresh
+      <mat-icon>refresh</mat-icon> Refresh
     </button>
   </header>
 
@@ -18,8 +18,8 @@
 
   <!-- Error State -->
   <div *ngIf="errorMessage" class="error-state">
-    <p>⚠️ {{ errorMessage }}</p>
-    <button class="retry-button" (click)="loadAnomalies()">🔄 Retry</button>
+    <p><mat-icon class="inline-icon">error</mat-icon> {{ errorMessage }}</p>
+    <button class="retry-button" (click)="loadAnomalies()"><mat-icon>replay</mat-icon> Retry</button>
   </div>
 
   <!-- Content -->
@@ -27,7 +27,7 @@
 
     <!-- Alert Banner -->
     <div *ngIf="criticalCount > 0" class="alert-banner">
-      <span class="alert-icon">🚨</span>
+      <span class="alert-icon"><mat-icon>notification_important</mat-icon></span>
       <span class="alert-text">
         <strong>{{ criticalCount }} critical anomal{{ criticalCount > 1 ? 'ies' : 'y' }}</strong> detected! Review recommended.
       </span>
@@ -37,7 +37,7 @@
     <div class="summary-grid">
       <div class="summary-card total">
         <div class="card-visual">
-          <span class="card-icon">⚡</span>
+          <span class="card-icon"><mat-icon>bolt</mat-icon></span>
           <span class="card-value">{{ anomalies.length }}</span>
         </div>
         <span class="card-label">Total Anomalies</span>
@@ -45,7 +45,7 @@
 
       <div class="summary-card spike" (click)="typeFilter = 'SPIKE'; onFilterChange()">
         <div class="card-visual">
-          <span class="card-icon">📈</span>
+          <span class="card-icon"><mat-icon>trending_up</mat-icon></span>
           <span class="card-value">{{ spikeCount }}</span>
         </div>
         <span class="card-label">Sales Spikes</span>
@@ -53,7 +53,7 @@
 
       <div class="summary-card drop" (click)="typeFilter = 'DROP'; onFilterChange()">
         <div class="card-visual">
-          <span class="card-icon">📉</span>
+          <span class="card-icon"><mat-icon>trending_down</mat-icon></span>
           <span class="card-value">{{ dropCount }}</span>
         </div>
         <span class="card-label">Sales Drops</span>
@@ -61,7 +61,7 @@
 
       <div class="summary-card deviation">
         <div class="card-visual">
-          <span class="card-icon">📊</span>
+          <span class="card-icon"><mat-icon>stacked_line_chart</mat-icon></span>
           <span class="card-value">{{ avgDeviation | number:'1.0-0' }}%</span>
         </div>
         <span class="card-label">Avg Deviation</span>
@@ -75,7 +75,7 @@
           <label>From</label>
           <input type="date" [(ngModel)]="dateRange.start" (change)="onDateChange()" />
         </div>
-        <span class="date-separator">→</span>
+        <span class="date-separator"><mat-icon>arrow_forward</mat-icon></span>
         <div class="date-field">
           <label>To</label>
           <input type="date" [(ngModel)]="dateRange.end" (change)="onDateChange()" />
@@ -113,7 +113,7 @@
            [class]="getTypeClass(anomaly.anomalyType)">
         
         <div class="timeline-marker">
-          <span class="marker-icon">{{ getTypeIcon(anomaly.anomalyType) }}</span>
+          <span class="marker-icon"><mat-icon>{{ getTypeIcon(anomaly.anomalyType) }}</mat-icon></span>
           <div class="marker-line"></div>
         </div>
 
@@ -123,7 +123,7 @@
               {{ anomaly.anomalyType }}
             </div>
             <div class="severity-badge" [class]="getSeverityClass(anomaly.severity)">
-              {{ getSeverityIcon(anomaly.severity) }} {{ anomaly.severity }}
+              <mat-icon class="badge-icon">{{ getSeverityIcon(anomaly.severity) }}</mat-icon> {{ anomaly.severity }}
             </div>
             <span class="anomaly-date">{{ formatDate(anomaly.date) }}</span>
           </div>
@@ -131,7 +131,7 @@
           <div class="card-body">
             <div class="product-info">
               <h4 class="product-name">Anomaly Detected</h4>
-              <span class="category">{{ anomaly.anomalyType }} Event</span>
+              <span class="category"><mat-icon class="tiny-icon">category</mat-icon> {{ anomaly.anomalyType }} Event</span>
             </div>
 
             <div class="metrics-row">
@@ -175,7 +175,7 @@
             </div>
 
             <p *ngIf="anomaly.zScore > 2" class="cause-text">
-              💡 <strong>Z-Score:</strong> {{ anomaly.zScore | number:'1.2-2' }} (significant deviation)
+              <mat-icon class="inline-icon">lightbulb</mat-icon> <strong>Z-Score:</strong> {{ anomaly.zScore | number:'1.2-2' }} (significant deviation)
             </p>
           </div>
         </div>
@@ -183,7 +183,7 @@
 
       <!-- Empty State -->
       <div *ngIf="filteredAnomalies.length === 0" class="empty-state">
-        <div class="empty-icon">✨</div>
+        <div class="empty-icon"><mat-icon>auto_awesome</mat-icon></div>
         <p>No anomalies detected in the selected period</p>
         <span class="empty-hint">Try adjusting the date range or filters</span>
       </div>

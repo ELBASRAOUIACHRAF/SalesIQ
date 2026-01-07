@@ -2,16 +2,16 @@
   <!-- Header -->
   <div class="page-header">
     <div class="header-left">
-      <h1 class="page-title">📄 Reports & Export</h1>
+      <h1 class="page-title"><mat-icon class="title-icon">description</mat-icon> Reports & Export</h1>
       <p class="page-subtitle">Generate and download professional PDF reports for your business data</p>
     </div>
     <div class="header-actions">
       <button class="btn btn-secondary" (click)="refreshData()" [disabled]="loading">
-        <span class="btn-icon">🔄</span>
+        <mat-icon class="btn-icon">refresh</mat-icon>
         <span>Refresh Data</span>
       </button>
       <button class="btn btn-primary" (click)="generateAllReports()" [disabled]="loading || generatingPdf">
-        <span class="btn-icon">📊</span>
+        <mat-icon class="btn-icon">download_for_offline</mat-icon>
         <span>{{ generatingPdf === 'all' ? 'Generating...' : 'Export All Reports' }}</span>
       </button>
     </div>
@@ -27,10 +27,10 @@
 
   <!-- Summary Cards -->
   <div class="summary-section" *ngIf="summary && !loading">
-    <h2 class="section-title">📈 Quick Overview</h2>
+    <h2 class="section-title"><mat-icon class="inline-icon">analytics</mat-icon> Quick Overview</h2>
     <div class="summary-grid">
       <div class="summary-card users">
-        <div class="card-icon">👥</div>
+        <div class="card-icon"><mat-icon>group</mat-icon></div>
         <div class="card-content">
           <span class="card-value">{{ summary.totalUsers }}</span>
           <span class="card-label">Total Users</span>
@@ -38,7 +38,7 @@
         </div>
       </div>
       <div class="summary-card products">
-        <div class="card-icon">📦</div>
+        <div class="card-icon"><mat-icon>inventory</mat-icon></div>
         <div class="card-content">
           <span class="card-value">{{ summary.totalProducts }}</span>
           <span class="card-label">Products</span>
@@ -46,7 +46,7 @@
         </div>
       </div>
       <div class="summary-card sales">
-        <div class="card-icon">💰</div>
+        <div class="card-icon"><mat-icon>payments</mat-icon></div>
         <div class="card-content">
           <span class="card-value">{{ summary.totalRevenue | currency:'USD':'symbol':'1.0-0' }}</span>
           <span class="card-label">Total Revenue</span>
@@ -54,7 +54,7 @@
         </div>
       </div>
       <div class="summary-card reviews">
-        <div class="card-icon">⭐</div>
+        <div class="card-icon"><mat-icon>star_rate</mat-icon></div>
         <div class="card-content">
           <span class="card-value">{{ summary.averageRating }}</span>
           <span class="card-label">Avg. Rating</span>
@@ -66,11 +66,11 @@
 
   <!-- Report Types Grid -->
   <div class="reports-section" *ngIf="!loading">
-    <h2 class="section-title">📑 Available Reports</h2>
+    <h2 class="section-title"><mat-icon class="inline-icon">folder_open</mat-icon> Available Reports</h2>
     <div class="reports-grid">
       <div class="report-card" *ngFor="let report of reportTypes" [style.--accent-color]="report.color">
         <div class="report-header">
-          <span class="report-icon">{{ report.icon }}</span>
+          <span class="report-icon"><mat-icon>{{ report.icon }}</mat-icon></span>
           <div class="report-info">
             <h3 class="report-name">{{ report.name }}</h3>
             <span class="record-count">{{ getDataCount(report) }} records</span>
@@ -89,7 +89,7 @@
         
         <div class="report-actions">
           <button class="action-btn preview" (click)="openPreview(report)" [disabled]="getDataCount(report) === 0">
-            <span>👁️</span>
+            <mat-icon>visibility</mat-icon>
             <span>Preview</span>
           </button>
           <button 
@@ -97,8 +97,9 @@
             (click)="generatePdf(report)" 
             [disabled]="generatingPdf !== null || getDataCount(report) === 0"
           >
-            <span>{{ generatingPdf === report.id ? '⏳' : '📥' }}</span>
-            <span>{{ generatingPdf === report.id ? 'Generating...' : 'Download PDF' }}</span>
+          <mat-icon *ngIf="generatingPdf !== report.id">picture_as_pdf</mat-icon>
+          <mat-icon *ngIf="generatingPdf === report.id" class="spin">hourglass_empty</mat-icon>
+          <span>{{ generatingPdf === report.id ? 'Generating...' : 'Download PDF' }}</span>
           </button>
         </div>
       </div>
@@ -107,7 +108,7 @@
 
   <!-- Info Banner -->
   <div class="info-banner" *ngIf="!loading">
-    <span class="info-icon">💡</span>
+    <span class="info-icon"><mat-icon>lightbulb</mat-icon></span>
     <div class="info-content">
       <h3>How to Download PDF Reports</h3>
       <p>
@@ -125,10 +126,10 @@
   <div class="modal-content preview-modal" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h2>
-        <span>{{ previewReport?.icon }}</span>
+        <mat-icon>{{ previewReport?.icon }}</mat-icon>
         {{ previewReport?.name }} Preview
       </h2>
-      <button class="modal-close" (click)="closePreview()">✕</button>
+      <button class="modal-close" (click)="closePreview()"><mat-icon>close</mat-icon></button>
     </div>
     
     <div class="modal-body">
@@ -193,7 +194,7 @@
               <td>{{ product.mark || '-' }}</td>
               <td class="currency">{{ product.price | currency:'USD' }}</td>
               <td [class.low-stock]="(product.stock || 0) < 10">{{ product.stock }}</td>
-              <td class="rating">{{ (product.rating || 0).toFixed(1) }} ⭐</td>
+              <td class="rating">{{ (product.rating || 0).toFixed(1) }} <mat-icon class="tiny-icon">star</mat-icon></td>
             </tr>
           </tbody>
         </table>
@@ -237,7 +238,7 @@
             <tr *ngFor="let review of reviews.slice(0, 10)">
               <td>{{ review.id }}</td>
               <td>{{ review.userName || 'Anonymous' }}</td>
-              <td class="rating">{{ (review.rating || 0).toFixed(1) }} ⭐</td>
+              <td class="rating">{{ (review.rating || 0).toFixed(1) }} <mat-icon class="tiny-icon">star</mat-icon></td>
               <td>{{ review.comment | slice:0:50 }}{{ (review.comment.length || 0) > 50 ? '...' : '' }}</td>
               <td>{{ review.reviewDate | date:'mediumDate' }}</td>
             </tr>
@@ -257,7 +258,7 @@
         (click)="generatePdf(previewReport!); closePreview()"
         [disabled]="generatingPdf !== null"
       >
-        <span>📥</span>
+      <mat-icon>picture_as_pdf</mat-icon>
         Download PDF
       </button>
     </div>

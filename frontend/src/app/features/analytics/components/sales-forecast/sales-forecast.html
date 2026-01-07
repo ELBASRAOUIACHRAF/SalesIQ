@@ -2,7 +2,7 @@
   <!-- Header -->
   <header class="forecast-header">
     <div class="header-content">
-      <h3>🔮 Sales Forecast</h3>
+      <h3><mat-icon class="header-icon">online_prediction</mat-icon> Sales Forecast</h3>
       <p class="subtitle">AI-powered predictive sales analysis</p>
     </div>
     <div class="header-controls">
@@ -12,7 +12,12 @@
         </option>
       </select>
       <button class="refresh-btn" (click)="loadForecast()" [disabled]="isLoading">
-        🔄
+        <ng-container *ngIf="!isLoading">
+          <mat-icon>refresh</mat-icon>
+        </ng-container>
+        <ng-container *ngIf="isLoading">
+          <mat-icon class="spin">hourglass_empty</mat-icon>
+        </ng-container>
       </button>
     </div>
   </header>
@@ -25,8 +30,8 @@
 
   <!-- Error State -->
   <div *ngIf="errorMessage" class="error-state">
-    <p>⚠️ {{ errorMessage }}</p>
-    <button class="retry-button" (click)="loadForecast()">🔄 Retry</button>
+    <p><mat-icon class="inline-icon">error_outline</mat-icon> {{ errorMessage }}</p>
+    <button class="retry-button" (click)="loadForecast()"><mat-icon>refresh</mat-icon> Retry</button>
   </div>
 
   <!-- Forecast Content -->
@@ -35,7 +40,7 @@
     <!-- Summary Cards -->
     <div class="summary-grid">
       <div class="summary-card total">
-        <div class="card-icon">💰</div>
+        <div class="card-icon"><mat-icon>monetization_on</mat-icon></div>
         <div class="card-info">
           <span class="card-value">{{ totalPredicted | currency:'USD':'symbol':'1.0-0' }}</span>
           <span class="card-label">Total Predicted Revenue</span>
@@ -43,7 +48,7 @@
       </div>
 
       <div class="summary-card daily">
-        <div class="card-icon">📊</div>
+        <div class="card-icon"><mat-icon>analytics</mat-icon></div>
         <div class="card-info">
           <span class="card-value">{{ avgDailySales | currency:'USD':'symbol':'1.0-0' }}</span>
           <span class="card-label">Avg Daily Sales</span>
@@ -51,7 +56,7 @@
       </div>
 
       <div class="summary-card peak">
-        <div class="card-icon">🏆</div>
+        <div class="card-icon"><mat-icon>emoji_events</mat-icon></div>
         <div class="card-info">
           <span class="card-value">{{ peakDay?.predictedSales | currency:'USD':'symbol':'1.0-0' }}</span>
           <span class="card-label">Peak Day ({{ formatDate(peakDay?.date || '') }})</span>
@@ -59,7 +64,7 @@
       </div>
 
       <div class="summary-card confidence" [class]="getConfidenceClass(avgConfidence)">
-        <div class="card-icon">🎯</div>
+        <div class="card-icon"><mat-icon>track_changes</mat-icon></div>
         <div class="card-info">
           <span class="card-value">{{ avgConfidence | number:'1.0-0' }}%</span>
           <span class="card-label">Avg Confidence</span>
@@ -69,7 +74,7 @@
 
     <!-- Forecast Chart -->
     <div class="chart-section">
-      <h4>Forecast Timeline</h4>
+      <h4><mat-icon class="inline-icon">timeline</mat-icon> Forecast Timeline</h4>
       <div class="chart-container">
         <div class="chart-bars">
           <div *ngFor="let day of forecastData; let i = index" 
@@ -108,7 +113,7 @@
 
     <!-- Detailed Forecast Table -->
     <div class="table-section">
-      <h4>Daily Forecast Details</h4>
+      <h4><mat-icon class="inline-icon">table_chart</mat-icon> Daily Forecast Details</h4>
       <div class="table-wrapper">
         <table class="forecast-table">
           <thead>
@@ -132,7 +137,15 @@
                   {{ day.confidence | number:'1.0-0' }}%
                 </span>
               </td>
-              <td class="trend-cell">{{ getTrendIcon(i) }}</td>
+              <td class="trend-cell">
+                <mat-icon *ngIf="getTrendIcon(i)" 
+                          class="small-icon"
+                          [class.trend-up]="getTrendIcon(i) === 'trending_up'"
+                          [class.trend-down]="getTrendIcon(i) === 'trending_down'"
+                          [class.trend-flat]="getTrendIcon(i) === 'trending_flat'">
+                  {{ getTrendIcon(i) }}
+                </mat-icon>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -141,7 +154,7 @@
 
     <!-- Empty State -->
     <div *ngIf="forecastData.length === 0" class="empty-state">
-      <p>🔮 No forecast data available</p>
+      <p><mat-icon class="empty-icon">query_stats</mat-icon> No forecast data available</p>
       <p class="hint">Historical sales data required for predictions</p>
     </div>
   </div>

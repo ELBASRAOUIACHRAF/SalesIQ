@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SystemSettingsService, SystemSettingsState } from '../../../core/services/system-settings.service';
+import { MatIconModule } from '@angular/material/icon';
 
 interface Setting {
   key: string;
@@ -24,7 +25,7 @@ interface SettingGroup {
 @Component({
   selector: 'app-system-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './system-settings.html',
   styleUrls: ['./system-settings.css']
 })
@@ -78,7 +79,7 @@ export class SystemSettings implements OnInit {
     this.settingGroups = [
       {
         title: 'General',
-        icon: '⚙️',
+        icon: 'settings', 
         description: 'General application settings and preferences',
         settings: [
           {
@@ -101,7 +102,7 @@ export class SystemSettings implements OnInit {
       },
       {
         title: 'Appearance',
-        icon: '🎨',
+        icon: 'palette', 
         description: 'Visual customization options',
         settings: [
           {
@@ -133,7 +134,7 @@ export class SystemSettings implements OnInit {
       },
       {
         title: 'Session',
-        icon: '🔒',
+        icon: 'lock', 
         description: 'Session and timeout settings',
         settings: [
           {

@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import {
   AnalyticsReportService,
   RFMReportData,
@@ -27,7 +28,7 @@ interface AnalyticsReportType {
 @Component({
   selector: 'app-analytics-reports',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './analytics-reports.html',
   styleUrls: ['./analytics-reports.css']
 })
@@ -61,7 +62,7 @@ export class AnalyticsReports implements OnInit {
       id: 'rfm',
       name: 'RFM Customer Segmentation',
       description: 'Customer segments based on Recency, Frequency, and Monetary value analysis',
-      icon: '🎯',
+      icon: 'groups',
       color: '#3b82f6',
       dataKey: 'rfm',
       columns: ['Customer ID', 'Segment', 'R-Score', 'F-Score', 'M-Score', 'Total Score', 'Recency (Days)', 'Purchases', 'Total Spent']
@@ -70,7 +71,7 @@ export class AnalyticsReports implements OnInit {
       id: 'churn',
       name: 'Churn Risk Analysis',
       description: 'Customers at risk of churning with probability scores and risk levels',
-      icon: '⚠️',
+      icon: 'person_remove',
       color: '#ef4444',
       dataKey: 'churn',
       columns: ['User ID', 'Churn Probability', 'Risk Level', 'Days Since Purchase', 'Total Purchases', 'Total Spent', 'Avg Order']
@@ -79,7 +80,7 @@ export class AnalyticsReports implements OnInit {
       id: 'forecast',
       name: 'Sales Forecast',
       description: 'Predicted sales revenue for the upcoming period using ML models',
-      icon: '📈',
+      icon: 'show_chart',
       color: '#10b981',
       dataKey: 'forecast',
       columns: ['Date', 'Predicted Revenue']
@@ -88,7 +89,7 @@ export class AnalyticsReports implements OnInit {
       id: 'stockout',
       name: 'Stockout Predictions',
       description: 'Products at risk of running out of stock with recommended reorder quantities',
-      icon: '📦',
+      icon: 'production_quantity_limits',
       color: '#f59e0b',
       dataKey: 'stockout',
       columns: ['Product ID', 'Product Name', 'Current Stock', 'Avg Daily Sales', 'Days Until Stockout', 'Risk Level', 'Reorder Qty']
@@ -97,7 +98,7 @@ export class AnalyticsReports implements OnInit {
       id: 'bestseller',
       name: 'Potential Bestsellers',
       description: 'Products showing strong potential to become bestsellers based on growth patterns',
-      icon: '🏆',
+      icon: 'emoji_events',
       color: '#8b5cf6',
       dataKey: 'bestseller',
       columns: ['Product ID', 'Product Name', 'Category', 'Current Sales', 'Growth Rate', 'Potential Score', 'Level']
@@ -106,7 +107,7 @@ export class AnalyticsReports implements OnInit {
       id: 'sentiment',
       name: 'Sentiment Analysis',
       description: 'Customer review sentiment breakdown by product',
-      icon: '💬',
+      icon: 'rate_review',
       color: '#06b6d4',
       dataKey: 'sentiment',
       columns: ['Product ID', 'Product Name', 'Total Reviews', 'Positive', 'Neutral', 'Negative', 'Sentiment']
@@ -115,7 +116,7 @@ export class AnalyticsReports implements OnInit {
       id: 'anomaly',
       name: 'Anomaly Detection',
       description: 'Unusual patterns and deviations detected in sales and metrics',
-      icon: '🔍',
+      icon: 'troubleshoot',
       color: '#ec4899',
       dataKey: 'anomaly',
       columns: ['Date', 'Metric', 'Actual Value', 'Expected Value', 'Deviation %', 'Type', 'Severity']
@@ -124,7 +125,7 @@ export class AnalyticsReports implements OnInit {
       id: 'abc',
       name: 'ABC Classification',
       description: 'Product classification by revenue contribution (Pareto analysis)',
-      icon: '📊',
+      icon: 'bar_chart',
       color: '#14b8a6',
       dataKey: 'abc',
       columns: ['Product ID', 'Product Name', 'Category', 'Total Revenue', 'Revenue %', 'Cumulative %', 'Class']

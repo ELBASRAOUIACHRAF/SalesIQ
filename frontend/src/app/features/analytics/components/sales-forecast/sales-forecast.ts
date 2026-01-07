@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
+import { MatIconModule } from '@angular/material/icon';
 
 interface ForecastData {
   date: string;
@@ -15,7 +16,7 @@ interface ForecastData {
 @Component({
   selector: 'app-sales-forecast',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './sales-forecast.html',
   styleUrls: ['./sales-forecast.css']
 })
@@ -134,8 +135,9 @@ export class SalesForecastComponent implements OnInit, OnDestroy {
     const current = this.forecastData[index].predictedSales;
     const previous = this.forecastData[index - 1].predictedSales;
     const change = ((current - previous) / previous) * 100;
-    if (change > 5) return '📈';
-    if (change < -5) return '📉';
-    return '➡️';
+    
+    if (change > 5) return 'trending_up';      
+    if (change < -5) return 'trending_down';   
+    return 'trending_flat';                    
   }
 }

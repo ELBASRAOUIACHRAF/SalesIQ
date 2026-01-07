@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { ChatbotService, ChatMessage } from '../../../services/chatbot.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-chatbot-assistant',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './chatbot-assistant.html',
   styleUrls: ['./chatbot-assistant.css']
 })

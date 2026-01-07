@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { 
   ReportService, 
   UserReportData, 
@@ -23,7 +24,7 @@ interface ReportType {
 @Component({
   selector: 'app-reports-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe, CurrencyPipe],
+  imports: [CommonModule, FormsModule, DatePipe, CurrencyPipe, MatIconModule],
   templateUrl: './reports-management.html',
   styleUrls: ['./reports-management.css']
 })
@@ -32,7 +33,7 @@ export class ReportsManagement implements OnInit {
     {
       id: 'users',
       name: 'Users Report',
-      icon: '👥',
+      icon: 'people', // Était 👥
       description: 'Complete user data including profiles, roles, activity and location info',
       color: '#6366f1',
       columns: ['ID', 'Username', 'Name', 'Email', 'Phone', 'Role', 'Status', 'City', 'Country', 'Created'],
@@ -41,7 +42,7 @@ export class ReportsManagement implements OnInit {
     {
       id: 'products',
       name: 'Products Report',
-      icon: '📦',
+      icon: 'inventory_2', // Était 📦
       description: 'Product catalog with pricing, inventory, ratings and specifications',
       color: '#8b5cf6',
       columns: ['ID', 'Name', 'Brand', 'Price', 'Stock', 'Discount', 'Rating', 'Reviews', 'Dimensions'],
@@ -50,7 +51,7 @@ export class ReportsManagement implements OnInit {
     {
       id: 'sales',
       name: 'Sales Report',
-      icon: '💰',
+      icon: 'monetization_on', // Était 💰
       description: 'Transaction history with amounts, payment methods and status',
       color: '#10b981',
       columns: ['ID', 'Date', 'User ID', 'Amount', 'Payment Method', 'Status'],
@@ -59,7 +60,7 @@ export class ReportsManagement implements OnInit {
     {
       id: 'reviews',
       name: 'Reviews Report',
-      icon: '⭐',
+      icon: 'rate_review', // Était ⭐
       description: 'Customer feedback with ratings, comments and product associations',
       color: '#f59e0b',
       columns: ['ID', 'User', 'Product', 'Rating', 'Comment', 'Date'],
@@ -746,7 +747,7 @@ export class ReportsManagement implements OnInit {
         const lowRatings = this.reviews.filter(r => r.rating < 3).length;
         cards = `
           <div class="summary-card"><div class="value">${data.length}</div><div class="label">Total Reviews</div></div>
-          <div class="summary-card"><div class="value">${avgRating.toFixed(1)} ⭐</div><div class="label">Avg. Rating</div></div>
+          <div class="summary-card"><div class="value">${avgRating.toFixed(1)} <mat-icon class="tiny-icon">star</mat-icon></div><div class="label">Avg. Rating</div></div>
           <div class="summary-card"><div class="value">${fiveStars}</div><div class="label">5-Star Reviews</div></div>
           <div class="summary-card"><div class="value">${lowRatings}</div><div class="label">Low Ratings (<3)</div></div>
         `;
@@ -776,7 +777,7 @@ export class ReportsManagement implements OnInit {
             <div class="desc">${this.summary.totalSales} Total Sales</div>
           </div>
           <div class="exec-item">
-            <div class="number">${this.summary.averageRating} ⭐</div>
+            <div class="number">${this.summary.averageRating} <mat-icon class="tiny-icon">star</mat-icon></div>
             <div class="desc">${this.summary.totalReviews} Reviews</div>
           </div>
         </div>
@@ -819,7 +820,7 @@ export class ReportsManagement implements OnInit {
             <td class="currency">$${(product.price || 0).toFixed(2)}</td>
             <td>${product.stock || 0}</td>
             <td>${product.discount ? product.discount + '%' : '-'}</td>
-            <td class="rating">${(product.rating || 0).toFixed(1)} ⭐</td>
+            <td class="rating">${(product.rating || 0).toFixed(1)} <mat-icon class="tiny-icon">star</mat-icon></td>
             <td>${product.reviewsCount || 0}</td>
             <td>${product.weight ? product.weight + 'kg' : '-'}</td>
           </tr>
@@ -845,7 +846,7 @@ export class ReportsManagement implements OnInit {
             <td>${review.id}</td>
             <td>${this.escapeHtml(review.userName || 'Anonymous')}</td>
             <td>${this.escapeHtml(this.truncate(review.productName || 'Product #' + review.productId, 25))}</td>
-            <td class="rating">${(review.rating || 0).toFixed(1)} ⭐</td>
+            <td class="rating">${(review.rating || 0).toFixed(1)} <mat-icon class="tiny-icon">star</mat-icon></td>
             <td>${this.escapeHtml(this.truncate(review.comment || '-', 40))}</td>
             <td>${this.formatDate(review.reviewDate)}</td>
           </tr>

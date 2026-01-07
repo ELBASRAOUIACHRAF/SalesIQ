@@ -6,11 +6,12 @@ import { Category } from '../../../core/models/category.model';
 import { CategoryService } from '../../../core/services/category.service';
 import { CsvService } from '../../../core/services/csv.service';
 import { HttpClient } from '@angular/common/http';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-categories-management',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './categories-management.html',
   styleUrls: ['./categories-management.css']
 })
@@ -175,21 +176,22 @@ export class CategoriesManagement implements OnInit, OnDestroy {
 
   getCategoryIcon(name: string): string {
     const icons: Record<string, string> = {
-      'electronics': '🔌',
-      'clothing': '👕',
-      'food': '🍔',
-      'books': '📚',
-      'sports': '⚽',
-      'home': '🏠',
-      'beauty': '💄',
-      'toys': '🧸',
-      'automotive': '🚗',
-      'health': '💊'
+      'electronics': 'power',           
+      'clothing': 'checkroom',          
+      'food': 'restaurant',             
+      'books': 'menu_book',             
+      'sports': 'sports_soccer',        
+      'home': 'home',                   
+      'beauty': 'brush',                
+      'toys': 'toys',                   
+      'automotive': 'directions_car',   
+      'health': 'local_hospital'        
     };
+    
     const key = name?.toLowerCase() || '';
     for (const [keyword, icon] of Object.entries(icons)) {
       if (key.includes(keyword)) return icon;
     }
-    return '📦';
+    return 'inventory_2';  
   }
 }

@@ -2,16 +2,16 @@
   <!-- Header -->
   <header class="page-header">
     <div class="header-left">
-      <h1 class="page-title">🏷️ Category Management</h1>
+      <h1 class="page-title"><mat-icon class="title-icon">category</mat-icon> Category Management</h1>
       <p class="page-subtitle">Organize your product categories</p>
     </div>
     <div class="header-actions">
       <button class="btn btn-secondary" (click)="exportCategories()">
-        <span class="btn-icon">📤</span>
+        <span class="btn-icon"><mat-icon class="btn-icon">file_download</mat-icon></span>
         Export CSV
       </button>
       <button class="btn btn-primary" (click)="openAddModal()">
-        <span class="btn-icon">➕</span>
+        <span class="btn-icon"><mat-icon class="btn-icon">add</mat-icon></span>
         Add Category
       </button>
     </div>
@@ -20,7 +20,7 @@
   <!-- Filters -->
   <div class="filters-section">
     <div class="search-box">
-      <span class="search-icon">🔍</span>
+      <span class="search-icon"><mat-icon class="search-icon">search</mat-icon></span>
       <input 
         type="text" 
         placeholder="Search categories..."
@@ -43,7 +43,7 @@
   <div *ngIf="!loading" class="categories-grid">
     <div *ngFor="let category of filteredCategories" class="category-card">
       <div class="category-icon">
-        {{ getCategoryIcon(category.name) }}
+        <mat-icon>{{ getCategoryIcon(category.name) }}</mat-icon>
       </div>
       <div class="category-info">
         <h3 class="category-name">{{ category.name }}</h3>
@@ -54,19 +54,19 @@
       </div>
       <div class="category-actions">
         <button class="action-btn view" (click)="openViewModal(category)" title="View">
-          👁️
+          <mat-icon>visibility</mat-icon>
         </button>
         <button class="action-btn edit" (click)="openEditModal(category)" title="Edit">
-          ✏️
+          <mat-icon>edit</mat-icon>
         </button>
         <button class="action-btn delete" (click)="deleteCategory(category)" title="Delete">
-          🗑️
+          <mat-icon>delete</mat-icon>
         </button>
       </div>
     </div>
 
     <div *ngIf="filteredCategories.length === 0" class="empty-state">
-      <span class="empty-icon">🏷️</span>
+      <span class="empty-icon"><mat-icon class="empty-icon">label_off</mat-icon></span>
       <p>No categories found</p>
     </div>
   </div>
@@ -76,17 +76,19 @@
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h2>
-          {{ modalMode === 'add' ? '➕ Add New Category' : 
-             modalMode === 'edit' ? '✏️ Edit Category' : '👁️ Category Details' }}
+          <mat-icon class="modal-icon">
+            {{ modalMode === 'add' ? 'add_circle' : modalMode === 'edit' ? 'edit' : 'info' }}
+          </mat-icon>
+          {{ modalMode === 'add' ? 'Add New Category' : modalMode === 'edit' ? 'Edit Category' : 'Category Details' }}
         </h2>
-        <button class="close-btn" (click)="closeModal()">✕</button>
+        <button class="close-btn" (click)="closeModal()"><mat-icon>close</mat-icon></button>
       </div>
       
       <div class="modal-body">
         <!-- View Mode -->
         <div *ngIf="modalMode === 'view' && selectedCategory" class="view-details">
           <div class="category-preview">
-            <span class="preview-icon">{{ getCategoryIcon(selectedCategory.name) }}</span>
+            <span class="preview-icon"><mat-icon>{{ getCategoryIcon(selectedCategory.name) }}</mat-icon></span>
             <h3>{{ selectedCategory.name }}</h3>
           </div>
           <div class="detail-row">
@@ -134,7 +136,7 @@
           <div class="form-preview">
             <span class="preview-label">Preview:</span>
             <div class="preview-card">
-              <span class="preview-icon">{{ getCategoryIcon(formData.name || '') }}</span>
+              <span class="preview-icon"><mat-icon>{{ getCategoryIcon(formData.name || '') }}</mat-icon></span>
               <span class="preview-name">{{ formData.name || 'Category Name' }}</span>
             </div>
           </div>

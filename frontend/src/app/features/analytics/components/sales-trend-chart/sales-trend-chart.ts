@@ -19,11 +19,12 @@ import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { SalesTrendAnalysisDto, TimeGranularity } from '../../../../core/models/salesTrend.model';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-sales-trend-chart',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './sales-trend-chart.html',
   styleUrls: ['./sales-trend-chart.css']
 })

@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { AnomalyDetectionDto } from '../../../../core/models/anomalyDetection.model';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-anomaly-detection',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './anomaly-detection.html',
   styleUrls: ['./anomaly-detection.css']
 })
@@ -120,10 +121,10 @@ export class AnomalyDetectionComponent implements OnInit, OnDestroy {
 
   getTypeIcon(type: string): string {
     switch (type) {
-      case 'SPIKE': return '📈';
-      case 'DROP': return '📉';
-      case 'OUTLIER': return '⚡';
-      default: return '📊';
+      case 'SPIKE': return 'trending_up';
+      case 'DROP': return 'trending_down';
+      case 'OUTLIER': return 'flash_on';
+      default: return 'ssid_chart';
     }
   }
 
@@ -137,11 +138,11 @@ export class AnomalyDetectionComponent implements OnInit, OnDestroy {
 
   getSeverityIcon(severity: string): string {
     switch (severity) {
-      case 'CRITICAL': return '🚨';
-      case 'HIGH': return '⚠️';
-      case 'MEDIUM': return '⏳';
-      case 'LOW': return '📌';
-      default: return '📊';
+      case 'CRITICAL': return 'report_problem';
+      case 'HIGH': return 'error_outline';
+      case 'MEDIUM': return 'warning_amber';
+      case 'LOW': return 'info_outline';
+      default: return 'analytics';
     }
   }
 

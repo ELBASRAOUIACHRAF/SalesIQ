@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { ChurnAnalysisDto, defaultChurnAnalysis } from '../../../../core/models/churnAnalysis.model';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-churn-analysis',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './churn-analysis.html',
   styleUrls: ['./churn-analysis.css']
 })

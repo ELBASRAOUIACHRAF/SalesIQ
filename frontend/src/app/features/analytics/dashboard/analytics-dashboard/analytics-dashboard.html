@@ -19,8 +19,8 @@
 
   <!-- Error State -->
   <div *ngIf="error && !loading" class="error-state">
-    <p>{{ error }}</p>
-    <button class="retry-btn" (click)="refresh()">Retry</button>
+    <p><mat-icon class="inline-icon">error_outline</mat-icon> {{ error }}</p>
+    <button class="retry-btn" (click)="refresh()"><mat-icon>refresh</mat-icon> Retry</button>
   </div>
 
   <!-- Dashboard Content -->
@@ -29,7 +29,7 @@
     <!-- Welcome Banner -->
     <div class="welcome-banner">
       <div class="welcome-content">
-        <h1>👋 Welcome back!</h1>
+        <h1><mat-icon class="wave-icon">waving_hand</mat-icon> Welcome back!</h1>
         <p>Here's what's happening with your business today</p>
       </div>
       <div class="quick-stats">
@@ -46,7 +46,7 @@
     
     <!-- Main KPI Cards -->
     <section class="dashboard-section">
-      <h2 class="section-title">📊 Key Performance Metrics</h2>
+      <h2 class="section-title"><mat-icon class="title-icon">bar_chart</mat-icon> Key Performance Metrics</h2>
       <div class="kpi-cards-grid">
         <app-kpi-card
           *ngFor="let k of kpis"
@@ -62,7 +62,7 @@
 
     <!-- Charts Section -->
     <section class="dashboard-section charts-section">
-      <h2 class="section-title">📈 Performance Trends</h2>
+      <h2 class="section-title"><mat-icon class="title-icon">show_chart</mat-icon> Performance Trends</h2>
       <div class="chart-cards-grid">
         <app-chart-kpi-card
           *ngFor="let c of chartCards"
@@ -81,7 +81,7 @@
     <div class="bottom-row">
       <!-- Customer Distribution -->
       <section class="dashboard-section pie-container">
-        <h2 class="section-title">👥 Customer Distribution</h2>
+        <h2 class="section-title"><mat-icon class="title-icon">groups</mat-icon> Customer Distribution</h2>
         <div class="pie-section">
           <app-kpi-pie-chart
             title="Customer Types"
@@ -94,7 +94,7 @@
 
       <!-- Quick Insights -->
       <section class="dashboard-section insights-container">
-        <h2 class="section-title">💡 Quick Insights</h2>
+        <h2 class="section-title"><mat-icon class="title-icon">lightbulb</mat-icon> Quick Insights</h2>
         <div class="insights-list">
           <div class="insight-item" *ngFor="let insight of insights">
             <span class="insight-icon">{{ insight.icon }}</span>

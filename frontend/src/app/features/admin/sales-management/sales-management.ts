@@ -6,11 +6,12 @@ import { SaleService, SaleDto } from '../../../core/services/sale.service';
 import { CsvService } from '../../../core/services/csv.service';
 import { HttpClient } from '@angular/common/http';
 import { SystemSettingsService } from '../../../core/services/system-settings.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-sales-management',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './sales-management.html',
   styleUrls: ['./sales-management.css']
 })

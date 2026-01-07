@@ -2,20 +2,24 @@
   <header class="pf-header">
     <div>
       <div class="eyebrow">Customer Insights</div>
-      <h3 class="title">Purchase Frequency</h3>
+      <h3 class="title"><mat-icon class="title-icon">shopping_bag</mat-icon> Purchase Frequency</h3>
       <p class="muted">Total sales and average monthly purchases per customer.</p>
     </div>
     <div class="header-actions">
       <button class="refresh-btn" (click)="loadPurchaseFrequency()" [disabled]="isLoading">
-        <span *ngIf="!isLoading">🔄 Refresh</span>
-        <span *ngIf="isLoading">⏳ Loading...</span>
+        <ng-container *ngIf="!isLoading">
+          <mat-icon>refresh</mat-icon> <span>Refresh</span>
+        </ng-container>
+        <ng-container *ngIf="isLoading">
+          <mat-icon class="spin">hourglass_empty</mat-icon> <span>Loading...</span>
+        </ng-container>
       </button>
     </div>
   </header>
 
   <!-- Error Message -->
   <div *ngIf="errorMessage" class="error-banner">
-    ⚠️ {{ errorMessage }}
+    <mat-icon class="inline-icon">error_outline</mat-icon> {{ errorMessage }}
   </div>
 
   <!-- Loading State -->
@@ -27,6 +31,7 @@
   <!-- Content (only show when not loading) -->
   <ng-container *ngIf="!isLoading">
     <div class="filters">
+      <mat-icon class="search-icon">search</mat-icon>
       <input type="search" placeholder="Filter by username" (input)="setFilter($any($event.target).value)" />
       <select (change)="setSort($any($event.target).value)">
         <option value="avg">Sort by Avg / Month</option>
@@ -37,18 +42,22 @@
 
     <div class="summary">
       <div class="chip">
+        <mat-icon class="chip-icon">groups</mat-icon>
         <div class="chip-label">Customers</div>
         <div class="chip-value">{{ summary().total }}</div>
       </div>
       <div class="chip">
+        <mat-icon class="chip-icon up">trending_up</mat-icon>
         <div class="chip-label">High frequency</div>
         <div class="chip-value">{{ summary().high }}</div>
       </div>
       <div class="chip">
+        <mat-icon class="chip-icon up">trending_down</mat-icon>
         <div class="chip-label">Low frequency</div>
         <div class="chip-value">{{ summary().low }}</div>
       </div>
       <div class="chip" *ngIf="summary().top">
+        <mat-icon class="chip-icon top">emoji_events</mat-icon>
         <div class="chip-label">Top performer</div>
         <div class="chip-value">{{ summary().top?.username }}</div>
         <div class="chip-sub">{{ summary().top?.totalSales | number:'1.0-0' }} total</div>
@@ -76,7 +85,10 @@
           <span class="bar-label">{{ item.averageSalesPerMonth | number:'1.1-1' }}</span>
         </div>
         <div class="right">
-          <span [class]="badgeClass(item.averageSalesPerMonth)">
+          <span [class]="badgeClass(item.averageSalesPerMonth)" class="status-badge">
+            <mat-icon class="tiny-icon">
+              {{ item.averageSalesPerMonth > highFreqThreshold ? 'arrow_upward' : item.averageSalesPerMonth <= lowFreqThreshold ? 'arrow_downward' : 'remove' }}
+            </mat-icon>
             {{ item.averageSalesPerMonth > highFreqThreshold ? 'High' : item.averageSalesPerMonth <= lowFreqThreshold ? 'Low' : 'Medium' }}
           </span>
         </div>
@@ -84,13 +96,14 @@
     </div>
 
     <ng-template #empty>
+      <mat-icon class="empty-icon">person_off</mat-icon>
       <div class="empty">No customer data found. Make sure there are sales in the database.</div>
     </ng-template>
   </ng-container>
 
   <!-- API Info -->
   <details class="api-info">
-    <summary>🔧 API Details</summary>
+    <summary><mat-icon class="inline-icon">integration_instructions</mat-icon> API Details</summary>
     <div class="api-content">
       <code>GET /api/v1/analytics/purchase-frequency</code>
       <p>Returns purchase frequency analysis for all customers.</p>

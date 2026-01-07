@@ -2,11 +2,16 @@
   <!-- Header -->
   <header class="stockout-header">
     <div class="header-content">
-      <h3>📦 Stockout Predictions</h3>
+      <h3><mat-icon class="header-icon">inventory_2</mat-icon> Stockout Predictions</h3>
       <p class="subtitle">AI-powered inventory risk analysis</p>
     </div>
     <button class="refresh-btn" (click)="loadPredictions()" [disabled]="isLoading">
-      🔄 Refresh
+      <ng-container *ngIf="!isLoading">
+        <mat-icon>refresh</mat-icon> Refresh
+      </ng-container>
+      <ng-container *ngIf="isLoading">
+        <mat-icon class="spin">hourglass_empty</mat-icon> Loading...
+      </ng-container>
     </button>
   </header>
 
@@ -18,8 +23,8 @@
 
   <!-- Error State -->
   <div *ngIf="errorMessage" class="error-state">
-    <p>⚠️ {{ errorMessage }}</p>
-    <button class="retry-button" (click)="loadPredictions()">🔄 Retry</button>
+    <p><mat-icon class="inline-icon">error_outline</mat-icon> {{ errorMessage }}</p>
+    <button class="retry-button" (click)="loadPredictions()"><mat-icon>replay</mat-icon> Retry</button>
   </div>
 
   <!-- Main Content -->
@@ -27,7 +32,7 @@
 
     <!-- Alert Banner for Critical -->
     <div *ngIf="criticalCount > 0" class="alert-banner critical">
-      <span class="alert-icon">🚨</span>
+      <span class="alert-icon"><mat-icon>report_problem</mat-icon></span>
       <span class="alert-text">
         <strong>{{ criticalCount }} product{{ criticalCount > 1 ? 's' : '' }}</strong> at critical stockout risk! Immediate action required.
       </span>
@@ -36,7 +41,7 @@
     <!-- Summary Cards -->
     <div class="summary-grid">
       <div class="summary-card critical" (click)="riskFilter = 'CRITICAL'; onFilterChange()">
-        <div class="card-icon">🚨</div>
+        <div class="card-icon"><mat-icon>report_problem</mat-icon></div>
         <div class="card-content">
           <span class="card-value">{{ criticalCount }}</span>
           <span class="card-label">Critical Risk</span>
@@ -44,7 +49,7 @@
       </div>
 
       <div class="summary-card high" (click)="riskFilter = 'HIGH'; onFilterChange()">
-        <div class="card-icon">⚠️</div>
+        <div class="card-icon"><mat-icon>warning</mat-icon></div>
         <div class="card-content">
           <span class="card-value">{{ highCount }}</span>
           <span class="card-label">High Risk</span>
@@ -52,7 +57,7 @@
       </div>
 
       <div class="summary-card medium" (click)="riskFilter = 'MEDIUM'; onFilterChange()">
-        <div class="card-icon">⏳</div>
+        <div class="card-icon"><mat-icon>hourglass_bottom</mat-icon></div>
         <div class="card-content">
           <span class="card-value">{{ mediumCount }}</span>
           <span class="card-label">Medium Risk</span>
@@ -60,7 +65,7 @@
       </div>
 
       <div class="summary-card low" (click)="riskFilter = 'LOW'; onFilterChange()">
-        <div class="card-icon">✅</div>
+        <div class="card-icon"><mat-icon>check_circle</mat-icon></div>
         <div class="card-content">
           <span class="card-value">{{ lowCount }}</span>
           <span class="card-label">Low Risk</span>
@@ -71,11 +76,12 @@
     <!-- Filters -->
     <div class="filters-bar">
       <div class="search-wrapper">
+        <mat-icon class="search-icon">search</mat-icon>
         <input 
           type="text" 
           [(ngModel)]="searchTerm" 
           (input)="onFilterChange()"
-          placeholder="🔍 Search products..."
+          placeholder="Search products..."
           class="search-input"
         />
       </div>
@@ -108,7 +114,7 @@
            [class]="getRiskClass(item.riskLevel)">
         
         <div class="risk-indicator">
-          <span class="risk-icon">{{ getRiskIcon(item.riskLevel) }}</span>
+          <span class="risk-icon"><mat-icon>{{ getRiskIcon(item.riskLevel) }}</mat-icon></span>
           <span class="days-badge" [class]="getRiskClass(item.riskLevel)">
             {{ getDaysLabel(item.daysUntilStockout) }}
           </span>
@@ -156,14 +162,14 @@
             {{ item.riskLevel }}
           </span>
           <button class="reorder-btn" title="Add to reorder list">
-            📋 Reorder
+            <mat-icon class="btn-icon">add_shopping_cart</mat-icon> Reorder
           </button>
         </div>
       </div>
 
       <!-- Empty State -->
       <div *ngIf="filteredPredictions.length === 0" class="empty-state">
-        <p>📦 No products match your criteria</p>
+        <p><mat-icon class="empty-icon">inventory</mat-icon> No products match your criteria</p>
         <button class="clear-filters" (click)="riskFilter = 'ALL'; searchTerm = ''; onFilterChange()">
           Clear Filters
         </button>

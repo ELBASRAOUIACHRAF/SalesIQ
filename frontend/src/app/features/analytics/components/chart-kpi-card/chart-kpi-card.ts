@@ -1,11 +1,12 @@
 import { Component, Input, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProfileBarComponent } from '../profile-bar/profile-bar';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-chart-kpi-card',
   standalone: true,
-  imports: [CommonModule, ProfileBarComponent],
+  imports: [CommonModule, ProfileBarComponent, MatIconModule],
   changeDetection: ChangeDetectionStrategy.Default,
   templateUrl: './chart-kpi-card.html',
   styleUrls: ['./chart-kpi-card.css']

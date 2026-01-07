@@ -1,12 +1,13 @@
 import { Component, Input, ChangeDetectionStrategy, OnInit, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 export interface PieSegment { label: string; value: number; color?: string }
 
 @Component({
   selector: 'app-kpi-pie-chart',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   changeDetection: ChangeDetectionStrategy.Default,
   templateUrl: './kpi-pie-chart.html',
   styleUrls: ['./kpi-pie-chart.css']

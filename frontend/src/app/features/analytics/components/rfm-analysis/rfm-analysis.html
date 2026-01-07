@@ -2,11 +2,16 @@
   <!-- Header -->
   <header class="rfm-header">
     <div class="header-content">
-      <h3>🎯 RFM Customer Segmentation</h3>
+      <h3><mat-icon class="header-icon">track_changes</mat-icon> RFM Customer Segmentation</h3>
       <p class="subtitle">Segment customers by Recency, Frequency & Monetary value</p>
     </div>
     <button class="refresh-btn" (click)="loadRFMAnalysis()" [disabled]="isLoading">
-      🔄 Refresh
+      <ng-container *ngIf="!isLoading">
+        <mat-icon>refresh</mat-icon> Refresh
+      </ng-container>
+      <ng-container *ngIf="isLoading">
+        <mat-icon class="spin">hourglass_empty</mat-icon> Loading...
+      </ng-container>
     </button>
   </header>
 
@@ -18,8 +23,8 @@
 
   <!-- Error State -->
   <div *ngIf="errorMessage" class="error-state">
-    <p>⚠️ {{ errorMessage }}</p>
-    <button class="retry-button" (click)="loadRFMAnalysis()">🔄 Retry</button>
+    <p><mat-icon class="inline-icon">error_outline</mat-icon>{{ errorMessage }}</p>
+    <button class="retry-button" (click)="loadRFMAnalysis()"><mat-icon>replay</mat-icon> Retry</button>
   </div>
 
   <!-- Results -->
@@ -28,7 +33,7 @@
     <!-- Overview Stats -->
     <div class="overview-grid">
       <div class="overview-card">
-        <div class="overview-icon">👥</div>
+        <div class="overview-icon"><mat-icon>groups</mat-icon></div>
         <div class="overview-content">
           <span class="overview-value">{{ totalCustomers }}</span>
           <span class="overview-label">Total Customers</span>
@@ -36,7 +41,7 @@
       </div>
 
       <div class="overview-card recency">
-        <div class="overview-icon">📅</div>
+        <div class="overview-icon"><mat-icon>event_repeat</mat-icon></div>
         <div class="overview-content">
           <span class="overview-value">{{ avgRecency | number:'1.0-0' }}</span>
           <span class="overview-label">Avg Days Since Purchase</span>
@@ -44,7 +49,7 @@
       </div>
 
       <div class="overview-card frequency">
-        <div class="overview-icon">🔄</div>
+        <div class="overview-icon"><mat-icon>autorenew</mat-icon></div>
         <div class="overview-content">
           <span class="overview-value">{{ avgFrequency | number:'1.1-1' }}</span>
           <span class="overview-label">Avg Purchase Count</span>
@@ -52,7 +57,7 @@
       </div>
 
       <div class="overview-card monetary">
-        <div class="overview-icon">💰</div>
+        <div class="overview-icon"><mat-icon>monetization_on</mat-icon></div>
         <div class="overview-content">
           <span class="overview-value">{{ avgMonetary | currency:'USD':'symbol':'1.0-0' }}</span>
           <span class="overview-label">Avg Lifetime Value</span>
@@ -62,7 +67,7 @@
 
     <!-- Segment Distribution -->
     <div class="segment-distribution">
-      <h4>📊 Segment Distribution</h4>
+      <h4><mat-icon class="inline-icon">bar_chart</mat-icon> Segment Distribution</h4>
       <div class="segment-bars">
         <div *ngFor="let stat of segmentStats" 
              class="segment-bar-item"
@@ -85,7 +90,7 @@
 
     <!-- Segment Filter -->
     <div class="filter-section">
-      <span class="filter-label">Filter by segment:</span>
+      <span class="filter-label"><mat-icon class="tiny-icon">filter_list</mat-icon> Filter by segment:</span>
       <div class="filter-buttons">
         <button [class.active]="selectedSegment === 'all'" (click)="setSegmentFilter('all')">
           All ({{ totalCustomers }})
@@ -157,7 +162,7 @@
     <!-- RFM Legend -->
     <div class="rfm-legend">
       <details>
-        <summary>📚 Understanding RFM Scores</summary>
+        <summary><mat-icon class="inline-icon">menu_book</mat-icon> Understanding RFM Scores</summary>
         <div class="legend-content">
           <div class="legend-item">
             <strong>R (Recency):</strong> How recently the customer made a purchase. Score 5 = most recent.

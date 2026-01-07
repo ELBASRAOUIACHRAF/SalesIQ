@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { SystemSettingsService } from '../../../../core/services/system-settings.service';
 import { Subject, takeUntil } from 'rxjs';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-admin-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, MatIconModule],
   templateUrl: './admin-sidebar.html',
   styleUrls: ['./admin-sidebar.css']
 })

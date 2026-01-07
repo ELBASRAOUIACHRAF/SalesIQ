@@ -2,11 +2,16 @@
   <!-- Header -->
   <header class="bestsellers-header">
     <div class="header-content">
-      <h3>🌟 Potential Bestsellers</h3>
+      <h3><mat-icon class="header-icon">auto_awesome</mat-icon> Potential Bestsellers</h3>
       <p class="subtitle">AI-identified products with high growth potential</p>
     </div>
     <button class="refresh-btn" (click)="loadBestsellers()" [disabled]="isLoading">
-      🔄 Refresh
+      <ng-container *ngIf="!isLoading">
+        <mat-icon>refresh</mat-icon> Refresh
+      </ng-container>
+      <ng-container *ngIf="isLoading">
+        <mat-icon class="spin">hourglass_empty</mat-icon> Loading...
+      </ng-container>
     </button>
   </header>
 
@@ -18,8 +23,8 @@
 
   <!-- Error State -->
   <div *ngIf="errorMessage" class="error-state">
-    <p>⚠️ {{ errorMessage }}</p>
-    <button class="retry-button" (click)="loadBestsellers()">🔄 Retry</button>
+    <p><mat-icon class="inline-icon">error_outline</mat-icon> {{ errorMessage }}</p>
+    <button class="retry-button" (click)="loadBestsellers()"><mat-icon class="inline-icon">refresh</mat-icon> Retry</button>
   </div>
 
   <!-- Results -->
@@ -28,7 +33,7 @@
     <!-- Summary Cards -->
     <div class="summary-grid">
       <div class="summary-card rocket">
-        <div class="card-icon">🚀</div>
+        <div class="card-icon"><mat-icon>rocket_launch</mat-icon></div>
         <div class="card-content">
           <span class="card-value">{{ veryHighPotential.length }}</span>
           <span class="card-label">Very High Potential</span>
@@ -36,7 +41,7 @@
       </div>
 
       <div class="summary-card star">
-        <div class="card-icon">⭐</div>
+        <div class="card-icon"><mat-icon>star</mat-icon></div>
         <div class="card-content">
           <span class="card-value">{{ highPotential.length }}</span>
           <span class="card-label">High Potential</span>
@@ -44,7 +49,7 @@
       </div>
 
       <div class="summary-card total">
-        <div class="card-icon">📦</div>
+        <div class="card-icon"><mat-icon>inventory_2</mat-icon></div>
         <div class="card-content">
           <span class="card-value">{{ products.length }}</span>
           <span class="card-label">Products Analyzed</span>
@@ -52,7 +57,7 @@
       </div>
 
       <div class="summary-card growth">
-        <div class="card-icon">📈</div>
+        <div class="card-icon"><mat-icon>trending_up</mat-icon></div>
         <div class="card-content">
           <span class="card-value">{{ avgGrowthRate | number:'1.0-0' }}%</span>
           <span class="card-label">Avg Growth Rate</span>
@@ -68,7 +73,7 @@
         
         <div class="product-rank">
           <span class="rank-number">{{ i + 1 }}</span>
-          <span class="potential-icon">{{ getPotentialIcon(product.potentialLevel) }}</span>
+          <span class="potential-icon"><mat-icon>{{ getPotentialIcon(product.potentialLevel) }}</mat-icon></span>
         </div>
 
         <div class="product-main">
@@ -102,13 +107,13 @@
           <div class="metric growth-metric">
             <span class="metric-label">Growth Rate</span>
             <span class="metric-value" [class.positive]="product.salesGrowthRate > 0" [class.negative]="product.salesGrowthRate < 0">
-              {{ getGrowthIcon(product.salesGrowthRate) }} {{ product.salesGrowthRate | number:'1.1-1' }}%
+              <mat-icon class="tiny-icon">{{ getGrowthIcon(product.salesGrowthRate) }}</mat-icon> {{ product.salesGrowthRate | number:'1.1-1' }}%
             </span>
           </div>
 
           <div class="metric">
             <span class="metric-label">Avg Rating</span>
-            <span class="metric-value rating">⭐ {{ product.avgRating | number:'1.1-1' }}</span>
+            <span class="metric-value rating"><mat-icon class="tiny-icon star-icon">star</mat-icon> {{ product.avgRating | number:'1.1-1' }}</span>
           </div>
 
           <div class="metric">
@@ -126,20 +131,20 @@
 
     <!-- Empty State -->
     <div *ngIf="products.length === 0" class="empty-state">
-      <p>🔍 No potential bestsellers identified yet</p>
+      <p><mat-icon class="inline-icon">search_off</mat-icon> No potential bestsellers identified yet</p>
       <p class="hint">Products need sales history to be analyzed</p>
     </div>
 
     <!-- Insights -->
     <div *ngIf="veryHighPotential.length > 0" class="insights-section">
-      <h4>💡 Insights</h4>
+      <h4><mat-icon class="inline-icon">lightbulb</mat-icon> Insights</h4>
       <div class="insight-cards">
         <div class="insight-card">
-          <span class="insight-icon">🎯</span>
+          <span class="insight-icon"><mat-icon>ads_click</mat-icon></span>
           <p>Consider increasing inventory for <strong>{{ veryHighPotential[0]?.productName }}</strong> - showing highest potential</p>
         </div>
         <div *ngIf="avgGrowthRate > 20" class="insight-card">
-          <span class="insight-icon">📊</span>
+          <span class="insight-icon"><mat-icon>analytics</mat-icon></span>
           <p>Average growth rate of <strong>{{ avgGrowthRate | number:'1.0-0' }}%</strong> indicates strong market momentum</p>
         </div>
       </div>

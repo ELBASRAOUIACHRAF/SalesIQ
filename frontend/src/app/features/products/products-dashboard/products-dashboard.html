@@ -14,19 +14,19 @@
         <div class="action-group">
           <span class="group-label">Products:</span>
           <button class="action-btn import-btn" (click)="triggerImport('products')">
-            <span class="icon">📥</span> Import
+            <mat-icon class="icon">file_upload</mat-icon> Import
           </button>
           <button class="action-btn export-btn" (click)="onExport('products')">
-            <span class="icon">📤</span> Export
+            <mat-icon class="icon">file_download</mat-icon> Export
           </button>
         </div>
         <div class="action-group">
           <span class="group-label">Search History:</span>
           <button class="action-btn import-btn" (click)="triggerImport('search-history')">
-            <span class="icon">📥</span> Import
+            <mat-icon class="icon">file_upload</mat-icon> Import
           </button>
           <button class="action-btn export-btn" (click)="onExport('search-history')">
-            <span class="icon">📤</span> Export
+            <mat-icon class="icon">file_download</mat-icon> Export
           </button>
         </div>
         <input 
@@ -40,6 +40,7 @@
       
       <!-- Import Status Message -->
       <div *ngIf="importMessage" class="import-message" [class.success]="importSuccess" [class.error]="!importSuccess">
+        <mat-icon class="msg-icon">{{ importSuccess ? 'check_circle' : 'error' }}</mat-icon>
         {{ importMessage }}
       </div>
     </div>
@@ -52,18 +53,10 @@
 
     <!-- Error State -->
     <div *ngIf="error && !loading" class="error-state">
-      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="8" x2="12" y2="12"/>
-        <line x1="12" y1="16" x2="12.01" y2="16"/>
-      </svg>
+      <mat-icon class="error-icon">error_outline</mat-icon>
       <p class="error-message">{{ error }}</p>
       <button class="retry-btn" (click)="fetchProducts()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M23 4v6h-6M1 20v-6h6"/>
-          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-        </svg>
-        Retry
+        <mat-icon>refresh</mat-icon> Retry
       </button>
     </div>
 
@@ -85,11 +78,7 @@
       <!-- Product Analytics Section -->
       <section class="analytics-section">
         <h2 class="section-title">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-            <line x1="12" y1="22.08" x2="12" y2="12"/>
-          </svg>
+          <mat-icon class="section-icon">query_stats</mat-icon>
           Product Analytics
         </h2>
         <div class="analytics-grid">
@@ -101,11 +90,7 @@
       <!-- Inventory Section -->
       <section class="analytics-section">
         <h2 class="section-title">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-            <line x1="12" y1="9" x2="12" y2="13"/>
-            <line x1="12" y1="17" x2="12.01" y2="17"/>
-          </svg>
+          <mat-icon class="section-icon">inventory</mat-icon>
           Inventory Management
         </h2>
         <div class="inventory-grid">

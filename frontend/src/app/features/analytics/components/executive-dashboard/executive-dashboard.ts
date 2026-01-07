@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { ExecutiveDashboardDto } from '../../../../core/models/executiveDashboard.model';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-executive-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './executive-dashboard.html',
   styleUrls: ['./executive-dashboard.css']
 })
@@ -77,11 +78,11 @@ export class ExecutiveDashboardComponent implements OnInit, OnDestroy {
   }
 
   getChangeIcon(value: number): string {
-    if (value > 10) return '🚀';
-    if (value > 0) return '📈';
-    if (value < -10) return '📉';
-    if (value < 0) return '↘️';
-    return '➡️';
+    if (value > 10) return 'rocket_launch'; 
+    if (value > 0) return 'trending_up';     
+    if (value < -10) return 'trending_down';
+    if (value < 0) return 'south_east';      
+    return 'east';                      
   }
 
   formatChange(value: number): string {

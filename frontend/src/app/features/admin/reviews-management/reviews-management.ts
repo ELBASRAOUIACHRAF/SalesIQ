@@ -5,6 +5,7 @@ import { Subject, takeUntil, map } from 'rxjs';
 import { CsvService } from '../../../core/services/csv.service';
 import { HttpClient } from '@angular/common/http';
 import { SystemSettingsService } from '../../../core/services/system-settings.service';
+import { MatIconModule } from '@angular/material/icon';
 
 interface Review {
   id: number;
@@ -20,7 +21,7 @@ interface Review {
 @Component({
   selector: 'app-reviews-management',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './reviews-management.html',
   styleUrls: ['./reviews-management.css']
 })

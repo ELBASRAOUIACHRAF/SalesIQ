@@ -46,7 +46,7 @@
   <div class="legend">
     <ng-container *ngFor="let seg of segments; let i = index">
       <div class="legend-item" [class.animated]="chartAnimated" [style.animation-delay]="(i * 0.1 + 0.5) + 's'">
-        <span class="swatch" [style.backgroundColor]="seg.color"></span>
+        <mat-icon class="legend-icon" [style.color]="seg.color">fiber_manual_record</mat-icon>
         <span class="label">{{ seg.label }}</span>
         <span class="val">{{ seg.value }}%</span>
       </div>

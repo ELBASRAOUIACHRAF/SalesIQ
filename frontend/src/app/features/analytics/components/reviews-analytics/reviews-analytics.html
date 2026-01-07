@@ -3,7 +3,7 @@
   <div class="section-header">
     <div class="header-content">
       <h3>
-        <span class="header-icon">💬</span>
+        <span class="header-icon"><mat-icon class="header-icon">rate_review</mat-icon></span>
         Reviews Sentiment Analysis
       </h3>
       <p class="section-subtitle">Analyze customer feedback and sentiment across products</p>
@@ -13,13 +13,13 @@
         [class.active]="viewMode === 'overview'" 
         (click)="viewMode = 'overview'"
         class="toggle-btn">
-        <span class="btn-icon">📊</span> Overview
+        <span class="btn-icon"><mat-icon class="btn-icon">bar_chart</mat-icon></span> Overview
       </button>
       <button 
         [class.active]="viewMode === 'details'" 
         (click)="viewMode = 'details'"
         class="toggle-btn">
-        <span class="btn-icon">🔍</span> Topic Analysis
+        <span class="btn-icon"><mat-icon class="btn-icon">topic</mat-icon></span> Topic Analysis
       </button>
     </div>
   </div>
@@ -32,9 +32,9 @@
 
   <!-- Error State -->
   <div *ngIf="sentimentError && !isLoadingSentiment" class="error-container">
-    <span class="error-icon">⚠️</span>
+    <span class="error-icon"><mat-icon class="error-icon">error_outline</mat-icon></span>
     <p>{{ sentimentError }}</p>
-    <button (click)="loadInitialData()" class="retry-btn">Retry</button>
+    <button (click)="loadInitialData()" class="retry-btn"><mat-icon>refresh</mat-icon> Retry</button>
   </div>
 
   <!-- Content -->
@@ -46,7 +46,7 @@
       <!-- Summary Stats Cards -->
       <div class="summary-stats">
         <div class="stat-card total-reviews">
-          <div class="stat-icon">📝</div>
+          <div class="stat-icon"><mat-icon>comment</mat-icon></div>
           <div class="stat-content">
             <span class="stat-value">{{ formatNumber(totalReviews) }}</span>
             <span class="stat-label">Total Reviews</span>
@@ -54,7 +54,7 @@
         </div>
         
         <div class="stat-card positive">
-          <div class="stat-icon">😊</div>
+          <div class="stat-icon"><mat-icon>sentiment_satisfied_alt</mat-icon></div>
           <div class="stat-content">
             <span class="stat-value">{{ formatNumber(totalPositive) }}</span>
             <span class="stat-label">Positive ({{ formatPercentage(positivePercentage) }})</span>
@@ -65,7 +65,7 @@
         </div>
         
         <div class="stat-card neutral">
-          <div class="stat-icon">😐</div>
+          <div class="stat-icon"><mat-icon>sentiment_neutral</mat-icon></div>
           <div class="stat-content">
             <span class="stat-value">{{ formatNumber(totalNeutral) }}</span>
             <span class="stat-label">Neutral ({{ formatPercentage(neutralPercentage) }})</span>
@@ -76,7 +76,7 @@
         </div>
         
         <div class="stat-card negative">
-          <div class="stat-icon">😞</div>
+          <div class="stat-icon"><mat-icon>sentiment_dissatisfied</mat-icon></div>
           <div class="stat-content">
             <span class="stat-value">{{ formatNumber(totalNegative) }}</span>
             <span class="stat-label">Negative ({{ formatPercentage(negativePercentage) }})</span>
@@ -90,7 +90,7 @@
       <!-- Overall Sentiment Gauge -->
       <div class="sentiment-gauge-container">
         <div class="gauge-header">
-          <h4>Overall Sentiment Score</h4>
+          <h4><mat-icon class="inline-icon">speed</mat-icon> Overall Sentiment Score</h4>
           <span class="gauge-info">Products with reviews: {{ productsWithReviews }}</span>
         </div>
         <div class="sentiment-gauge">
@@ -117,19 +117,19 @@
 
       <!-- Sentiment Distribution Chart -->
       <div class="distribution-chart">
-        <h4>Sentiment Distribution by Product</h4>
+        <h4><mat-icon class="inline-icon">bar_chart</mat-icon> Sentiment Distribution by Product</h4>
         <div class="chart-controls">
           <button [class.active]="sortBy === 'reviews'" (click)="setSortBy('reviews')">
-            By Reviews {{ sortBy === 'reviews' ? (sortDirection === 'desc' ? '↓' : '↑') : '' }}
+            By Reviews <mat-icon class="tiny-icon">{{ sortBy === 'reviews' ? (sortDirection === 'desc' ? 'arrow_downward' : 'arrow_upward') : '' }}</mat-icon>
           </button>
           <button [class.active]="sortBy === 'positive'" (click)="setSortBy('positive')">
-            By Positive {{ sortBy === 'positive' ? (sortDirection === 'desc' ? '↓' : '↑') : '' }}
+            By Positive <mat-icon class="tiny-icon">{{ sortBy === 'positive' ? (sortDirection === 'desc' ? 'arrow_downward' : 'arrow_upward') : '' }}</mat-icon>
           </button>
           <button [class.active]="sortBy === 'negative'" (click)="setSortBy('negative')">
-            By Negative {{ sortBy === 'negative' ? (sortDirection === 'desc' ? '↓' : '↑') : '' }}
+            By Negative <mat-icon class="tiny-icon">{{ sortBy === 'negative' ? (sortDirection === 'desc' ? 'arrow_downward' : 'arrow_upward') : '' }}</mat-icon>
           </button>
           <button [class.active]="sortBy === 'sentiment'" (click)="setSortBy('sentiment')">
-            By Score {{ sortBy === 'sentiment' ? (sortDirection === 'desc' ? '↓' : '↑') : '' }}
+            By Score <mat-icon class="tiny-icon">{{ sortBy === 'sentiment' ? (sortDirection === 'desc' ? 'arrow_downward' : 'arrow_upward') : '' }}</mat-icon>
           </button>
         </div>
         
@@ -154,7 +154,7 @@
             </div>
             <div class="bar-stats">
               <span class="sentiment-badge" [ngClass]="getSentimentClass(item.overallSentiment)">
-                {{ getSentimentIcon(item.overallSentiment) }} {{ item.overallSentiment }}
+                <mat-icon class="small-icon">{{ getSentimentIcon(item.overallSentiment) }}</mat-icon> {{ item.overallSentiment }}
               </span>
               <span class="review-count">{{ item.totalReviews }} reviews</span>
             </div>
@@ -162,7 +162,7 @@
         </div>
 
         <div *ngIf="sentimentData.length === 0" class="no-data">
-          <span class="no-data-icon">📭</span>
+          <span class="no-data-icon"><mat-icon class="no-data-icon">speaker_notes_off</mat-icon></span>
           <p>No review data available</p>
         </div>
       </div>
@@ -209,9 +209,9 @@
 
       <!-- Topics Error -->
       <div *ngIf="topicsError && !isLoadingTopics" class="error-container small">
-        <span class="error-icon">⚠️</span>
+        <span class="error-icon"><mat-icon class="error-icon">warning</mat-icon></span>
         <p>{{ topicsError }}</p>
-        <button (click)="loadTopics()" class="retry-btn">Retry</button>
+        <button (click)="loadTopics()" class="retry-btn"><mat-icon>refresh</mat-icon> Retry</button>
       </div>
 
       <!-- Selected Product Info -->
@@ -224,7 +224,7 @@
 
       <!-- Topics Display -->
       <div *ngIf="!isLoadingTopics && !topicsError && topics.length > 0" class="topics-container">
-        <h4>Discovered Topics</h4>
+        <h4><mat-icon class="inline-icon">lightbulb</mat-icon> Discovered Topics</h4>
         <div class="topics-grid">
           <div class="topic-card" *ngFor="let topic of topics" [ngClass]="getTopicSentimentClass(topic.avgSentiment)">
             <div class="topic-header">
@@ -259,13 +259,13 @@
 
       <!-- No Topics -->
       <div *ngIf="!isLoadingTopics && !topicsError && selectedProductId && topics.length === 0" class="no-data">
-        <span class="no-data-icon">🔍</span>
+        <span class="no-data-icon"><mat-icon class="no-data-icon">manage_search</mat-icon></span>
         <p>No topics found for this product. The product may not have enough reviews for topic extraction.</p>
       </div>
 
       <!-- No Selection -->
       <div *ngIf="!selectedProductId && !isLoadingTopics" class="no-selection">
-        <span class="no-selection-icon">👆</span>
+        <span class="no-selection-icon"><mat-icon class="no-selection-icon">touch_app</mat-icon></span>
         <p>Select a product above to analyze review topics</p>
       </div>
     </div>

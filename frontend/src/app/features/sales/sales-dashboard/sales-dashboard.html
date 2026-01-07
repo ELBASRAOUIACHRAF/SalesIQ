@@ -15,28 +15,28 @@
         <div class="action-group">
           <span class="group-label">Sales:</span>
           <button class="action-btn import-btn" (click)="triggerImport('sales')">
-            <span class="icon">📥</span> Import
+            <mat-icon class="icon">file_upload</mat-icon> Import
           </button>
           <button class="action-btn export-btn" (click)="onExport('sales')">
-            <span class="icon">📤</span> Export
+            <mat-icon class="icon">file_download</mat-icon> Export
           </button>
         </div>
         <div class="action-group">
           <span class="group-label">Sold Products:</span>
           <button class="action-btn import-btn" (click)="triggerImport('sold-products')">
-            <span class="icon">📥</span> Import
+            <mat-icon class="icon">file_upload</mat-icon> Import
           </button>
           <button class="action-btn export-btn" (click)="onExport('sold-products')">
-            <span class="icon">📤</span> Export
+            <mat-icon class="icon">file_download</mat-icon> Export
           </button>
         </div>
         <div class="action-group">
           <span class="group-label">Baskets:</span>
           <button class="action-btn import-btn" (click)="triggerImport('baskets')">
-            <span class="icon">📥</span> Import
+            <mat-icon class="icon">file_upload</mat-icon> Import
           </button>
           <button class="action-btn export-btn" (click)="onExport('baskets')">
-            <span class="icon">📤</span> Export
+            <mat-icon class="icon">file_download</mat-icon> Export
           </button>
         </div>
         <input 
@@ -50,6 +50,7 @@
       
       <!-- Import Status Message -->
       <div *ngIf="importMessage" class="import-message" [class.success]="importSuccess" [class.error]="!importSuccess">
+        <mat-icon class="msg-icon">{{ importSuccess ? 'check_circle' : 'error' }}</mat-icon>
         {{ importMessage }}
       </div>
     </div>

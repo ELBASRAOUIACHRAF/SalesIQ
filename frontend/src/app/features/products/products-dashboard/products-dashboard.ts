@@ -5,6 +5,7 @@ import { KpiCardComponent } from '../../../shared/components/kpi-card/kpi-card';
 import { TopBarComponent } from '../../analytics/components/top-bar/top-bar';
 import { ApiService } from '../../../core/services/app.service';
 import { CsvService } from '../../../core/services/csv.service';
+import { MatIconModule } from '@angular/material/icon';
 
 // Product Analytics Components
 import { ABCAnalysisComponent } from '../../analytics/components/abc-analysis/abc-analysis';
@@ -30,7 +31,8 @@ interface ProductKpi {
     // Product Analytics
     ABCAnalysisComponent,
     PotentialBestsellersComponent,
-    StockoutPredictionComponent
+    StockoutPredictionComponent,
+    MatIconModule
   ],
   templateUrl: './products-dashboard.html',
   styleUrls: ['./products-dashboard.css'],

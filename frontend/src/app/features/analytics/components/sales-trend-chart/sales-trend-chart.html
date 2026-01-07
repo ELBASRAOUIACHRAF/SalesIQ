@@ -15,7 +15,7 @@
   
   <!-- ========== HEADER ========== -->
   <div class="card-header">
-    <h3>📈 Sales Trend Analysis</h3>
+    <h3><mat-icon class="header-icon">show_chart</mat-icon> Sales Trend Analysis</h3>
     <p class="subtitle">Analyze your sales data over time with different granularities</p>
   </div>
 
@@ -25,7 +25,7 @@
     <!-- Row 1: Date Inputs -->
     <div class="input-row">
       <div class="input-group">
-        <label for="startDate">📅 Start Date</label>
+        <label for="startDate"><mat-icon class="inline-icon">date_range</mat-icon> Start Date</label>
         <input 
           type="date" 
           id="startDate" 
@@ -41,7 +41,7 @@
       </div>
       
       <div class="input-group">
-        <label for="endDate">📅 End Date</label>
+        <label for="endDate"><mat-icon class="inline-icon">event</mat-icon> End Date</label>
         <input 
           type="date" 
           id="endDate" 
@@ -51,7 +51,7 @@
       </div>
       
       <div class="input-group">
-        <label for="granularity">📊 Time Granularity</label>
+        <label for="granularity"><mat-icon class="inline-icon">bar_chart</mat-icon> Time Granularity</label>
         <select 
           id="granularity" 
           [(ngModel)]="selectedGranularity"
@@ -92,11 +92,16 @@
         (click)="onAnalyzeClick()"
         [disabled]="isLoading"
       >
-        <span *ngIf="!isLoading">🔍 Analyze Sales Trend</span>
-        <span *ngIf="isLoading">⏳ Loading...</span>
+      <ng-container *ngIf="!isLoading">
+        <mat-icon>analytics</mat-icon> <span>Analyze Sales Trend</span>
+      </ng-container>
+      <ng-container *ngIf="isLoading">
+        <mat-icon class="spin">hourglass_empty</mat-icon> <span>Loading...</span>
+      </ng-container>
       </button>
       
       <span class="hint-text">
+        <mat-icon class="tiny-icon">info</mat-icon>
         Click the button to fetch data from the backend API
       </span>
     </div>
@@ -104,8 +109,8 @@
 
   <!-- ========== ERROR MESSAGE ========== -->
   <div *ngIf="errorMessage" class="error-state">
-    <p>⚠️ {{ errorMessage }}</p>
-    <button class="retry-button" (click)="onAnalyzeClick()">🔄 Retry</button>
+    <p><mat-icon class="inline-icon">error_outline</mat-icon> {{ errorMessage }}</p>
+    <button class="retry-button" (click)="onAnalyzeClick()"><mat-icon class="inline-icon">refresh</mat-icon> Retry</button>
   </div>
 
   <!-- ========== LOADING SPINNER ========== -->
@@ -117,7 +122,7 @@
 
   <!-- ========== INITIAL STATE (before any search) ========== -->
   <div *ngIf="!hasSearched && !isLoading" class="initial-state">
-    <div class="empty-icon">📊</div>
+    <div class="empty-icon"><mat-icon>poll</mat-icon></div>
     <p>Select a date range and granularity, then click <strong>Analyze</strong> to see your sales trends.</p>
   </div>
 
@@ -146,7 +151,7 @@
 
     <!-- Bar Chart Visualization -->
     <div class="chart-container" *ngIf="salesTrendData.points.length > 0">
-      <h4>Revenue Over Time</h4>
+      <h4><mat-icon class="inline-icon">timeline</mat-icon> Revenue Over Time</h4>
       <div class="bar-chart">
         <div 
           *ngFor="let point of salesTrendData.points; let i = index"
@@ -164,7 +169,7 @@
 
     <!-- Data Table -->
     <div class="table-container" *ngIf="salesTrendData.points.length > 0">
-      <h4>Detailed Data</h4>
+      <h4><mat-icon class="inline-icon">table_chart</mat-icon> Detailed Data</h4>
       <table>
         <thead>
           <tr>
@@ -189,7 +194,7 @@
 
     <!-- Empty Results -->
     <div *ngIf="salesTrendData.points.length === 0" class="empty-results">
-      <p>📭 No sales data found for the selected period.</p>
+      <p><mat-icon class="empty-icon-small">query_stats</mat-icon> No sales data found for the selected period.</p>
       <p>Try selecting a different date range.</p>
     </div>
   </div>
@@ -197,7 +202,7 @@
   <!-- ========== API INFO (for learning) ========== -->
   <div class="api-info">
     <details>
-      <summary>🔧 API Details (click to expand)</summary>
+      <summary><mat-icon class="inline-icon">integration_instructions</mat-icon> API Details (click to expand)</summary>
       <div class="api-details">
         <p><strong>Endpoint:</strong> <code>GET /api/v1/analytics/sales-trend</code></p>
         <p><strong>Parameters:</strong></p>

@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { RFMSegmentDto } from '../../../../core/models/rfmAnalysis.model';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-rfm-analysis',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './rfm-analysis.html',
   styleUrls: ['./rfm-analysis.css']
 })
@@ -56,19 +57,19 @@ export class RfmAnalysisComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.errorMessage = '';
 
-    console.log('🔥 RFM Component: Calling getRFMAnalysis()...');
+    console.log(' RFM Component: Calling getRFMAnalysis()...');
 
     this.analyticsService.getRFMAnalysis()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
-          console.log('✅ RFM Component: Received data:', data);
+          console.log(' RFM Component: Received data:', data);
           this.customers = data;
           this.isLoading = false;
           this.cdr.detectChanges();
         },
         error: (err) => {
-          console.error('❌ RFM Analysis error:', err);
+          console.error('RFM Analysis error:', err);
           this.errorMessage = 'Failed to load RFM Analysis';
           this.isLoading = false;
           this.cdr.detectChanges();

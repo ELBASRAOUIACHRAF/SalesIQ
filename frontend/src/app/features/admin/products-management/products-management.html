@@ -2,16 +2,16 @@
   <!-- Header -->
   <header class="page-header">
     <div class="header-left">
-      <h1 class="page-title">📦 Product Management</h1>
+      <h1 class="page-title"><mat-icon class="title-icon">inventory_2</mat-icon> Product Management</h1>
       <p class="page-subtitle">Manage your product catalog</p>
     </div>
     <div class="header-actions">
       <button class="btn btn-secondary" (click)="exportProducts()">
-        <span class="btn-icon">📤</span>
+        <mat-icon class="btn-icon">file_download</mat-icon>
         Export CSV
       </button>
       <button class="btn btn-primary" (click)="openAddModal()">
-        <span class="btn-icon">➕</span>
+        <mat-icon class="btn-icon">add</mat-icon>
         Add Product
       </button>
     </div>
@@ -20,7 +20,7 @@
   <!-- Filters -->
   <div class="filters-section">
     <div class="search-box">
-      <span class="search-icon">🔍</span>
+      <mat-icon class="search-icon">search</mat-icon>
       <input 
         type="text" 
         placeholder="Search products..."
@@ -72,26 +72,26 @@
         <p class="product-brand">{{ product.brand }}</p>
         <div class="product-meta">
           <span class="product-price">{{ formatPrice(product.price) }}</span>
-          <span class="product-rating">⭐ {{ product.rating | number:'1.1-1' }}</span>
+          <span class="product-rating"><mat-icon class="star-icon">star</mat-icon> {{ product.rating | number:'1.1-1' }}</span>
         </div>
         <p class="product-category">{{ getCategoryName(product.categoryId || 0) }}</p>
         <p class="product-quantity">Stock: {{ product.stock }} units</p>
       </div>
       <div class="product-actions">
         <button class="action-btn view" (click)="openViewModal(product)" title="View">
-          👁️
+          <mat-icon>visibility</mat-icon>
         </button>
         <button class="action-btn edit" (click)="openEditModal(product)" title="Edit">
-          ✏️
+          <mat-icon>edit</mat-icon>
         </button>
         <button class="action-btn delete" (click)="deleteProduct(product)" title="Delete">
-          🗑️
+          <mat-icon>delete</mat-icon>
         </button>
       </div>
     </div>
 
     <div *ngIf="paginatedProducts.length === 0" class="empty-state">
-      <span class="empty-icon">📦</span>
+      <mat-icon class="empty-icon">inventory</mat-icon>
       <p>No products found</p>
     </div>
   </div>
@@ -103,7 +103,7 @@
       [disabled]="currentPage === 1"
       (click)="previousPage()"
     >
-      ← Previous
+    <mat-icon>chevron_left</mat-icon> Previous
     </button>
     <span class="pagination-info">
       Page {{ currentPage }} of {{ totalPages }}
@@ -113,7 +113,7 @@
       [disabled]="currentPage === totalPages"
       (click)="nextPage()"
     >
-      Next →
+      Next <mat-icon>chevron_right</mat-icon>
     </button>
   </div>
 
@@ -122,10 +122,12 @@
     <div class="modal-content modal-large" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h2>
-          {{ modalMode === 'add' ? '➕ Add New Product' : 
-             modalMode === 'edit' ? '✏️ Edit Product' : '👁️ Product Details' }}
+          <mat-icon class="modal-icon">
+            {{ modalMode === 'add' ? 'add_circle' : modalMode === 'edit' ? 'edit' : 'info' }}
+          </mat-icon>
+          {{ modalMode === 'add' ? 'Add New Product' : modalMode === 'edit' ? 'Edit Product' : 'Product Details' }}
         </h2>
-        <button class="close-btn" (click)="closeModal()">✕</button>
+        <button class="close-btn" (click)="closeModal()"><mat-icon>close</mat-icon></button>
       </div>
       
       <div class="modal-body">
@@ -160,7 +162,7 @@
             </div>
             <div class="detail-row">
               <span class="detail-label">Rating:</span>
-              <span class="detail-value">⭐ {{ selectedProduct.rating | number:'1.1-1' }}</span>
+              <span class="detail-value"><mat-icon class="star-icon">star</mat-icon> {{ selectedProduct.rating | number:'1.1-1' }}</span>
             </div>
             <div class="detail-row">
               <span class="detail-label">Category:</span>

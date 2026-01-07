@@ -13,52 +13,68 @@
   <ul class="menu-list">
     <li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
       <a routerLink="/analytics" (click)="handleNavClick()">
-        <span class="icon">📊</span>
+        <span class="icon">
+          <mat-icon>dashboard</mat-icon>
+        </span>
         <span class="label">Dashboard</span>
       </a>
     </li>
     <li class="menu-divider"></li>
     <li routerLinkActive="active">
       <a routerLink="/analytics/products" (click)="handleNavClick()">
-        <span class="icon">📦</span>
+        <span class="icon">
+          <mat-icon>inventory_2</mat-icon>
+        </span>
         <span class="label">Products</span>
       </a>
     </li>
     <li routerLinkActive="active">
       <a routerLink="/analytics/categories" (click)="handleNavClick()">
-        <span class="icon">🏷️</span>
+        <span class="icon">
+          <mat-icon>category</mat-icon>
+        </span>
         <span class="label">Categories</span>
       </a>
     </li>
     <li routerLinkActive="active">
       <a routerLink="/analytics/reviews" (click)="handleNavClick()">
-        <span class="icon">⭐</span>
+        <span class="icon">
+          <mat-icon>star_rate</mat-icon>
+        </span>
         <span class="label">Reviews</span>
       </a>
     </li>
     <li routerLinkActive="active">
       <a routerLink="/analytics/sales" (click)="handleNavClick()">
-        <span class="icon">💰</span>
+        <span class="icon">
+          <mat-icon>attach_money</mat-icon>
+        </span>
         <span class="label">Sales</span>
       </a>
     </li>
     <li routerLinkActive="active">
       <a routerLink="/analytics/users" (click)="handleNavClick()">
-        <span class="icon">👥</span>
+        <span class="icon">
+          <mat-icon>groups</mat-icon>
+        </span>
         <span class="label">Users</span>
       </a>
     </li>
     <li class="menu-divider"></li>
     <li routerLinkActive="active">
       <a routerLink="/analytics/reports" (click)="handleNavClick()">
-        <span class="icon">📄</span>
+        <span class="icon">
+          <mat-icon>description</mat-icon>
+        </span>
         <span class="label">Reports</span>
         <span class="badge analytics">AI</span>
       </a>
     </li>
     <li routerLinkActive="active">
       <a routerLink="/analytics/ai-assistant" (click)="handleNavClick()">
-        <span class="icon">🤖</span>
+        <span class="icon">
+          <mat-icon>smart_toy</mat-icon>
+        </span>
         <span class="label">AI Assistant</span>
         <span class="badge new">NEW</span>
       </a>

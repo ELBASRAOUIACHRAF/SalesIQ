@@ -5,11 +5,12 @@ import { Subject, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChartKpiCardComponent } from '../chart-kpi-card/chart-kpi-card';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-seasonality-chart',
   standalone: true,
-  imports: [CommonModule, FormsModule, ChartKpiCardComponent],
+  imports: [CommonModule, FormsModule, ChartKpiCardComponent, MatIconModule],
   templateUrl: './seasonality-chart.html',
   styleUrls: ['./seasonality-chart.css']
 })

@@ -8,6 +8,7 @@ import { RfmAnalysisComponent } from '../../analytics/components/rfm-analysis/rf
 import { ChurnAnalysisComponent } from '../../analytics/components/churn-analysis/churn-analysis';
 import { ChurnPredictionComponent } from '../../analytics/components/churn-prediction/churn-prediction';
 import { ExecutiveDashboardComponent } from '../../analytics/components/executive-dashboard/executive-dashboard';
+import { MatIconModule } from '@angular/material/icon';
 
 // Services
 import { CsvService } from '../../../core/services/csv.service';
@@ -23,7 +24,8 @@ import { CsvService } from '../../../core/services/csv.service';
     RfmAnalysisComponent,
     ChurnAnalysisComponent,
     ChurnPredictionComponent,
-    ExecutiveDashboardComponent
+    ExecutiveDashboardComponent,
+    MatIconModule
   ],
   template: `
     <div class="dashboard-layout">
@@ -43,10 +45,10 @@ import { CsvService } from '../../../core/services/csv.service';
           <!-- Import/Export Actions -->
           <div class="action-bar">
             <button class="action-btn import-btn" (click)="triggerImport()">
-              <span class="icon">📥</span> Import Users
+              <mat-icon class="icon">file_upload</mat-icon> Import Users
             </button>
             <button class="action-btn export-btn" (click)="onExportUsers()">
-              <span class="icon">📤</span> Export Users
+              <mat-icon class="icon">file_download</mat-icon> Export Users
             </button>
             <input 
               #fileInput 
@@ -59,6 +61,7 @@ import { CsvService } from '../../../core/services/csv.service';
           
           <!-- Import Status Message -->
           <div *ngIf="importMessage" class="import-message" [class.success]="importSuccess" [class.error]="!importSuccess">
+            <mat-icon class="msg-icon">{{ importSuccess ? 'check_circle' : 'error' }}</mat-icon>
             {{ importMessage }}
           </div>
         </div>
@@ -67,13 +70,13 @@ import { CsvService } from '../../../core/services/csv.service';
         <ng-container *ngIf="activeTab === 'Overview'">
           <!-- Executive Overview -->
           <section class="analytics-section">
-            <h2 class="section-title">📊 Executive Overview</h2>
+            <h2 class="section-title"><mat-icon class="section-icon">dashboard</mat-icon> Executive Overview</h2>
             <app-executive-dashboard></app-executive-dashboard>
           </section>
 
           <!-- Purchase Frequency -->
           <section class="analytics-section">
-            <h2 class="section-title">🛒 Purchase Frequency</h2>
+            <h2 class="section-title"><mat-icon class="section-icon">shopping_bag</mat-icon> Purchase Frequency</h2>
             <app-purchase-frequency
               [highFreqThreshold]="5"
               [lowFreqThreshold]="1"
@@ -85,7 +88,7 @@ import { CsvService } from '../../../core/services/csv.service';
         <ng-container *ngIf="activeTab === 'Segmentation'">
           <!-- Customer Segmentation -->
           <section class="analytics-section">
-            <h2 class="section-title">👥 Customer Segmentation (RFM Analysis)</h2>
+            <h2 class="section-title"><mat-icon class="section-icon">groups</mat-icon> Customer Segmentation (RFM Analysis)</h2>
             <p class="section-description">Segment customers by Recency, Frequency, and Monetary value</p>
             <div class="analytics-grid">
               <app-rfm-analysis></app-rfm-analysis>
@@ -97,7 +100,7 @@ import { CsvService } from '../../../core/services/csv.service';
         <ng-container *ngIf="activeTab === 'Retention'">
           <!-- Retention Analytics -->
           <section class="analytics-section">
-            <h2 class="section-title">📉 Retention & Churn Analysis</h2>
+            <h2 class="section-title"><mat-icon class="section-icon">person_remove</mat-icon> Retention & Churn Analysis</h2>
             <p class="section-description">Monitor customer retention rates and predict churn risk</p>
             <div class="analytics-grid two-cols">
               <app-churn-analysis></app-churn-analysis>

@@ -6,14 +6,19 @@
       <p class="subtitle">Pareto principle: 80/20 revenue distribution</p>
     </div>
     <button class="refresh-btn" (click)="loadABCAnalysis()" [disabled]="isLoading">
-      <span *ngIf="!isLoading">🔄 Refresh</span>
-      <span *ngIf="isLoading">⏳ Loading...</span>
+      <ng-container *ngIf="!isLoading">
+        <mat-icon>refresh</mat-icon> <span>Refresh</span>
+      </ng-container>
+      <ng-container *ngIf="isLoading">
+        <mat-icon>hourglass_bottom</mat-icon> <span>Loading...</span>
+      </ng-container>
     </button>
   </header>
 
   <!-- Error Message -->
   <div *ngIf="errorMessage" class="error-banner">
-    ⚠️ {{ errorMessage }}
+    <mat-icon>error_outline</mat-icon>
+    {{ errorMessage }}
   </div>
 
   <!-- Loading State -->
@@ -25,7 +30,7 @@
   <!-- Summary Cards -->
   <div class="summary-row" *ngIf="!isLoading">
     <div class="summary-card class-a">
-      <div class="summary-icon">🏆</div>
+      <div class="summary-icon"><mat-icon>emoji_events</mat-icon></div>
       <div class="summary-content">
         <div class="summary-value">{{ summary.classACount }}</div>
         <div class="summary-label">Class A Products</div>
@@ -33,7 +38,7 @@
       </div>
     </div>
     <div class="summary-card class-b">
-      <div class="summary-icon">📊</div>
+      <div class="summary-icon"><mat-icon>bar_chart</mat-icon></div>
       <div class="summary-content">
         <div class="summary-value">{{ summary.classBCount }}</div>
         <div class="summary-label">Class B Products</div>
@@ -41,7 +46,7 @@
       </div>
     </div>
     <div class="summary-card class-c">
-      <div class="summary-icon">📦</div>
+      <div class="summary-icon"><mat-icon>inventory_2</mat-icon></div>
       <div class="summary-content">
         <div class="summary-value">{{ summary.classCCount }}</div>
         <div class="summary-label">Class C Products</div>
@@ -49,7 +54,7 @@
       </div>
     </div>
     <div class="summary-card total">
-      <div class="summary-icon">💰</div>
+      <div class="summary-icon"><mat-icon>monetization_on</mat-icon></div>
       <div class="summary-content">
         <div class="summary-value">${{ summary.totalRevenue | number:'1.0-0' }}</div>
         <div class="summary-label">Total Revenue</div>
@@ -119,7 +124,7 @@
 
   <!-- API Info -->
   <details class="api-info">
-    <summary>🔧 API Details</summary>
+    <summary><mat-icon class="inline-icon">build</mat-icon> API Details</summary>
     <div class="api-content">
       <code>GET /api/v1/analytics/abc-analysis</code>
       <p>Returns products classified into A, B, C categories based on revenue.</p>

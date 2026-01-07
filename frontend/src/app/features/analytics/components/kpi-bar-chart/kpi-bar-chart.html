@@ -25,7 +25,11 @@
       </div>
       <div class="stat-item trend" [class.trend-up]="stats.trend === 'up'" [class.trend-down]="stats.trend === 'down'">
         <span class="stat-label">Change</span>
-        <span class="stat-value">{{ stats.trend === 'up' ? '↑' : stats.trend === 'down' ? '↓' : '→' }} {{ stats.trendPercent.toFixed(1) }}%</span>
+        <span class="stat-value">
+          <mat-icon class="tiny-icon" *ngIf="stats.trend === 'up'">trending_up</mat-icon>
+          <mat-icon class="tiny-icon" *ngIf="stats.trend === 'down'">trending_down</mat-icon>
+          <mat-icon class="tiny-icon" *ngIf="stats.trend === 'neutral' || !stats.trend">trending_flat</mat-icon>
+          {{ stats.trendPercent.toFixed(1) }}%</span>
       </div>
     </div>
     

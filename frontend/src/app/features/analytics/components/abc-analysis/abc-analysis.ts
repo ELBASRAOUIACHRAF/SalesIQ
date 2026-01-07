@@ -2,11 +2,12 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { ABCAnalysisDto, ABCProductDto, defaultABCAnalysis } from '../../../../core/models/abcAnalysis.model';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-abc-analysis',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,MatIconModule],
   templateUrl: './abc-analysis.html',
   styleUrls: ['./abc-analysis.css']
 })

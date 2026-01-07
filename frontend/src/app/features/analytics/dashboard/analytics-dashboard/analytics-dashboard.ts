@@ -8,6 +8,7 @@ import { TopBarComponent } from '../../components/top-bar/top-bar';
 
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { ExecutiveDashboardDto } from '../../../../core/models/executiveDashboard.model';
+import { MatIconModule } from '@angular/material/icon';
 
 interface DashboardKpi {
   title: string;
@@ -32,7 +33,8 @@ interface Insight {
     TopBarComponent,
     KpiCardComponent,
     ChartKpiCardComponent,
-    KpiPieChartComponent
+    KpiPieChartComponent,
+    MatIconModule
   ],
   templateUrl: './analytics-dashboard.html',
   styleUrls: ['./analytics-dashboard.css'],
@@ -145,27 +147,27 @@ export class AnalyticsDashboard implements OnInit, OnDestroy {
     
     this.insights = [
       {
-        icon: '📈',
+        icon: 'trending_up',
         title: 'Avg Order Value',
         value: this.formatCurrency(kpis?.averageOrderValue)
       },
       {
-        icon: '🔄',
+        icon: 'autorenew',
         title: 'Retention Rate',
         value: (customers?.retentionRate || 0).toFixed(1) + '%'
       },
       {
-        icon: '⭐',
+        icon: 'star',
         title: 'Avg Rating',
         value: (kpis?.averageRating || 0).toFixed(1) + ' / 5.0'
       },
       {
-        icon: '📦',
+        icon: 'inventory_2',
         title: 'Products Sold',
         value: this.safeNumber(kpis?.totalProductsSold).toLocaleString()
       },
       {
-        icon: '👤',
+        icon: 'person_add',
         title: 'New Customers',
         value: this.safeNumber(kpis?.newCustomers || customers?.newCustomers).toLocaleString()
       }

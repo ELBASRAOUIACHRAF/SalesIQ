@@ -2,12 +2,12 @@
   <!-- Header -->
   <header class="page-header">
     <div class="header-left">
-      <h1 class="page-title">💰 Sales Management</h1>
+      <h1 class="page-title"><mat-icon class="title-icon">monetization_on</mat-icon> Sales Management</h1>
       <p class="page-subtitle">Track and manage all sales transactions</p>
     </div>
     <div class="header-actions">
       <button class="btn btn-secondary" (click)="exportSales()">
-        <span class="btn-icon">📤</span>
+        <mat-icon class="btn-icon">file_download</mat-icon>
         Export CSV
       </button>
     </div>
@@ -16,21 +16,21 @@
   <!-- Stats Cards -->
   <div class="stats-row">
     <div class="stat-card revenue">
-      <div class="stat-icon">💵</div>
+      <div class="stat-icon"><mat-icon>payments</mat-icon></div>
       <div class="stat-content">
         <span class="stat-value">{{ formatCurrency(totalRevenue) }}</span>
         <span class="stat-label">Total Revenue</span>
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon">📊</div>
+      <div class="stat-icon"><mat-icon>shopping_cart</mat-icon></div>
       <div class="stat-content">
         <span class="stat-value">{{ totalSales }}</span>
         <span class="stat-label">Total Sales</span>
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon">💳</div>
+      <div class="stat-icon"><mat-icon>receipt_long</mat-icon></div>
       <div class="stat-content">
         <span class="stat-value">{{ formatCurrency(avgOrderValue) }}</span>
         <span class="stat-label">Avg. Order Value</span>
@@ -50,7 +50,7 @@
   <!-- Filters -->
   <div class="filters-section">
     <div class="search-box">
-      <span class="search-icon">🔍</span>
+      <mat-icon class="search-icon">search</mat-icon>
       <input 
         type="text" 
         placeholder="Search by ID, User ID..."
@@ -109,20 +109,20 @@
           <td class="user-cell">User #{{ sale.userId }}</td>
           <td class="actions-cell">
             <button class="action-btn view" (click)="openViewModal(sale)" title="View">
-              👁️
+              <mat-icon>visibility</mat-icon>
             </button>
             <button class="action-btn edit" (click)="openEditModal(sale)" title="Edit">
-              ✏️
+              <mat-icon>edit</mat-icon>
             </button>
             <button class="action-btn delete" (click)="deleteSale(sale)" title="Delete">
-              🗑️
+              <mat-icon>delete</mat-icon>
             </button>
           </td>
         </tr>
         <tr *ngIf="paginatedSales.length === 0">
           <td colspan="7" class="empty-cell">
             <div class="empty-state">
-              <span class="empty-icon">💰</span>
+              <mat-icon class="empty-icon">point_of_sale</mat-icon>
               <p>No sales found</p>
             </div>
           </td>
@@ -138,7 +138,7 @@
       [disabled]="currentPage === 1"
       (click)="previousPage()"
     >
-      ← Previous
+    <mat-icon>chevron_left</mat-icon> Previous
     </button>
     <span class="pagination-info">
       Page {{ currentPage }} of {{ totalPages }}
@@ -148,7 +148,7 @@
       [disabled]="currentPage === totalPages"
       (click)="nextPage()"
     >
-      Next →
+      Next <mat-icon>chevron_right</mat-icon>
     </button>
   </div>
 
@@ -156,8 +156,15 @@
   <div *ngIf="showModal" class="modal-overlay" (click)="closeModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h2>{{ modalMode === 'view' ? '👁️ Sale Details' : '✏️ Edit Sale' }}</h2>
-        <button class="close-btn" (click)="closeModal()">✕</button>
+        <h2>
+          <mat-icon class="modal-icon">
+            {{ modalMode === 'view' ? 'info' : 'edit' }}
+          </mat-icon>
+          {{ modalMode === 'view' ? 'Sale Details' : 'Edit Sale' }}
+        </h2>
+        <button class="close-btn" (click)="closeModal()">
+          <mat-icon>close</mat-icon>
+        </button>
       </div>
       
       <div class="modal-body">

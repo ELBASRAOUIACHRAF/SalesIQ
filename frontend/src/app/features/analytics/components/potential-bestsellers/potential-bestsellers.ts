@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { PotentialBestSellerDto } from '../../../../core/models/potentialBestseller.model';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-potential-bestsellers',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './potential-bestsellers.html',
   styleUrls: ['./potential-bestsellers.css']
 })
@@ -73,11 +74,11 @@ export class PotentialBestsellersComponent implements OnInit, OnDestroy {
 
   getPotentialIcon(level: string): string {
     switch (level) {
-      case 'VERY_HIGH': return '🚀';
-      case 'HIGH': return '⭐';
-      case 'MEDIUM': return '📈';
-      case 'LOW': return '📊';
-      default: return '📦';
+      case 'VERY_HIGH': return 'rocket_launch'; 
+      case 'HIGH': return 'star';               
+      case 'MEDIUM': return 'trending_up';      
+      case 'LOW': return 'bar_chart';           
+      default: return 'inventory_2';            
     }
   }
 
@@ -86,9 +87,9 @@ export class PotentialBestsellersComponent implements OnInit, OnDestroy {
   }
 
   getGrowthIcon(rate: number): string {
-    if (rate > 50) return '🔥';
-    if (rate > 20) return '📈';
-    if (rate > 0) return '↗️';
-    return '↘️';
+    if (rate > 50) return 'local_fire_department'; 
+    if (rate > 20) return 'trending_up';           
+    if (rate > 0) return 'north_east';              
+    return 'south_east';                            
   }
 }
