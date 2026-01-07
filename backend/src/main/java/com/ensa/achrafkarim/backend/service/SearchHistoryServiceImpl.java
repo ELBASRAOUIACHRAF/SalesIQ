@@ -45,9 +45,8 @@ public class SearchHistoryServiceImpl implements SearchHistoryService {
     }
 
     @Override
-    public void deleteSearchHistory(Long searchHistoryId) {
-        if (!searchHistoryRepository.findById(searchHistoryId).isPresent()) return;
-        searchHistoryRepository.deleteById(searchHistoryId);
+    public void deleteSearchHistory(Long searchHistoryId, Long userId) {
+        searchHistoryRepository.deleteByIdAndUsersId(searchHistoryId, userId);
     }
 
     @Override

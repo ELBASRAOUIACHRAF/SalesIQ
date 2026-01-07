@@ -1,6 +1,7 @@
 package com.ensa.achrafkarim.backend.service;
 
 import com.ensa.achrafkarim.backend.dto.ProfileDto;
+import com.ensa.achrafkarim.backend.dto.RegistrationDto;
 import com.ensa.achrafkarim.backend.dto.UsersDto;
 import com.ensa.achrafkarim.backend.entities.Users;
 import com.ensa.achrafkarim.backend.enums.Role;
@@ -11,6 +12,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -25,6 +28,7 @@ public class UsersServiceImpl implements UsersService{
     // private PasswordEncoder passwordEncoder;
     UsersRepository  usersRepository;
     UsersMapper  usersMapper;
+    PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -42,7 +46,7 @@ public class UsersServiceImpl implements UsersService{
         user.setHoursLoggedIn(0);
         user.setLastLogin(LocalDateTime.now());
         user.setActive(true);
-        user.setPassword("null"); // a changer
+        user.setPassword(passwordEncoder.encode(usersDto.getFirstName())); // a changer
 
         Users savedUser = usersRepository.save(user);
         return usersMapper.toDto(savedUser);
@@ -241,5 +245,20 @@ public class UsersServiceImpl implements UsersService{
         user.setCountry(profileDto.getCountry());
         usersRepository.save(user);
         return profileDto;
+    }
+
+    @Override
+    public void register(RegistrationDto registrationDto) {
+        Users user = new Users();
+        user.setEmail(registrationDto.getEmail());
+        user.setFirstName(registrationDto.getFirstName());
+        user.setLastName(registrationDto.getLastName());
+        user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
+        user.setRole(Role.CLIENT);
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+        user.setPhoneNumber(registrationDto.getPhoneNumber());
+        usersRepository.save(user);
+
     }
 }

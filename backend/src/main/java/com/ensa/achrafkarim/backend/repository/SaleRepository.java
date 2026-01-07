@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface SaleRepository extends JpaRepository<Sale, Long> {
     List<Sale> findByUsersId(Long id);
@@ -63,4 +64,5 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
             @Param("endDate") LocalDateTime endDate
     );
 
+    Optional<Sale> findByIdAndUsersId(Long id, Long userId);
 }

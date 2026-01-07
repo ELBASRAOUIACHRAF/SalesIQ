@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface ReviewsRepository extends JpaRepository<Reviews, Long> {
 
@@ -49,4 +50,8 @@ public interface ReviewsRepository extends JpaRepository<Reviews, Long> {
     boolean existsById(Long reviewId);
 
     List<Reviews> findAllByproductId(Long productId);
+
+    Optional<Reviews> findByIdAndUsersId(Long reviewId, Long userId);
+
+    void deleteByIdAndUsersId(Long reviewId, Long userId);
 }

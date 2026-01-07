@@ -25,6 +25,9 @@ import { Basket } from './shared/components/basket/basket';
 import { RecommendationsSidebar } from './shared/components/recommendations-sidebar/recommendations-sidebar';
 import { ContactPage } from './shared/pages/contact-page/contact-page';
 import { CategoriesPage } from './shared/pages/categories-page/categories-page';
+import { ErrorPage } from './shared/pages/error-page/error-page';
+import { SuccessPage } from './shared/pages/success-page/success-page';
+import { CheckoutPage } from './shared/pages/checkout-page/checkout-page';
 
 @Component({
   selector: 'app-root',
@@ -44,6 +47,9 @@ import { CategoriesPage } from './shared/pages/categories-page/categories-page';
     ContactPage,
     CategoriesPage,
     SearchResultsPage,
+    ErrorPage,
+    SuccessPage,
+    CheckoutPage,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'

@@ -6,7 +6,7 @@
     <span class="badge" *ngIf="notifications > 0">{{ notifications }}</span>
   </button>
 
-  <div class="profile" tabindex="0" aria-label="profile">
+  <div class="profile" tabindex="0" aria-label="profile" (click)="navigateToProfile()" style="cursor: pointer;">
     <div class="avatar" aria-hidden="true">{{ (userName || '').slice(0,1).toUpperCase() }}</div>
     <div class="name" *ngIf="!compact">{{ userName }}</div>
   </div>

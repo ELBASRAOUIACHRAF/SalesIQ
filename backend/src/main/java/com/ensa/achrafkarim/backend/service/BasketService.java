@@ -9,9 +9,11 @@ public interface BasketService {
 
     List<BasketItemDto> getBasketItemsByUsersId(Long id);
 
-    boolean addToBasket(Long productId, Long basketId, Long quantity);
+    boolean addToBasket(Long productId, Long userId, Long quantity);
 
-    Long getBasketItemsCount(Long basketId);
+    Long getBasketItemsCount(Long userId);
 
-    boolean deleteItem(Long basketItemId);
+    boolean deleteItem(Long basketItemId, Long userId);
+
+    void clearBasket(Long userId);
 }

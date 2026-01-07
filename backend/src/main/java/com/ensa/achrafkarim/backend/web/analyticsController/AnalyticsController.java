@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -16,13 +17,14 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201"})
+//@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201"})
 @RequestMapping("/api/v1/analytics")
 public class AnalyticsController {
 
     private final AdvancedAnalyticsService advancedAnalyticsService;
     private final SaleService saleService;
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/forecastSales")
     public ResponseEntity<SalesForecastDto> getForecast(
             @RequestParam(defaultValue = "7") int daysAhead
@@ -49,6 +51,7 @@ public class AnalyticsController {
      * Step 1: Backend Controller Endpoint for Sales Trend Analysis
      * This endpoint receives HTTP GET requests and calls the service method
      */
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/sales-trend")
     public ResponseEntity<SalesTrendAnalysisDto> getSalesTrend(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
@@ -76,6 +79,7 @@ public class AnalyticsController {
      * Example: period1 revenue = $1000, period2 revenue = $1200
      * Growth rate = ((1200-1000)/1000)*100 = 20%
      */
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/growth-rate")
     public ResponseEntity<Double> getSalesGrowthRate(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime period1Start,
@@ -105,11 +109,13 @@ public class AnalyticsController {
      * @param endDate   - End of analysis period
      * @return SeasonalityAnalysisDto with all components
      */
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/seasonality")
     public ResponseEntity<SeasonalityAnalysisDto> getSeasonality(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
     ) {
+        System.out.println("seasonality execute");
         try {
             SeasonalityAnalysisDto result = advancedAnalyticsService.analyzeSeasonality(startDate, endDate);
             return ResponseEntity.ok(result);
@@ -122,6 +128,7 @@ public class AnalyticsController {
         }
     }
 
+//    @PreAuthorize("permitAll()")
     @GetMapping("/similarProducts/{productId}")
     public List<ProductDto> getSimilarProducts(@PathVariable Long productId) {
         return advancedAnalyticsService.getSimilarProductsByProduct(productId);
@@ -135,6 +142,7 @@ public class AnalyticsController {
      * @param endDate   - End of analysis period
      * @return CohortAnalysisDto with cohort metrics
      */
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/cohorts")
     public ResponseEntity<CohortAnalysisDto> getCohortAnalysis(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
@@ -161,6 +169,7 @@ public class AnalyticsController {
      *
      * @return ABCAnalysisDto with classified products
      */
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/abc-analysis")
     public ResponseEntity<ABCAnalysisDto> getABCAnalysis() {
         try {
@@ -181,6 +190,7 @@ public class AnalyticsController {
      *
      * @return List of PurchaseFrequencyAnalysisDto for all customers
      */
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/purchase-frequency")
     public ResponseEntity<List<PurchaseFrequencyAnalysisDto>> getPurchaseFrequency() {
         try {
@@ -195,6 +205,7 @@ public class AnalyticsController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/api/v1/analytics/marketBasket")
     public List<AssociationRuleDto> getMarketBasketRules(
             @RequestParam double minSupport,
@@ -203,6 +214,7 @@ public class AnalyticsController {
         return advancedAnalyticsService.performMarketBasketAnalysis(minSupport, minConfidence);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/productslifecycle/{productId}")
     public ResponseEntity<ProductLifecycleDto> getProductLifecycle(
             @PathVariable("productId") Long productId
@@ -212,6 +224,7 @@ public class AnalyticsController {
     }
 
     // turnover controller
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/inventory-turnover/{id}")
     public ResponseEntity<Double> getInventoryTurnoverRatio(
             @PathVariable("id") Long productId,

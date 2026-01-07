@@ -18,30 +18,31 @@ export class BasketService {
 
   constructor(private http: HttpClient) { }
 
-  getUsersBasket(usersId: number): Observable<BasketItem[]>{
-    return this.http.get<BasketItem[]>(`${this.apiUrl}basket/usersBasket/${usersId}`);
+  getUsersBasket(): Observable<BasketItem[] | any>{
+    return this.http.get<any>(`${this.apiUrl}basket/usersBasket`);
   }
 
-  addToBasket(quantity: number, productId: number, basketId: number): Observable<boolean> {
+  addToBasket(quantity: number, productId: number): Observable<boolean> {
     const url = `${this.apiUrl}basket/add`;
     
     const params = new HttpParams()
       .set('quantity', quantity.toString())
-      .set('productId', productId.toString())
-      .set('basketId', basketId.toString());
+      .set('productId', productId.toString());
+    
   
       return this.http.post<boolean>(url, {}, { params }).pipe(
         tap((success) => {
           if (success) {
             // On rafraîchit automatiquement le compteur si l'ajout a réussi
-            this.updateCartCount(basketId);
+            this.updateCartCount();
+            console.log("ca marche trés bien");
           }
         }))
   }
 
-  updateCartCount(basketId: number) {
+  updateCartCount() {
     
-    this.http.get<number>(`${this.apiUrl}basket/itemscount/${basketId}`).subscribe({
+    this.http.get<number>(`${this.apiUrl}basket/itemscount`).subscribe({
       next: (count) => {
         // console.log('Nouveau compte reçu du serveur :', count);
         this.cartCountSubject.next(count);
@@ -53,7 +54,7 @@ export class BasketService {
     });
   }
 
-  deleteBasketItem(basketItemId: number, basketId: number): Observable<boolean> {
+  deleteBasketItem(basketItemId: number): Observable<boolean> {
 
     const url = `${this.apiUrl}basket/deleteBasketItem`;
 
@@ -62,7 +63,7 @@ export class BasketService {
   
     return this.http.delete<boolean>(url, { params }).pipe(
       tap(() => {
-        this.updateCartCount(basketId);
+        this.updateCartCount();
       })
     );
   }

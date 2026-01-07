@@ -1,6 +1,7 @@
 package com.ensa.achrafkarim.backend.service;
 
 import com.ensa.achrafkarim.backend.dto.ProfileDto;
+import com.ensa.achrafkarim.backend.dto.RegistrationDto;
 import com.ensa.achrafkarim.backend.dto.UsersDto;
 import com.ensa.achrafkarim.backend.enums.Role;
 import com.ensa.achrafkarim.backend.enums.Segment;
@@ -36,4 +37,6 @@ public interface UsersService {
     ProfileDto getUsersProfile(Long usersId);
 
     ProfileDto updateUsersInfo(ProfileDto profileDto);
+
+    void register(RegistrationDto registrationDto);
 }

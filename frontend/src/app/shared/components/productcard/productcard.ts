@@ -126,14 +126,13 @@ export class Productcard implements OnInit, OnChanges {
     
     this.basketService.addToBasket(
       1, 
-      product.id, 
-      1
+      product.id
     ).subscribe({
       next: (success) => {
         if (success) {
           // Optionnel : Afficher un message de succès (SnackBar)
           console.log('Produit ajouté au panier !', product.stock);
-          this.basketService.updateCartCount(1);
+          this.basketService.updateCartCount();
         }
       },
       error: (err) => {

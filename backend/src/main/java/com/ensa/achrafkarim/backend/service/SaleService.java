@@ -13,6 +13,7 @@ public interface SaleService {
 
     SaleDto updateSaleStatus(Long saleId, Status newStatus);
     SaleDto getSale(Long id);
+    SaleDto getUsersSale(Long id, Long userId);
     List<SaleDto> listSales();
     List<SaleDto> getSalesByUser(Long userId);
     SaleDto createSale(SaleDto saleDto, Long userId);

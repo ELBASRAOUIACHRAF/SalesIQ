@@ -5,6 +5,7 @@ import com.ensa.achrafkarim.backend.dto.ProductDto;
 import com.ensa.achrafkarim.backend.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,19 +15,22 @@ import java.util.List;
 @RestController
 @RequestMapping("products")
 @AllArgsConstructor
-@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201"})
+//@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201"})
 public class ProductRestController {
 
     private ProductService productService;
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/productDetails/{productId}")
     public ProductDetailsDto getProductDetails(@PathVariable Long productId){
         return productService.getProductDetails(productId);
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/getOne/{productId}")
     public ProductDto getProduct(@PathVariable Long productId) {return productService.getProduct(productId); }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/getAll")
     public List<ProductDto>  getProducts(){return productService.listProducts(); }
 
@@ -39,6 +43,7 @@ public class ProductRestController {
         return productService.createProduct(productDto, categoryId);
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/sortedproducts/{sortMethod}")
     public List<ProductDto> sortedProducts(@PathVariable Boolean sortMethod){
         return productService.getProductsSortedByPrice(sortMethod);
@@ -65,6 +70,7 @@ public class ProductRestController {
         else return productService.decreaseStock(productId, quantity);
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/categoryproducts/{categoryId}")
     public List<ProductDto> getCategoryProducts(@PathVariable Long categoryId){
         return productService.getProductsByCategory(categoryId);
@@ -149,6 +155,7 @@ public class ProductRestController {
         return productService.addImageToProduct(productId, file);
     }
 
+    @PreAuthorize("permitAll()")
     @PostMapping("/by-categories")
     public List<ProductDto> getProductsByCategories(
             @RequestBody List<Long> categoryIds

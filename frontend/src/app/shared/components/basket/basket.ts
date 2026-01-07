@@ -6,7 +6,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { BasketItem } from '../../../core/models/BasketItem.model';
 import { BasketService } from '../../../core/services/basket.service';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-basket',
@@ -19,21 +19,20 @@ export class Basket implements OnInit{
   basketItems: BasketItem[] = [];
   basketId!: number;
   
-  constructor(private cd: ChangeDetectorRef, private basketService: BasketService) {}
+  constructor(private cd: ChangeDetectorRef, private basketService: BasketService,private router: Router) {}
   
   ngOnInit(): void {
-    const userId = 2;
-    this.basketId = 1;
-    this.loadBasketItems(userId);
+
+    this.loadBasketItems();
   }
 
   
   
-  loadBasketItems(userId: number){
-    this.basketService.getUsersBasket(userId).subscribe((data) => {
+  loadBasketItems(){
+    this.basketService.getUsersBasket().subscribe((data) => {
       this.basketItems = data;
-      // console.log(data);
-      this.basketService.updateCartCount(1);
+      
+      this.basketService.updateCartCount();
       this.cd.detectChanges();
     })
   }
@@ -60,13 +59,13 @@ export class Basket implements OnInit{
   
 
   removeItem(id: number) {
-    this.basketService.deleteBasketItem(id, 1).subscribe({
+    this.basketService.deleteBasketItem(id).subscribe({
       next: () => {
         console.log('Suppression réussie pour l\'ID:', id);
         
         this.basketItems = this.basketItems.filter(i => i.id !== id);
         // this.loadBasketItems(2);
-        this.basketService.updateCartCount(this.basketId);
+        this.basketService.updateCartCount();
         this.cd.detectChanges();
       },
       error: (err) => {
@@ -75,6 +74,28 @@ export class Basket implements OnInit{
       }
     });
   }
+
+  proceedToCheckout() {
+    
+    if (this.basketItems.length === 0) {
+      alert('Your basket is empty');
+      return;
+    }
+
+    const checkoutData = {
+      items: this.basketItems,
+      summary: {
+        totalPrice: this.totalPrice,
+        totalItems: this.totalItems
+      }
+    };
+
+    this.router.navigate(['/checkout'], { 
+      state: { data: checkoutData } 
+    });
+  }
+
+  
 
 }
  

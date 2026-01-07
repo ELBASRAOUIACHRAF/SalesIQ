@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,8 +66,9 @@ public class ReviewsServiceImpl implements ReviewsService{
     }
 
     @Override
-    public ReviewsDto updateReview(Long reviewId, ReviewsDto reviewsDto) {
-        Reviews reviews = reviewsRepository.findById(reviewId).get();
+    public ReviewsDto updateReview(Long reviewId, ReviewsDto reviewsDto, Long userId) {
+        Reviews reviews = reviewsRepository.findByIdAndUsersId(reviewId, userId)
+                .orElseThrow(() -> new RuntimeException("Avis introuvable ou modification non autorisée"));
         reviews.setComment(reviewsDto.getComment());
         reviews.setRating(reviewsDto.getRating());
         Reviews savedReview = reviewsRepository.save(reviews);
@@ -74,9 +76,9 @@ public class ReviewsServiceImpl implements ReviewsService{
     }
 
     @Override
-    public void deleteReview(Long reviewId) {
+    public void deleteReview(Long reviewId, Long userId) {
         if (!reviewsRepository.existsById(reviewId)) return ;
-        reviewsRepository.deleteById(reviewId);
+        reviewsRepository.deleteByIdAndUsersId(reviewId, userId);
     }
 
     @Override

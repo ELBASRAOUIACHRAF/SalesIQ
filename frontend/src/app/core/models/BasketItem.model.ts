@@ -6,4 +6,5 @@ export interface BasketItem {
     imageUrl: string;
     quantity: number;
     stock: number;
+    productId: number;
   }

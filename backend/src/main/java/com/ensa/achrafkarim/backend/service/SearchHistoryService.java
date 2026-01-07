@@ -9,7 +9,7 @@ public interface SearchHistoryService {
 
     SearchHistoryDto addSearchHistory(Long usersId, String query);
     void clearSearchHistory(Long usersId);
-    void deleteSearchHistory(Long searchHistoryId);
+    void deleteSearchHistory(Long searchHistoryId, Long userId);
     Page<SearchHistoryDto> getSearchHistory(Long usersId, int page, int size);
 
     Long getCountSearchHistory(Long usersId);

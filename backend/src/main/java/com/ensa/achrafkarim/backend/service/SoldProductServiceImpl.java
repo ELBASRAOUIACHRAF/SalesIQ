@@ -120,4 +120,23 @@ public class SoldProductServiceImpl implements SoldProductService {
         if (soldProduct == null) return 0;
         return (soldProduct.getUnitPrice()*soldProduct.getQuantity());
     }
+
+    @Override
+    public Double getTotalPriceBySalesUser(Long saleId, Long id) {
+        List<SoldProduct> soldOfSale = soldProductRepository.findAllBySaleIdAndUsersId(saleId, id);
+        double totalPrice = 0;
+        for (SoldProduct sold : soldOfSale) {
+            totalPrice += sold.getUnitPrice()*sold.getQuantity();
+        }
+        return totalPrice;
+    }
+
+    @Override
+    public List<ProductDto> getSoldProductsBySalesUser(Long saleId, Long id) {
+        List<SoldProduct> soldOfSale = soldProductRepository.findAllBySaleIdAndUsersId(saleId, id);
+        List<Product> productIds = soldOfSale.stream().map(sold -> sold.getProduct()).collect(Collectors.toList());
+        return productIds.stream()
+                .map(prod -> productMapper.toDto(prod))
+                .collect(Collectors.toList());
+    }
 }

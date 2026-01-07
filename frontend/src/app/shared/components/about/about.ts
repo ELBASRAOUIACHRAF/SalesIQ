@@ -17,7 +17,6 @@ stats = [
   { value: '50', label: 'Countries Served' }
 ];
 
-// Valeurs en Anglais
 values = [
   { 
     icon: 'verified', 
@@ -48,26 +47,5 @@ team = [
     image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' 
   }
 ];
-// team = [
-//   { 
-//     name: 'Soufiane Ait', 
-//     role: 'CEO & Founder', 
-//     image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' 
-//   },
-//   { 
-//     name: 'Sarah Connor', 
-//     role: 'Head of Product', 
-//     image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' 
-//   },
-//   { 
-//     name: 'James Bond', 
-//     role: 'Lead Developer', 
-//     image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' 
-//   },
-//   { 
-//     name: 'Emily Rose', 
-//     role: 'Marketing Director', 
-//     image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80' 
-//   }
-// ];
+
 }
