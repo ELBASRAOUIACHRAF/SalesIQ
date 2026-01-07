@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import (recommendation, sales_forecast, mba, rfm, 
                             churn, ranking, bestseller, stockout, anomaly,
-                            topic, sentiment)
+                            topic, sentiment, chatbot)
 from app.services.recommendation_service import reco_service
 
 app = FastAPI(
@@ -90,6 +90,12 @@ app.include_router(
     sentiment.router,
     prefix="/api/v1",
     tags=["sentiment analysis"]
+)
+
+app.include_router(
+    chatbot.router,
+    prefix="/api/v1",
+    tags=["chatbot"]
 )
 
 @app.get("/")

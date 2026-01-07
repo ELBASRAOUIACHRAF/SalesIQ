@@ -1,0 +1,54 @@
+<div class="chat-wrapper">
+  <header class="chat-header">
+    <div>
+      <p class="eyebrow">Assistant IA</p>
+      <h1>Chatbot Admin</h1>
+      <p class="subtitle">Posez vos questions en français, le bot répond avec les KPIs et la base de connaissances.</p>
+    </div>
+    <div class="header-actions">
+      <label class="toggle">
+        <input type="checkbox" [(ngModel)]="includeRealTimeData" />
+        <span>Inclure données temps réel (30j)</span>
+      </label>
+      <button class="ghost" (click)="resetChat()">Nouveau chat</button>
+    </div>
+  </header>
+
+  <section class="quick-questions" aria-label="Questions rapides">
+    <button class="chip" *ngFor="let q of quickQuestions" (click)="askQuickQuestion(q)">{{ q }}</button>
+  </section>
+
+  <section class="chat-panel">
+    <div class="messages" #messagesContainer>
+      <div *ngFor="let msg of messages" class="message" [class.user]="msg.role === 'user'" [class.assistant]="msg.role === 'assistant'">
+        <div class="meta">
+          <span class="role">{{ msg.role === 'user' ? 'Vous' : 'Assistant' }}</span>
+          <span class="time">{{ msg.timestamp | date:'shortTime' }}</span>
+        </div>
+        <div class="bubble" [class.user-bubble]="msg.role === 'user'" [class.bot-bubble]="msg.role === 'assistant'">
+          {{ msg.content }}
+        </div>
+      </div>
+      <div class="message assistant" *ngIf="isLoading">
+        <div class="meta"><span class="role">Assistant</span><span class="time">...</span></div>
+        <div class="bubble bot-bubble">Rédaction en cours...</div>
+      </div>
+    </div>
+
+    <div class="composer">
+      <textarea
+        [(ngModel)]="inputMessage"
+        (keydown)="onKeyPress($event)"
+        placeholder="Écrivez votre question..."
+        rows="3"
+        [disabled]="isLoading"
+      ></textarea>
+      <div class="composer-actions">
+        <button class="secondary" type="button" (click)="clearSession()">Réinitialiser session</button>
+        <button class="primary" type="button" (click)="sendMessage()" [disabled]="isLoading || !inputMessage.trim()">
+          {{ isLoading ? 'Envoi...' : 'Envoyer' }}
+        </button>
+      </div>
+    </div>
+  </section>
+</div>

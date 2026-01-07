@@ -1,0 +1,129 @@
+<div class="analytics-chat-wrapper">
+  <!-- Header -->
+  <header class="chat-header">
+    <div class="header-content">
+      <div class="title-section">
+        <span class="badge-ai">🤖 AI Assistant</span>
+        <h1>Analytics Intelligence</h1>
+        <p class="subtitle">Explorez vos données avec l'IA • Accès direct à la base de données PostgreSQL</p>
+      </div>
+      <div class="header-actions">
+        <label class="toggle-switch">
+          <input type="checkbox" [(ngModel)]="includeRealTimeData" />
+          <span class="toggle-label">📡 Données temps réel (30j)</span>
+        </label>
+        <button class="btn-outline" (click)="resetChat()">
+          <span>🔄</span> Nouveau chat
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Quick Actions Grid -->
+  <section class="suggestions-grid">
+    <button 
+      class="suggestion-card" 
+      *ngFor="let s of analyticsSuggestions" 
+      (click)="askSuggestion(s)"
+      [disabled]="isLoading">
+      <span class="suggestion-icon">{{ s.icon }}</span>
+      <span class="suggestion-label">{{ s.label }}</span>
+    </button>
+  </section>
+
+  <!-- Quick Questions -->
+  <section class="quick-questions">
+    <span class="section-label">Questions fréquentes:</span>
+    <div class="chips-container">
+      <button 
+        class="chip" 
+        *ngFor="let q of quickQuestions" 
+        (click)="askQuickQuestion(q)"
+        [disabled]="isLoading">
+        {{ q }}
+      </button>
+    </div>
+  </section>
+
+  <!-- Chat Panel -->
+  <section class="chat-panel">
+    <div class="messages-container" #messagesContainer>
+      <div 
+        *ngFor="let msg of messages" 
+        class="message" 
+        [class.user-message]="msg.role === 'user'" 
+        [class.assistant-message]="msg.role === 'assistant'">
+        
+        <div class="message-header">
+          <span class="avatar" [class.user-avatar]="msg.role === 'user'" [class.bot-avatar]="msg.role === 'assistant'">
+            {{ msg.role === 'user' ? '👤' : '🤖' }}
+          </span>
+          <span class="sender">{{ msg.role === 'user' ? 'Vous' : 'Assistant IA' }}</span>
+          <span class="timestamp">{{ msg.timestamp | date:'HH:mm' }}</span>
+        </div>
+        
+        <div class="message-content" [class.user-content]="msg.role === 'user'" [class.bot-content]="msg.role === 'assistant'">
+          <pre class="message-text">{{ msg.content }}</pre>
+        </div>
+      </div>
+
+      <!-- Loading indicator -->
+      <div class="message assistant-message" *ngIf="isLoading">
+        <div class="message-header">
+          <span class="avatar bot-avatar">🤖</span>
+          <span class="sender">Assistant IA</span>
+          <span class="timestamp">...</span>
+        </div>
+        <div class="message-content bot-content">
+          <div class="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <span class="loading-text">Analyse en cours...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-area">
+      <div class="input-wrapper">
+        <textarea
+          [(ngModel)]="inputMessage"
+          (keydown)="onKeyPress($event)"
+          placeholder="Posez votre question d'analyse... (Ex: Quels sont les KPIs ce mois?)"
+          rows="2"
+          [disabled]="isLoading"
+          class="chat-input"
+        ></textarea>
+        <div class="input-actions">
+          <span class="input-hint">Entrée pour envoyer • Shift+Entrée pour nouvelle ligne</span>
+          <div class="action-buttons">
+            <button class="btn-secondary" type="button" (click)="clearSession()" [disabled]="isLoading">
+              Réinitialiser
+            </button>
+            <button 
+              class="btn-primary" 
+              type="button" 
+              (click)="sendMessage()" 
+              [disabled]="isLoading || !inputMessage.trim()">
+              {{ isLoading ? '⏳ Analyse...' : '🚀 Envoyer' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Info -->
+  <footer class="chat-footer">
+    <div class="footer-info">
+      <span class="status-indicator online"></span>
+      <span>Connecté à PostgreSQL</span>
+      <span class="separator">•</span>
+      <span>Modèle: Gemma 3 4B (Local)</span>
+      <span class="separator">•</span>
+      <span>GPU: 100%</span>
+    </div>
+  </footer>
+</div>

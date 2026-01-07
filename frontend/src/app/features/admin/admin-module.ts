@@ -11,6 +11,7 @@ import { SalesManagement } from './sales-management/sales-management';
 import { DataManagement } from './data-management/data-management';
 import { SystemSettings } from './system-settings/system-settings';
 import { ReportsManagement } from './reports-management/reports-management';
+import { ChatbotAssistant } from './chatbot-assistant/chatbot-assistant';
 
 @NgModule({
   declarations: [],
@@ -26,6 +27,7 @@ import { ReportsManagement } from './reports-management/reports-management';
     DataManagement,
     SystemSettings,
     ReportsManagement,
+    ChatbotAssistant,
     RouterModule.forChild([
       {
         path: '',
@@ -39,6 +41,7 @@ import { ReportsManagement } from './reports-management/reports-management';
           { path: 'sales', component: SalesManagement },
           { path: 'data', component: DataManagement },
           { path: 'reports', component: ReportsManagement },
+          { path: 'chatbot', component: ChatbotAssistant },
           { path: 'settings', component: SystemSettings }
         ]
       }

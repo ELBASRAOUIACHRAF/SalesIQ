@@ -217,6 +217,11 @@
   color: #fca5a5;
 }
 
+.badge.ai {
+  background: rgba(56, 189, 248, 0.2);
+  color: #7dd3fc;
+}
+
 /* Sidebar footer */
 .sidebar-footer {
   margin-top: auto;
