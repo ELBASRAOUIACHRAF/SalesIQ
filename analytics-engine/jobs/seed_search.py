@@ -29,7 +29,7 @@ def get_db_connection():
             port="5432",
             database="SalesIQDB",
             user="postgres",
-            password="0668856255"
+            password="Aa123890"
         )
     except Exception as e:
         print(f"Erreur de connexion DB: {e}")
