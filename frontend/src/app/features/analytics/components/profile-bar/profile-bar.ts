@@ -1,7 +1,6 @@
 import { Component, Input, OnInit, OnDestroy, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil, catchError, of } from 'rxjs';
 import { UsersService } from '../../../../core/services/users.service';
 import { ProfileModel } from '../../../../core/models/profile.model';
@@ -48,7 +47,10 @@ export class ProfileBarComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
   navigateToProfile(): void {
-    this.router.navigate(['/analytics/profile']);
+    // this.router.navigate(['/dashboard/profile-dashboard']);
+    this.router.navigate(['/profile-dashboard']);
+
+
   }
 
   @HostListener('document:click', ['$event'])
@@ -154,4 +156,5 @@ export class ProfileBarComponent implements OnInit, OnDestroy {
     if (this.loadError || !this.profile) return 'No User';
     return `${this.profile.firstName || ''} ${this.profile.lastName || ''}`.trim() || 'Unknown';
   }
+  
 }

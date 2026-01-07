@@ -55,7 +55,7 @@
   <button class="help-btn" aria-label="help"><mat-icon>help_outline</mat-icon></button>
 
   <!-- Profile -->
-  <div class="profile" [class.profile-loading]="isLoading" [class.profile-error]="loadError" tabindex="0" aria-label="profile">
+  <div class="profile" [class.profile-loading]="isLoading" [class.profile-error]="loadError" tabindex="0" aria-label="profile" (click)="navigateToProfile()">
     <div class="avatar" [class.avatar-loading]="isLoading" [class.avatar-error]="loadError" aria-hidden="true">{{ displayInitial }}</div>
     <div class="name" *ngIf="!compact">{{ displayName }}</div>
   </div>

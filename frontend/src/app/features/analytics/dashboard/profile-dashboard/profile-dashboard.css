@@ -1,18 +1,65 @@
-/* ===== PROFILE DASHBOARD CONTENT ===== */
+/* =========================================
+   1. LAYOUT PRINCIPAL (WRAPPER)
+   ========================================= */
+/* C'est le conteneur qui permet d'avoir le menu à gauche et le contenu à droite */
+.layout-wrapper {
+  display: flex;           /* Active l'alignement horizontal (Menu | Contenu) */
+  height: 100vh;           /* Prend 100% de la hauteur de la fenêtre */
+  width: 100vw;
+  overflow: hidden;        /* Empêche le scroll sur la fenêtre principale */
+  background-color: #f8fafc;
+}
 
+/* =========================================
+   2. ZONE DE CONTENU (DROITE)
+   ========================================= */
+/* C'est la zone qui va scroller, à droite du menu */
 .dashboard-content {
-  width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 1.5rem 2rem;
-  padding-top: 1rem;
-  box-sizing: border-box;
+  flex: 1;                 /* Prend tout l'espace restant à droite du menu */
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  height: 100%;            /* Force la hauteur pour activer le scroll interne */
+  overflow-y: auto;        /* Le scroll se fait ICI, pas sur le body */
+  position: relative;
+  
+  /* On ne met pas de padding ici pour que la scrollbar soit tout à droite */
+}
+
+/* =========================================
+   3. HEADER (STICKY)
+   ========================================= */
+.dashboard-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;             /* Au-dessus du contenu */
+  
+  /* Style visuel (Mélange de vos deux versions pour le meilleur rendu) */
+  background: rgba(248, 250, 252, 0.95); /* Fond presque opaque */
+  backdrop-filter: blur(8px);            /* Effet de flou "verre" */
+  border-bottom: 1px solid #e2e8f0;      /* Légère séparation */
+  
+  padding: 1rem 2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* =========================================
+   4. CONTENU DU PROFIL
+   ========================================= */
+.profile-content {
+  width: 100%;
+  max-width: 1200px;       /* Limite la largeur pour ne pas étirer sur grand écran */
+  margin: 0 auto;          /* Centre le contenu horizontalement */
+  padding: 2rem;           /* Espace autour du contenu */
+  box-sizing: border-box;
+  
+  /* Animation d'apparition */
   animation: fadeIn 0.5s ease-out;
 }
 
+/* =========================================
+   5. ANIMATIONS & RESPONSIVE
+   ========================================= */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -24,31 +71,13 @@
   }
 }
 
-/* ===== DASHBOARD HEADER ===== */
-.dashboard-header {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  background: linear-gradient(180deg, #f8fafc 0%, rgba(248, 250, 252, 0.95) 100%);
-  margin: 0 -2rem;
-  padding: 1rem 2rem;
-  backdrop-filter: blur(8px);
-}
-
-/* ===== PROFILE CONTENT ===== */
-.profile-content {
-  width: 100%;
-  padding: 1rem 0;
-}
-
+/* Ajustements pour tablettes et petits écrans */
 @media (max-width: 1024px) {
-  .dashboard-content {
+  .dashboard-header {
     padding: 1rem 1.5rem;
   }
-
-  .dashboard-header {
-    margin: 0 -1.5rem;
-    padding: 1rem 1.5rem;
+  
+  .profile-content {
+    padding: 1.5rem;
   }
 }
-

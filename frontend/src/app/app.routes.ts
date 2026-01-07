@@ -12,6 +12,7 @@ import { SearchResultsPage } from './shared/pages/search-results-page/search-res
 import { ErrorPage } from './shared/pages/error-page/error-page';
 import { SuccessPage } from './shared/pages/success-page/success-page';
 import { CheckoutPage } from './shared/pages/checkout-page/checkout-page';
+import { ProfileDashboard } from './features/analytics/dashboard/profile-dashboard/profile-dashboard';
 
 
 
@@ -31,6 +32,8 @@ export const routes: Routes = [
     
     // Route pour le profil (à décommenter quand prêt)
     { path: 'account', component: Profile },
+
+    { path: 'profile-dashboard', component: ProfileDashboard },
 
     { path: '', component: HomePage },
 
