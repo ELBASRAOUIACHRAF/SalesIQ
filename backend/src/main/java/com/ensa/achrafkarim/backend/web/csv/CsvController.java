@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +29,7 @@ public class CsvController {
 
     // ============ CATEGORY ============
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @PostMapping("/categories/import")
     public ResponseEntity<Map<String, Object>> importCategories(
             @RequestParam("file") MultipartFile file) {
@@ -45,6 +47,7 @@ public class CsvController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/categories/export")
     public ResponseEntity<byte[]> exportCategories() {
         try {
@@ -60,6 +63,7 @@ public class CsvController {
 
     // ============ PRODUCT ============
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @PostMapping("/products/import")
     public ResponseEntity<Map<String, Object>> importProducts(
             @RequestParam("file") MultipartFile file) {
@@ -77,6 +81,7 @@ public class CsvController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/products/export")
     public ResponseEntity<byte[]> exportProducts() {
         try {
@@ -92,6 +97,7 @@ public class CsvController {
 
     // ============ SALE ============
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @PostMapping("/sales/import")
     public ResponseEntity<Map<String, Object>> importSales(
             @RequestParam("file") MultipartFile file) {
@@ -109,6 +115,7 @@ public class CsvController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/sales/export")
     public ResponseEntity<byte[]> exportSales() {
         try {
@@ -124,6 +131,7 @@ public class CsvController {
 
     // ============ USERS ============
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @PostMapping("/users/import")
     public ResponseEntity<Map<String, Object>> importUsers(
             @RequestParam("file") MultipartFile file) {
@@ -141,6 +149,7 @@ public class CsvController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/users/export")
     public ResponseEntity<byte[]> exportUsers() {
         try {
@@ -156,6 +165,7 @@ public class CsvController {
 
     // ============ SOLD PRODUCT ============
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @PostMapping("/sold-products/import")
     public ResponseEntity<Map<String, Object>> importSoldProducts(
             @RequestParam("file") MultipartFile file) {
@@ -173,6 +183,7 @@ public class CsvController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/sold-products/export")
     public ResponseEntity<byte[]> exportSoldProducts() {
         try {
@@ -188,6 +199,7 @@ public class CsvController {
 
     // ============ SEARCH HISTORY ============
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @PostMapping("/search-history/import")
     public ResponseEntity<Map<String, Object>> importSearchHistory(
             @RequestParam("file") MultipartFile file) {
@@ -205,6 +217,7 @@ public class CsvController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/search-history/export")
     public ResponseEntity<byte[]> exportSearchHistory() {
         try {
@@ -220,6 +233,7 @@ public class CsvController {
 
     // ============ REVIEWS ============
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @PostMapping("/reviews/import")
     public ResponseEntity<Map<String, Object>> importReviews(
             @RequestParam("file") MultipartFile file) {
@@ -237,6 +251,7 @@ public class CsvController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/reviews/export")
     public ResponseEntity<byte[]> exportReviews() {
         try {
@@ -252,6 +267,7 @@ public class CsvController {
 
     // ============ BASKET ============
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @PostMapping("/baskets/import")
     public ResponseEntity<Map<String, Object>> importBaskets(
             @RequestParam("file") MultipartFile file) {
@@ -269,6 +285,7 @@ public class CsvController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'ANALYST')")
     @GetMapping("/baskets/export")
     public ResponseEntity<byte[]> exportBaskets() {
         try {

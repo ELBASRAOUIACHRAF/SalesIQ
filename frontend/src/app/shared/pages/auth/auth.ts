@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 @Component({
   selector: 'app-auth',
   imports: [ReactiveFormsModule, FormsModule, MatInputModule, MatFormFieldModule, MatButtonModule, MatIconModule, CommonModule],
@@ -18,8 +19,12 @@ export class Auth {
   // Déclaration des deux formulaires
   loginForm!: FormGroup;
   registerForm!: FormGroup;
+  errorMessage: string = '';
 
-  constructor(private fb: FormBuilder, private router: Router) {}
+  constructor(private fb: FormBuilder,
+             private router: Router,
+             private authService: AuthService
+            ) {}
 
     // --- Getters pour le Formulaire d'Inscription (Sign Up) ---
   get fName() { return this.registerForm.get('firstName'); }
@@ -59,29 +64,56 @@ export class Auth {
     this.isSignUpActive = !this.isSignUpActive;
   }
 
-  // Action quand on clique sur "Sign In"
+
   onLogin(): void {
+    // Réinitialiser le message d'erreur
+    this.errorMessage = '';
+
     if (this.loginForm.valid) {
-      console.log('Login Data:', this.loginForm.value);
-      // Ici: appeler ton AuthService.login(this.loginForm.value)
-      this.router.navigate(['/']).then(() => {
-        window.location.reload();
+      
+      // 2. Appel du service
+      this.authService.login(this.loginForm.value).subscribe({
+        
+        // Cas de succès (Code 200 OK)
+        next: (response) => {
+          console.log('Login réussi !', response);
+          // La redirection suffit. Le token est déjà stocké par le service (via le tap).
+          this.router.navigate(['/']); 
+        },
+        
+        // Cas d'erreur (Code 401, 403, 500...)
+        error: (err) => {
+          console.error('Erreur de login', err);
+          if (err.status === 401) {
+            this.errorMessage = "Email ou mot de passe incorrect.";
+          } else {
+            this.errorMessage = "Une erreur technique est survenue.";
+          }
+        }
       });
+
     } else {
-      this.loginForm.markAllAsTouched(); // Affiche les erreurs si le form est invalide
+      this.loginForm.markAllAsTouched();
     }
   }
 
-  // Action quand on clique sur "Sign Up"
   onRegister(): void {
     if (this.registerForm.valid) {
-      console.log('Register Data:', this.registerForm.value);
-      // Ici: appeler ton AuthService.register(this.registerForm.value)
-      this.router.navigate(['/']).then(() => {
-        window.location.reload();
+      const registerData = this.registerForm.value;
+      
+      this.authService.signUp(registerData).subscribe({
+        next: (response) => {
+          console.log('Inscription réussie !', response);
+                    
+          // this.router.navigate(['/auth']); 
+          this.toggleForm();
+        },
+        error: (err) => {
+          console.error('Erreur lors de l\'inscription :', err);
+          // ex: this.errorMessage = "Cet email est déjà utilisé.";
+        }
       });
-      // L'objet envoyé ressemblera à :
-      // { firstName: '...', lastName: '...', phoneNumber: '...', email: '...', password: '...' }
+
     } else {
       this.registerForm.markAllAsTouched();
     }

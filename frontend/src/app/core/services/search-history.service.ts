@@ -12,25 +12,25 @@ export class SearchHistoryService {
 
   constructor(private http: HttpClient) { }
 
-  addUserSearchQuery(userId: number, query: string): Observable<SearchHistory>{
-    return this.http.post<SearchHistory>(`${this.apiUrl}search/addSearch/${userId}`, query);
+  addUserSearchQuery(query: string): Observable<SearchHistory | null>{
+    return this.http.post<any>(`${this.apiUrl}search/addSearch`, query);
   }
 
-  getUsersSearchHistory(userId: number): Observable<SearchHistory[]>{
-    return this.http.get<SearchHistory[]>(`${this.apiUrl}search/searchQuery/${userId}`);
+  getUsersSearchHistory(): Observable<SearchHistory[] | null>{
+    return this.http.get<any>(`${this.apiUrl}search/searchQuery`);
   }
 
-  clearUsersHistory(userId: number): Observable<any>{
-    return this.http.delete<any>(`${this.apiUrl}search/clearHistory/${userId}`);
+  clearUsersHistory(): Observable<any>{
+    return this.http.delete<any>(`${this.apiUrl}search/clearHistory`);
   }
 
   deleteFromSearchHistory(SearchHistoryId: number): Observable<any>{
     return this.http.delete<any>(`${this.apiUrl}search/deleteSearch/${SearchHistoryId}`);
   }
 
-  getRecentSearches(userId: number): Observable<any>{ 
+  getRecentSearches(): Observable<any>{ 
     let params = new HttpParams().set('page', '0').set('size', '5'); 
-    return this.http.get<any>(`${this.apiUrl}search/getRecentSearches/${userId}`, { params });
+    return this.http.get<any>(`${this.apiUrl}search/getRecentSearches`, { params });
   }
 
 }

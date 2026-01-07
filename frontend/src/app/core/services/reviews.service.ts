@@ -13,24 +13,24 @@ export class ReviewsService {
 
   constructor(private http: HttpClient) { }
 
-  getReviewsByProductId(productId: number): Observable<Reviews[]>{
-    return this.http.get<Reviews[]>(`${this.apiUrl}reviews/productreviewsdetails/${productId}`);
+  getReviewsByProductId(productId: number): Observable<Reviews[] | any>{
+    return this.http.get<any>(`${this.apiUrl}reviews/productreviewsdetails/${productId}`);
   }
 
-  addReview(review: Reviews, productId: number, userId: number): Observable<Reviews> {
+  addReview(review: Reviews, productId: number): Observable<Reviews | null> {
     // Utilisez HttpParams pour construire l'URL proprement
     const url = `http://localhost:8080/reviews/createreview`;
     return this.http.post<Reviews>(url, review, {
       params: {
-        productId: productId.toString(),
-        userId: userId.toString()
+        productId: productId.toString()
       }
     });
   }
 
   getPercentageRatingsStatsByProduct(productId: number): Observable<RatingStats> {
     return this.getReviewsByProductId(productId).pipe(
-      map((reviews: Reviews[]) => {
+      map((safeReviews: Reviews[] | null) => {
+        const reviews = safeReviews || [];
         const total = reviews.length;
         
         // Initialisation des compteurs pour chaque étoile (1 à 5)

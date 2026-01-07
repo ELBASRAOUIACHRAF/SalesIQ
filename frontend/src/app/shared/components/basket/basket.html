@@ -14,7 +14,7 @@
           </div>
           
           <div class="item-details">
-            <h2 class="item-name" [routerLink]="['/product', item.id]">{{ item.name }}</h2>
+            <h2 class="item-name" [routerLink]="['/product', item.productId]">{{ item.name }}</h2>
             <p class="stock-status" [class.in-stock]="item.stock > 0">
               {{ item.stock > 0 ? 'In Stock' : 'Out of Stock' }}
             </p>
@@ -70,7 +70,7 @@
           Subtotal ({{ totalItems }} items): <b>${{ totalPrice | number:'1.2-2' }}</b>
         </div>
         
-        <button mat-flat-button class="btn-checkout">
+        <button mat-flat-button class="btn-checkout" (click)="proceedToCheckout()">
           Proceed to Checkout
         </button>
       </div>

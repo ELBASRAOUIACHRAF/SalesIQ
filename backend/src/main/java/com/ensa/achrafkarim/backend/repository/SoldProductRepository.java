@@ -203,4 +203,13 @@ public interface SoldProductRepository extends JpaRepository<SoldProduct, Long> 
     Long countUnitsSoldInPeriod(@Param("startDate") LocalDateTime startDate,
                                 @Param("endDate") LocalDateTime endDate);
 
+
+//    List<SoldProduct> findAllBySaleIdAndUsersId(Long saleId, Long id);
+
+//    @Query("SELECT sp.product FROM SoldProduct sp WHERE sp.sale.id = :saleId AND sp.sale.user.id = :userId")
+//    List<Product> findProductsBySaleIdAndUserId(@Param("saleId") Long saleId, @Param("userId") Long userId);
+
+    // 2. Récupérer les VENTES DE PRODUITS (SoldProduct) complètes
+    @Query("SELECT sp FROM SoldProduct sp WHERE sp.sale.id = :saleId AND sp.sale.users.id = :userId")
+    List<SoldProduct> findAllBySaleIdAndUsersId(@Param("saleId") Long saleId, @Param("userId") Long userId);
 }

@@ -150,6 +150,23 @@ export class Productcard implements OnInit, OnChanges, OnDestroy {
     const decimal = rating % 1;
     return decimal >= 0.25 && decimal < 0.75;
   }
+  // onAddToCart(product: Product) {
+    
+  //   this.basketService.addToBasket(
+  //     1, 
+  //     product.id
+  //   ).subscribe({
+  //     next: (success) => {
+  //       if (success) {
+  //         // Optionnel : Afficher un message de succès (SnackBar)
+  //         console.log('Produit ajouté au panier !', product.stock);
+  //         this.basketService.updateCartCount();
+  //       }
+  //     },
+  //     error: (err) => {
+  //       console.error('Erreur lors de l\'ajout au panier', err);
+  //     }
+  //   });
 
   emptyStars(rating: number): number {
     return 5 - this.fullStars(rating) - (this.hasHalfStar(rating) ? 1 : 0);
@@ -162,7 +179,7 @@ export class Productcard implements OnInit, OnChanges, OnDestroy {
     this.addingToCart.add(product.id);
     this.cdr.detectChanges();
     
-    this.basketService.addToBasket(1, product.id, 1)
+    this.basketService.addToBasket(1, product.id)
       .pipe(
         takeUntil(this.destroy$),
         catchError(error => {
@@ -177,7 +194,7 @@ export class Productcard implements OnInit, OnChanges, OnDestroy {
       .subscribe(success => {
         if (success) {
           this.addedToCart.add(product.id);
-          this.basketService.updateCartCount(1);
+          this.basketService.updateCartCount();
           
           // Clear the "added" state after 2 seconds
           setTimeout(() => {

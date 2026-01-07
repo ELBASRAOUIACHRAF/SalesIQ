@@ -8,6 +8,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { ProfileModel } from '../../../core/models/profile.model';
 import { UsersService } from '../../../core/services/users.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { AuthService } from "../../../core/services/auth.service";
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-account',
@@ -23,48 +26,39 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 export class Account implements OnInit {
 
   constructor(
+    private authService: AuthService,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
     private dialog: MatDialog,
     private usersService: UsersService,
+    private router: Router
   ) {}
 
   // @Input() userId!: number;
-  userId = 1;
+  // userId = 3;
 
   profileModel!: ProfileModel;
   profileLoadError = false;
 
-  loadUsersProfile(usersId: number){
-    this.usersService.getUsersProfile(usersId).subscribe({
-      next: (data) => {
-        this.profileModel = data;
-        console.log('Données reçues :', data);
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Failed to load profile:', err);
-        this.profileLoadError = true;
-        // Set default profile data
-        this.profileModel = {
-          firstName: 'Admin',
-          lastName: 'User',
-          email: 'admin@salesiq.com',
-          phoneNumber: '',
-          bio: '',
-          country: '',
-          city: '',
-          postalCode: ''
-        } as ProfileModel;
-        this.cdr.detectChanges();
-      }
-    });
+  loadUsersProfile(){
+    this.usersService.getUsersProfile().subscribe((data) => {
+      this.profileModel = data;
+      console.log('Données reçues :', data)
+      this.cdr.detectChanges();
+    })
   }
 
  
-  ngOnInit(): void { 
-      this.loadUsersProfile(this.userId);
-   }
+  ngOnInit(): void {
+    // Vérifier d'abord si l'utilisateur est connecté
+    if (this.authService.isLoggedIn()) {
+      this.loadUsersProfile();
+      // this.loadSearchHistory(); 
+      // this.updateCartCount();
+    } else {
+      console.log("Utilisateur non connecté (Mode Invité)");
+    }
+  }
 
   onEdit(section: string) {
     let dialogConfig = {
@@ -124,5 +118,13 @@ export class Account implements OnInit {
         });
       }
     });
+  }
+
+  onLogout(): void {
+    this.authService.logout();
+    
+    this.snackBar.open('You have been logged out.', 'Close', { duration: 3000 });
+    
+    this.router.navigate(['/auth']);
   }
 }

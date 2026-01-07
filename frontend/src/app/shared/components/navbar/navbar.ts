@@ -70,7 +70,7 @@ export class Navbar implements OnInit {
     });
 
     // Initialisation au chargement (ex: basketId = 1)
-    this.basketService.updateCartCount(1);
+    this.basketService.updateCartCount();
     this.loadSearchHistory();
   }
 
@@ -83,7 +83,7 @@ export class Navbar implements OnInit {
   }
 
   loadSearchHistory(){
-    this.searchHistoryService.getRecentSearches(this.userId).subscribe({
+    this.searchHistoryService.getRecentSearches().subscribe({
       next: (response: any) => {
         // Spring Boot renvoie un objet Page, la liste est dans 'content'
         this.searchHistory = response.content;
@@ -115,7 +115,7 @@ export class Navbar implements OnInit {
         item.query.toLowerCase() === cleanQuery.toLowerCase()
       );
       if(!exists){
-        this.searchHistoryService.addUserSearchQuery(this.userId, this.searchQuery).subscribe({
+        this.searchHistoryService.addUserSearchQuery(this.searchQuery).subscribe({
           next: (response) => {
             console.log('Recherche enregistrée avec succès', response);
             
@@ -150,7 +150,7 @@ export class Navbar implements OnInit {
   }
 
   clearAllHistory() {
-    this.searchHistoryService.clearUsersHistory(this.userId).subscribe({
+    this.searchHistoryService.clearUsersHistory().subscribe({
       next: () => {
         this.searchHistory = [];
       }

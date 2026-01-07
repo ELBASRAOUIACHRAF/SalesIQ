@@ -16,4 +16,5 @@ public class BasketItemDto {
     private Long quantity;
     private double unitPrice;
     private Long stock;
+    private Long productId;
 }

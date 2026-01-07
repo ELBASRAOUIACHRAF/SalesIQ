@@ -30,12 +30,14 @@ public class SaleServiceImpl implements SaleService {
     private SaleRepository saleRepository;
     private SaleMapper saleMapper;
     private SoldProductService soldProductService;
+    private BasketService basketService;
 
-    public SaleServiceImpl(SaleRepository saleRepository, SaleMapper saleMapper, UsersRepository usersRepository, SoldProductService  soldProductService) {
+    public SaleServiceImpl(BasketService basketService, SaleRepository saleRepository, SaleMapper saleMapper, UsersRepository usersRepository, SoldProductService  soldProductService) {
         this.saleRepository = saleRepository;
         this.saleMapper = saleMapper;
         this.usersRepository = usersRepository;
         this.soldProductService = soldProductService;
+        this.basketService = basketService;
     }
 
     @Override
@@ -52,6 +54,13 @@ public class SaleServiceImpl implements SaleService {
     public SaleDto getSale(Long id) {
         Sale sale = saleRepository.findById(id).orElse(null);
         if (sale == null) return null;
+        return saleMapper.toDto(sale);
+    }
+
+    @Override
+    public SaleDto getUsersSale(Long id, Long userId) {
+        Sale sale = saleRepository.findByIdAndUsersId(id, userId)
+                .orElseThrow(() -> new RuntimeException("Commande introuvable ou accès refusé"));
         return saleMapper.toDto(sale);
     }
 
@@ -84,6 +93,7 @@ public class SaleServiceImpl implements SaleService {
         for (ProductOrderInfoDto productOrderInfoDto1 : productOrderInfoDtoList) {
             soldProductService.addSoldProduct(savedSale.getId(), productOrderInfoDto1);
         }
+        basketService.clearBasket(userId);
         return saleMapper.toDto(savedSale);
     }
 

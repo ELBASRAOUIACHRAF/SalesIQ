@@ -25,29 +25,11 @@ export class ProductBuyCard implements OnInit{
 
   productDetails!: ProductDetailsModel;
   newPrice: number = 0;
-
-  
-
-
   // @Input() product: any = {
   //   price: 169.99,
   //   stockQuantity: 12
   // };
 
-  loadProductDetails(productId: number){
-    this.productService.getProductDetailsById(productId).subscribe((data) => {
-      this.productDetails = data;
-      // On vérifie si discount existe, sinon on garde le prix initial
-      if (this.productDetails && this.productDetails.discount > 0) {
-        this.newPrice = this.productDetails.price * (1 - this.productDetails.discount / 100);
-      } else {
-        this.newPrice = this.productDetails.price;
-      }
-      this.cdr.detectChanges();
-    });
-  }
-
-  
   selectedQuantity = 1;
   userLocation = 'Phoenix 85001';
   deliveryDate = new Date();
@@ -62,7 +44,18 @@ export class ProductBuyCard implements OnInit{
     this.deliveryDate.setDate(this.deliveryDate.getDate() + 3);
   }
 
-
+  loadProductDetails(productId: number){
+    this.productService.getProductDetailsById(productId).subscribe((data) => {
+      this.productDetails = data;
+      // On vérifie si discount existe, sinon on garde le prix initial
+      if (this.productDetails && this.productDetails.discount > 0) {
+        this.newPrice = this.productDetails.price * (1 - this.productDetails.discount / 100);
+      } else {
+        this.newPrice = this.productDetails.price;
+      }
+      this.cdr.detectChanges();
+    });
+  }
   
 
   ngOnInit(): void {
@@ -82,14 +75,14 @@ export class ProductBuyCard implements OnInit{
     
     this.basketService.addToBasket(
       this.selectedQuantity, 
-      this.productDetails.id, 
-      1
+      this.productDetails.id
+      
     ).subscribe({
       next: (success) => {
         if (success) {
           // Optionnel : Afficher un message de succès (SnackBar)
           console.log('Produit ajouté au panier !');
-          this.basketService.updateCartCount(1);
+          this.basketService.updateCartCount();
         }
       },
       error: (err) => {

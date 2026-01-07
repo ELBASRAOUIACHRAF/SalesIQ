@@ -9,6 +9,9 @@ import { AboutPage } from './shared/pages/about-page/about-page';
 import { ContactPage } from './shared/pages/contact-page/contact-page';
 import { CategoriesPage } from './shared/pages/categories-page/categories-page';
 import { SearchResultsPage } from './shared/pages/search-results-page/search-results-page';
+import { ErrorPage } from './shared/pages/error-page/error-page';
+import { SuccessPage } from './shared/pages/success-page/success-page';
+import { CheckoutPage } from './shared/pages/checkout-page/checkout-page';
 
 
 
@@ -37,7 +40,13 @@ export const routes: Routes = [
 
     { path: 'categories', component: CategoriesPage },
 
+    { path: 'checkout', component: CheckoutPage },
+
     { path: 'auth', component: Auth },
+
+    { path: 'error', component: ErrorPage },
+    { path: 'success', component: SuccessPage },
+
     
     // Optionnel : Page 404 si l'URL n'existe pas
     // { path: '**', redirectTo: 'products' }

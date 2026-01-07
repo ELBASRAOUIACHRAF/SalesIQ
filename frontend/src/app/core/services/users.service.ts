@@ -9,16 +9,16 @@ import { ProfileModel } from '../models/profile.model';
 })
 export class UsersService {
   
-  private apiUrl = 'http://localhost:8080/'; 
+  private apiUrl = 'http://localhost:8080/users'; 
 
   constructor(private http: HttpClient) { }
 
-  getUsersProfile(usersId: number): Observable<ProfileModel>{
-    return this.http.get<ProfileModel>(`${this.apiUrl}profile/${usersId}`);
+  getUsersProfile(): Observable<ProfileModel>{
+    return this.http.get<ProfileModel>(`${this.apiUrl}/profile`);
   }
 
   updateUserProfile(profileData: ProfileModel): Observable<ProfileModel>{
-    return this.http.put<ProfileModel>(`${this.apiUrl}profileUpdate`, profileData);
+    return this.http.put<ProfileModel>(`${this.apiUrl}/profileUpdate`, profileData);
   }
 
 

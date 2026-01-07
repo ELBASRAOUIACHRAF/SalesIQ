@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { AnalyticsDashboard } from './dashboard/analytics-dashboard/analytics-dashboard';
 import { AnalyticsLayout } from './layout/analytics-layout';
 import { KpiCardComponent } from '../../shared/components/kpi-card/kpi-card';
@@ -10,24 +10,7 @@ import { ReviewsDashboard } from '../reviews/reviews-dashboard/reviews-dashboard
 import { SalesDashboard } from '../sales/sales-dashboard/sales-dashboard';
 import { UsersDashboard } from '../users/users-dashboard/users-dashboard';
 import { AnalyticsReports } from './components/analytics-reports/analytics-reports';
-import { AnalyticsChatbot } from './components/analytics-chatbot/analytics-chatbot';
 
-const routes: Routes = [
-  {
-    path: '',
-    component: AnalyticsLayout,
-    children: [
-      { path: '', component: AnalyticsDashboard },
-      { path: 'products', component: ProductsDashboard },
-      { path: 'categories', component: CategoriesDashboard },
-      { path: 'reviews', component: ReviewsDashboard },
-      { path: 'sales', component: SalesDashboard },
-      { path: 'users', component: UsersDashboard },
-      { path: 'reports', component: AnalyticsReports },
-      { path: 'ai-assistant', component: AnalyticsChatbot }
-    ]
-  }
-];
 
 @NgModule({
   declarations: [],
@@ -37,8 +20,21 @@ const routes: Routes = [
     AnalyticsDashboard,
     AnalyticsLayout,
     AnalyticsReports,
-    AnalyticsChatbot,
-    RouterModule.forChild(routes)
+    RouterModule.forChild([
+      {
+        path: '',
+        component: AnalyticsLayout,
+        children: [
+          { path: '', component: AnalyticsDashboard },
+          { path: 'products', component: ProductsDashboard },
+          { path: 'categories', component: CategoriesDashboard },
+          { path: 'reviews', component: ReviewsDashboard },
+          { path: 'sales', component: SalesDashboard },
+          { path: 'users', component: UsersDashboard },
+          { path: 'reports', component: AnalyticsReports }
+        ]
+      }
+    ])
   ]
 })
 export class AnalyticsModule { }

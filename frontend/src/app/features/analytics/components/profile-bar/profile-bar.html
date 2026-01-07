@@ -9,6 +9,9 @@
       <span class="badge" *ngIf="unreadCount > 0">{{ unreadCount > 99 ? '99+' : unreadCount }}</span>
     </button>
 
+  <!-- <div class="profile" tabindex="0" aria-label="profile" (click)="navigateToProfile()" style="cursor: pointer;">
+    <div class="avatar" aria-hidden="true">{{ (userName || '').slice(0,1).toUpperCase() }}</div>
+    <div class="name" *ngIf="!compact">{{ userName }}</div> -->
     <!-- Notification Panel -->
     <div class="notification-panel" *ngIf="notificationPanelOpen" (click)="$event.stopPropagation()">
       <div class="panel-header">

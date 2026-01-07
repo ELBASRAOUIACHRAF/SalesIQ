@@ -1,0 +1,217 @@
+<div class="checkout-wrapper">
+  <div class="checkout-container">
+
+    <header class="page-header">
+      <h1>Secure Checkout</h1>
+      <p>Complete your purchase safely and securely.</p>
+    </header>
+
+    <div class="checkout-layout">
+
+      <div class="left-column">
+        
+        <div class="section-card">
+          <div class="card-title">
+            <div class="icon-box">
+              <mat-icon>local_shipping</mat-icon>
+            </div>
+            <h2>Shipping Information</h2>
+          </div>
+
+          <form [formGroup]="shippingForm" class="form-grid">
+            <div class="row-2">
+              <mat-form-field appearance="outline" class="custom-field">
+                <mat-label>First Name</mat-label>
+                <mat-icon matPrefix>person_outline</mat-icon>
+                <input matInput formControlName="firstName" placeholder="John">
+                <mat-error>Required</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="custom-field">
+                <mat-label>Last Name</mat-label>
+                <mat-icon matPrefix>person</mat-icon>
+                <input matInput formControlName="lastName" placeholder="Doe">
+                <mat-error>Required</mat-error>
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="custom-field">
+              <mat-label>Email Address</mat-label>
+              <mat-icon matPrefix>email</mat-icon>
+              <input matInput formControlName="email" placeholder="john@example.com">
+              <mat-error>Valid email required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="custom-field">
+              <mat-label>Street Address</mat-label>
+              <mat-icon matPrefix>home</mat-icon>
+              <input matInput formControlName="address" placeholder="123 Street Name">
+              <mat-error>Required</mat-error>
+            </mat-form-field>
+
+            <div class="row-3">
+              <mat-form-field appearance="outline" class="custom-field">
+                <mat-label>City</mat-label>
+                <mat-icon matPrefix>location_city</mat-icon>
+                <input matInput formControlName="city">
+                <mat-error>Required</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="custom-field">
+                <mat-label>Postal Code</mat-label>
+                <mat-icon matPrefix>markunread_mailbox</mat-icon>
+                <input matInput formControlName="postalCode">
+                <mat-error>Required</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="custom-field">
+                <mat-label>Phone</mat-label>
+                <mat-icon matPrefix>phone</mat-icon>
+                <input matInput formControlName="phoneNumber">
+                <mat-error>Required</mat-error>
+              </mat-form-field>
+            </div>
+          </form>
+        </div>
+
+        <div class="section-card">
+          <div class="card-title">
+            <div class="icon-box">
+              <mat-icon>payment</mat-icon>
+            </div>
+            <h2>Payment Method</h2>
+          </div>
+
+          <form [formGroup]="paymentForm">
+            
+            <mat-radio-group formControlName="method" class="payment-grid">
+              
+              <mat-radio-button value="CREDITCARD" class="payment-option">
+                <div class="option-content">
+                  <span class="label">Credit Card</span>
+                  <div class="icons" style="padding-left: 30px;">
+                     <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" height="15" alt="Visa">
+                  </div>
+                </div>
+              </mat-radio-button>
+
+              <mat-radio-button value="PAYPAL" class="payment-option">
+                <div class="option-content">
+                  <span class="label">PayPal</span>
+                  <div class="icons" style="padding-left: 30px;">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" height="15" alt="PayPal">
+                 </div>
+                </div>
+              </mat-radio-button>
+
+              <mat-radio-button value="CASH" class="payment-option">
+                <div class="option-content">
+                  <span class="label" style="padding-right: 30px;">Cash on Delivery</span>
+                  <mat-icon class="icon-grey">local_atm</mat-icon>
+                </div>
+              </mat-radio-button>
+
+              <mat-radio-button value="TRANSFER" class="payment-option">
+                <div class="option-content">
+                  <span class="label" style="padding-right: 30px;" >Bank Transfer</span>
+                  <mat-icon class="icon-grey">account_balance</mat-icon>
+                </div>
+              </mat-radio-button>
+
+            </mat-radio-group>
+
+            <div class="dynamic-section" *ngIf="paymentForm.get('method')?.value === 'CREDITCARD'">
+              <div class="form-grid">
+                <mat-form-field appearance="outline" class="custom-field">
+                  <mat-label>Card Number</mat-label>
+                  <mat-icon matPrefix>credit_card</mat-icon>
+                  <input matInput formControlName="cardNumber" placeholder="0000 0000 0000 0000">
+                  <mat-error>Invalid card number</mat-error>
+                </mat-form-field>
+
+                <div class="row-2">
+                  <mat-form-field appearance="outline" class="custom-field">
+                    <mat-label>Expiry (MM/YY)</mat-label>
+                    <mat-icon matPrefix>calendar_today</mat-icon>
+                    <input matInput formControlName="expiry" placeholder="MM/YY">
+                    <mat-error>Required</mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="custom-field">
+                    <mat-label>CVV</mat-label>
+                    <mat-icon matPrefix>lock</mat-icon>
+                    <input matInput formControlName="cvv" type="password" placeholder="123">
+                    <mat-error>3 digits</mat-error>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+
+            <div class="info-box" *ngIf="paymentForm.get('method')?.value === 'CASH'">
+              <mat-icon>local_shipping</mat-icon>
+              <p>Pay safely with cash upon delivery.</p>
+            </div>
+
+            <div class="info-box" *ngIf="paymentForm.get('method')?.value === 'PAYPAL'">
+              <mat-icon>open_in_new</mat-icon>
+              <p>You will be redirected to PayPal to complete your purchase.</p>
+            </div>
+
+            <div class="info-box transfer-box" *ngIf="paymentForm.get('method')?.value === 'TRANSFER'">
+              <mat-icon>info</mat-icon>
+              <div>
+                <p><strong>Bank Details:</strong> SalesIQ Inc.</p>
+                <p>IBAN: MA64 007 888 9999 1234 5678</p>
+                <small>Order shipped after payment receipt.</small>
+              </div>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+      <aside class="right-column">
+        <div class="summary-card">
+          <div class="summary-header">
+            <h3>Order Summary</h3>
+            <span class="badge">{{ orderSummary.itemCount }} items</span>
+          </div>
+
+          <div class="summary-content">
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span>${{ orderSummary.subtotal | number:'1.2-2' }}</span>
+            </div>
+            <div class="summary-row">
+              <span>Shipping</span>
+              <span class="free">FREE</span>
+            </div>
+            <div class="summary-row">
+              <span>Tax</span>
+              <span>$0.00</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="total-row">
+              <span>Total</span>
+              <span class="amount">${{ orderSummary.total | number:'1.2-2' }}</span>
+            </div>
+
+            <button mat-flat-button class="btn-confirm" (click)="onSubmitOrder()" [disabled]="isProcessing">
+              <span *ngIf="!isProcessing">CONFIRM ORDER</span>
+              <span *ngIf="isProcessing">PROCESSING...</span>
+              <mat-icon *ngIf="!isProcessing">arrow_forward</mat-icon>
+            </button>
+
+            <div class="secure-label">
+              <mat-icon inline>gpp_good</mat-icon> 
+              Payments are SSL encrypted and secured.
+            </div>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</div>

@@ -19,4 +19,7 @@ public interface SoldProductService {
     long getNumberOfTimesSold(Long productId);
     double getProductProfitBySaleProductIds(Long productId, Long saleId); // method we talked abt it earlier
 
+    Double getTotalPriceBySalesUser(Long saleId, Long id);
+
+    List<ProductDto> getSoldProductsBySalesUser(Long saleId, Long id);
 }

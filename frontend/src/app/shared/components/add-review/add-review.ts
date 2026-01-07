@@ -72,7 +72,7 @@ export class AddReview implements OnInit {
         reviewDate: new Date(),
       };
 
-      this.reviewsService.addReview(newReview, this.productId, 2).subscribe({
+      this.reviewsService.addReview(newReview, this.productId).subscribe({
         next: () => {
           this.snackBar.open('Thank you! Your review has been submitted.', 'Close', {
             duration: 3000,

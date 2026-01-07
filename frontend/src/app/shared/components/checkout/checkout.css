@@ -1,0 +1,396 @@
+/* =========================================
+   1. VARIABLES & CONFIGURATION
+   ========================================= */
+   :host {
+    --primary-dark: #0f172a;   /* Bleu Nuit */
+    --primary-light: #f1f5f9;  /* Gris très clair */
+    --accent-yellow: #facc15;  /* Jaune Vif */
+    --accent-yellow-hover: #eab308;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    
+    --card-radius: 16px;
+    --input-radius: 8px;
+  }
+  
+  .checkout-wrapper {
+    background-color: var(--primary-light);
+    min-height: 100vh;
+    padding: 40px 20px;
+    font-family: 'Inter', system-ui, sans-serif;
+    box-sizing: border-box;
+  }
+  
+  .checkout-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  /* =========================================
+     2. HEADER DE PAGE
+     ========================================= */
+  .page-header {
+    margin-bottom: 2rem;
+  }
+  
+  .page-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary-dark);
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.5px;
+  }
+  
+  .page-header p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin: 0;
+  }
+  
+  /* =========================================
+     3. LAYOUT PRINCIPAL (GRILLE GAUCHE/DROITE)
+     ========================================= */
+  .checkout-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px; /* Colonne principale flexible, Sommaire fixe */
+    gap: 24px;
+    align-items: start;
+  }
+  
+  /* =========================================
+     4. STYLE DES CARTES (CONTAINERS)
+     ========================================= */
+  .section-card {
+    background: white;
+    border-radius: var(--card-radius);
+    padding: 30px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    margin-bottom: 24px;
+    border: 1px solid white; /* Pour l'effet propre */
+  }
+  
+  .card-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  
+  .icon-box {
+    background-color: #fefce8; /* Fond jaune pâle */
+    color: #854d0e; /* Icone jaune foncé */
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .card-title h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+  }
+  
+  /* =========================================
+     5. FORMULAIRES & INPUTS (OVERRIDE MATERIAL)
+     ========================================= */
+  .form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  
+  .row-3 {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 16px;
+  }
+  
+  /* --- Nettoyage du style Angular Material --- */
+  
+  ::ng-deep .custom-field {
+    width: 100%;
+  }
+
+  
+  /* Fond blanc et bordures douces */
+  ::ng-deep .custom-field .mdc-text-field--outlined {
+    background-color: white !important;
+    --mdc-outlined-text-field-container-shape: var(--input-radius);
+    --mdc-outlined-text-field-outline-color: #cbd5e1;
+    --mdc-outlined-text-field-focus-outline-color: var(--primary-dark);
+  }
+  
+  /* Configuration de l'icône à l'intérieur de l'input */
+  ::ng-deep .custom-field .mat-mdc-form-field-icon-prefix {
+    padding: 0;
+    margin-right: 12px; /* Espace entre icone et texte */
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  ::ng-deep .custom-field mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+  
+  /* Suppression des bugs visuels (lignes verticales) */
+  ::ng-deep .custom-field .mdc-text-field--outlined .mdc-notched-outline__notch {
+    border-right: none;
+  }
+  
+  /* =========================================
+     6. PAIEMENT (GRID 2x2 & ALIGNEMENT ICONES)
+     ========================================= */
+  
+  /* Grille des boutons radio */
+  .payment-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 colonnes égales */
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  
+  /* Style du conteneur du bouton radio */
+  .payment-option {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px; /* Espace interne */
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+  }
+  
+  /* Style quand sélectionné */
+  .mat-mdc-radio-checked .payment-option {
+    border-color: var(--primary-dark);
+    background-color: #f8fafc;
+    box-shadow: 0 0 0 1px var(--primary-dark);
+  }
+  
+  /* --- FIX CRUCIAL POUR L'ALIGNEMENT --- */
+  /* Force le label interne de Material à prendre 100% de la largeur */
+  ::ng-deep .payment-option .mdc-label {
+    width: 100%;
+  }
+  
+  /* Conteneur flex pour séparer Texte (gauche) et Icone (droite) */
+  .option-content {
+    display: flex;
+    justify-content: space-between; /* <--- C'est ici la magie */
+    align-items: center;
+    width: 100%;
+    padding-left: 8px;
+  }
+  
+  .option-content .label {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text-main);
+  }
+  
+  /* Gestion des images (Visa, etc.) */
+  .option-content img {
+    height: 16px;
+    width: auto;
+    display: block;
+  }
+  
+  /* Gestion des icônes Material (Cash, Transfer) */
+  .icon-grey {
+    color: #94a3b8;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+  
+  /* --- ZONES D'INFORMATION DYNAMIQUES --- */
+  .dynamic-section, .info-box {
+    animation: slideDown 0.3s ease-out;
+  }
+  
+  .info-box {
+    background-color: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: var(--text-main);
+  }
+  
+  .info-box mat-icon {
+    color: var(--text-muted);
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+  
+  .info-box p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+  
+  /* Spécifique Virement Bancaire */
+  .transfer-box {
+    align-items: flex-start;
+  }
+  .transfer-box p { margin-bottom: 4px; }
+  .transfer-box small { 
+    color: var(--text-muted); 
+    display: block; 
+    margin-top: 8px; 
+  }
+  
+  .credit-card-form {
+    border-top: 1px solid var(--border-color);
+    margin-top: 20px;
+    padding-top: 20px;
+  }
+  
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* =========================================
+     7. SOMMAIRE DE COMMANDE (STICKY DARK)
+     ========================================= */
+  .summary-card {
+    background-color: var(--primary-dark);
+    color: white;
+    border-radius: var(--card-radius);
+    padding: 30px;
+    position: sticky; /* Reste visible au scroll */
+    top: 20px;
+    z-index: 10;
+  }
+  
+  .summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  
+  .summary-header h3 { margin: 0; font-size: 1.25rem; }
+  
+  .badge {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+    color: #94a3b8; /* Gris clair sur fond foncé */
+  }
+  
+  .summary-row span:last-child {
+    color: white;
+    font-weight: 500;
+  }
+  
+  .summary-row .free {
+    color: var(--accent-yellow);
+    font-weight: 700;
+  }
+  
+  .divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 20px 0;
+  }
+  
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+  }
+  
+  .total-row .amount {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent-yellow);
+    line-height: 1;
+  }
+  
+  /* BOUTON CONFIRMATION */
+  .btn-confirm {
+    width: 100%;
+    background-color: var(--accent-yellow) !important;
+    color: var(--primary-dark) !important;
+    height: 56px;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 8px;
+    letter-spacing: 0.5px;
+    transition: transform 0.1s;
+  }
+  
+  .btn-confirm:hover:not(:disabled) {
+    background-color: var(--accent-yellow-hover) !important;
+    transform: translateY(-1px);
+  }
+  
+  .btn-confirm:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  
+  .btn-confirm mat-icon { margin-left: 8px; }
+  
+  .secure-label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    font-size: 0.75rem;
+    color: #64748b;
+    opacity: 0.8;
+  }
+  
+  /* =========================================
+     8. RESPONSIVE DESIGN
+     ========================================= */
+  @media (max-width: 960px) {
+    .checkout-layout {
+      grid-template-columns: 1fr; /* Une seule colonne sur tablette */
+    }
+    
+    .summary-card {
+      position: static; /* Plus de sticky sur mobile */
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .row-2, .row-3 {
+      grid-template-columns: 1fr; /* Inputs empilés */
+    }
+    
+    .payment-grid {
+      grid-template-columns: 1fr; /* Boutons paiement empilés */
+    }
+  }

@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, OnDestroy, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { Subject, takeUntil, catchError, of } from 'rxjs';
 import { UsersService } from '../../../../core/services/users.service';
@@ -32,7 +33,8 @@ export class ProfileBarComponent implements OnInit, OnDestroy {
   constructor(
     private usersService: UsersService,
     private notificationService: NotificationService,
-    private elementRef: ElementRef
+    private elementRef: ElementRef,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -43,6 +45,9 @@ export class ProfileBarComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+  navigateToProfile(): void {
+    this.router.navigate(['/analytics/profile']);
   }
 
   @HostListener('document:click', ['$event'])
@@ -70,7 +75,7 @@ export class ProfileBarComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.loadError = false;
 
-    this.usersService.getUsersProfile(this.userId)
+    this.usersService.getUsersProfile()
       .pipe(
         takeUntil(this.destroy$),
         catchError(error => {

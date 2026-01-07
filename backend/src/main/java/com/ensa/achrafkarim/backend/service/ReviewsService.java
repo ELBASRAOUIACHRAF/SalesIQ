@@ -23,8 +23,8 @@ public interface ReviewsService {
 
     List<ReviewsDto> getReviewsByUserId(Long userId);
     ReviewsDto createReview(ReviewsDto reviewsDto, Long productId, Long userId);
-    ReviewsDto updateReview(Long reviewId, ReviewsDto reviewsDto);
-    void deleteReview(Long reviewId);
+    ReviewsDto updateReview(Long reviewId, ReviewsDto reviewsDto, Long userId);
+    void deleteReview(Long reviewId, Long userId);
 
     // =====================
     // FILTERING

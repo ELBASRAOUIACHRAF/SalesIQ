@@ -4,6 +4,9 @@ import com.ensa.achrafkarim.backend.entities.Basket;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import javax.net.ssl.SSLSession;
+import java.util.Optional;
+
 public interface BasketRepository extends JpaRepository<Basket, Long> {
 
     @Query("""
@@ -14,4 +17,6 @@ public interface BasketRepository extends JpaRepository<Basket, Long> {
         WHERE b.user.id = :userId
     """)
     Basket findBasketByUserIdWithItems(Long userId);
+
+    Optional<Basket> findByUserId(Long userId);
 }

@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface ReviewsRepository extends JpaRepository<Reviews, Long> {
 
@@ -22,7 +23,7 @@ public interface ReviewsRepository extends JpaRepository<Reviews, Long> {
     List<Reviews> findAllByproductIdWithUser(Long productId);
 
     List<Reviews> findAllByusersId(Long usersId);
-    
+
     void deleteAllByUsersId(Long usersId);
 
     List<Reviews> findByRatingBetween(double minRating, double maxRating);
@@ -52,6 +53,10 @@ public interface ReviewsRepository extends JpaRepository<Reviews, Long> {
     boolean existsById(Long reviewId);
 
     List<Reviews> findAllByproductId(Long productId);
+
+    Optional<Reviews> findByIdAndUsersId(Long reviewId, Long userId);
+
+    void deleteByIdAndUsersId(Long reviewId, Long userId);
 
     @Query("SELECT COUNT(r.id), AVG(r.rating) FROM Reviews r " +
             "WHERE r.reviewDate BETWEEN :startDate AND :endDate")
