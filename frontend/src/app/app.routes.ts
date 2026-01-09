@@ -13,7 +13,7 @@ import { ErrorPage } from './shared/pages/error-page/error-page';
 import { SuccessPage } from './shared/pages/success-page/success-page';
 import { CheckoutPage } from './shared/pages/checkout-page/checkout-page';
 import { ProfileDashboard } from './features/analytics/dashboard/profile-dashboard/profile-dashboard';
-
+import { roleGuard } from './core/guards/role-guard';
 
 
 export const routes: Routes = [
@@ -57,6 +57,8 @@ export const routes: Routes = [
     // Analytics module with all analytics-related routes
     {
         path: 'analytics',
+        canActivate: [roleGuard],          // 1. On active le Guard
+        data: { roles: ['ROLE_ADMIN', 'ROLE_ANALYST'] },
         loadChildren: () => import('./features/analytics/analytics-module')
             .then(m => m.AnalyticsModule)
     },
@@ -64,6 +66,8 @@ export const routes: Routes = [
     // Admin module with all admin-related routes
     {
         path: 'admin',
+        canActivate: [roleGuard],
+        data: { role: 'ROLE_ADMIN' },
         loadChildren: () => import('./features/admin/admin-module')
             .then(m => m.AdminModule)
     }

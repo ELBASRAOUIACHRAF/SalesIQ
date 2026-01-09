@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { RegisterModel } from '../models/register.model';
+import { jwtDecode } from 'jwt-decode';
 
 export interface LoginRequest {
   email: string;
@@ -57,31 +58,40 @@ export class AuthService {
     return null; // Sur le serveur, on n'a pas de token, c'est normal
   }
 
-  /**
-   * Vérifie si l'utilisateur est connecté (basique : présence du token)
-   */
+
   isLoggedIn(): boolean {
     const token = this.getToken();
     return !!token; // Retourne true si le token existe, false sinon
   }
 
-  // logout(): void {
-  //   localStorage.removeItem('auth_token');
-  //   // Optionnel : Rediriger vers la page de login ici via le Router
-  // }
+
   logout(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('auth_token');
-      // Optionnel : Rediriger vers la page de login ici via le Router
     }
   }
 
-  // signUp(registrationInfo: RegisterModel): Observable<any>{
-  //   return this.http.post<any>(`${this.apiUrl}/login`, registrationInfo)
-  // }
 
   signUp(registrationInfo: RegisterModel): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/register`, registrationInfo);
+  }
+
+  getUserRole(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      const decoded: any = jwtDecode(token);
+      return decoded.role; // On lit la clé "role" définie dans ton Spring Boot
+    } catch (error) {
+      console.error('Erreur de décodage du token', error);
+      return null;
+    }
+  }
+
+  hasRole(expectedRole: string): boolean {
+    const userRole = this.getUserRole();
+    return userRole === expectedRole;
   }
 
 }
